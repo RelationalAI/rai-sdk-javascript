@@ -5,7 +5,11 @@ export class Foo {
     this.foo = 321;
   }
 
-  test() {
-    console.log('fooo', this.foo);
+  test(b: string) {
+    console.log('fooo', this.foo, b);
   }
 }
+
+const a = new Foo();
+
+a.test(123);
