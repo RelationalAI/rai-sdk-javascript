@@ -4,3 +4,5 @@ dist
 .idea
 yarn.lock
 .DS_Store
+.eslintcache
+tsconfig.tsbuildinfo

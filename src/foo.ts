@@ -6,6 +6,6 @@ export class Foo {
   }
 
   test() {
-    console.log("fooo", this.foo);
+    console.log('fooo', this.foo);
   }
 }

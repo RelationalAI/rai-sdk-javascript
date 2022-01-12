@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { promises } from "fs";
+import { promises } from 'fs';
 
 const { readFile } = promises;
 
-export async function readConfig(configPath = "~/.rai/config") {
-  const strConfig = await readFile(configPath, "utf-8");
+export async function readConfig(configPath = '~/.rai/config') {
+  const strConfig = await readFile(configPath, 'utf-8');
 
   return strConfig;
 }
