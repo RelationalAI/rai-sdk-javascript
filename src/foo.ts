@@ -9,7 +9,3 @@ export class Foo {
     console.log('fooo', this.foo, b);
   }
 }
-
-const a = new Foo();
-
-a.test(123);

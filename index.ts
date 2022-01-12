@@ -12,5 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export { readConfig } from './src/config';
 export * from './src/foo';
+
+export { readConfig } from './src/config';
