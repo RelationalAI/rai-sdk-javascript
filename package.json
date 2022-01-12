@@ -1,0 +1,40 @@
+{
+  "name": "rai-sdk-javascript",
+  "description": "RelationalAI SDK for JavaScript",
+  "version": "1.0.0",
+  "author": {
+    "name": "RelationalAI",
+    "url": "https://relational.ai"
+  },
+  "homepage": "https://github.com/RelationalAI/rai-sdk-javascript#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RelationalAI/rai-sdk-javascript.git"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "api",
+    "rel",
+    "relationalai",
+    "sdk"
+  ],
+  "exports": {
+    "require": "./dist/node/rai-sdk-javascript.js",
+    "default": "./dist/browser/rai-sdk-javascript.modern.js"
+  },
+  "types": "dist/typings/index.d.ts",
+  "main": "./dist/node/rai-sdk-javascript.js",
+  "browser": "./dist/browser/rai-sdk-javascript.js",
+  "module": "./dist/browser/rai-sdk-javascript.module.js",
+  "unpkg": "./dist/browser/rai-sdk-javascript.umd.js",
+  "scripts": {
+    "build": "rm -rf ./dist && npm run build:browser && npm run build:node",
+    "build:browser": "microbundle -i ./index.ts -o ./dist/browser --target web --alias ./src/config=./src/config.browser",
+    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --format cjs",
+    "dev:browser": "npm run build:browser -- -w",
+    "dev:node": "npm run build:node -- -w"
+  },
+  "devDependencies": {
+    "microbundle": "^0.14.2"
+  }
+}
