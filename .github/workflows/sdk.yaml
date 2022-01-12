@@ -10,17 +10,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Read node from package.json
-        uses: culshaw/read-package-node-version-actions@v1
-        id: package-node-version
-
-      - name: Show node version number
-        run: echo "Version is ${{ steps.package-node-version.outputs.version }}"
-
-      - name: Setup Node.js ${{ steps.package-node-version.outputs.version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ steps.package-node-version.outputs.version }}
+          node-version: 14.15.5
 
       - name: Install dependencies
         run: npm ci
