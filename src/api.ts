@@ -12,5 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export { readConfig } from './src/config';
-export * from './src/credentials';
+import { Credentials } from './credentials';
+
+export class Context {
+  constructor(
+    public credentials: Credentials,
+    public host: string,
+    public port = 443,
+    public scheme = 'https',
+    public region = 'us-east',
+  ) {}
+}
