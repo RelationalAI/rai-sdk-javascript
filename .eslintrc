@@ -41,7 +41,7 @@
     "@typescript-eslint/ban-types": "off",
     "no-console": "warn",
     "no-empty-function": "off",
-    "no-undef": [1],
+    "no-undef": "off",
     "no-unused-vars": [
       "error",
       { "varsIgnorePattern": "^_$", "argsIgnorePattern": "^_+$" }

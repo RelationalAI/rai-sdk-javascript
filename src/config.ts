@@ -12,12 +12,82 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-env node */
+/* eslint-disable no-console */
+
+import { ConfigIniParser } from 'config-ini-parser';
 import { promises } from 'fs';
+import { homedir } from 'os';
+
+import { Config } from './types';
 
 const { readFile } = promises;
 
-export async function readConfig(configPath = '~/.rai/config') {
-  const strConfig = await readFile(configPath, 'utf-8');
+export async function readConfig(
+  profile = 'default',
+  configPath = '~/.rai/config',
+) {
+  configPath = resolveHome(configPath);
 
-  return strConfig;
+  try {
+    const strCfg = await readFile(configPath, 'utf-8');
+    const configParser = new ConfigIniParser();
+
+    configParser.parse(strCfg);
+
+    const sections = configParser.sections();
+
+    if (!sections.includes(profile)) {
+      throw new Error(`Profile '${profile}' not found in ${configPath}`);
+    }
+
+    return readClientCredentials(configParser, profile);
+  } catch (error: unknown) {
+    if (isNodeError(error) && error.code === 'ENOENT') {
+      throw new Error(`Can't find file: ${configPath}`);
+    } else {
+      throw error;
+    }
+  }
+}
+
+const REQUIRED_FIELDS = ['host', 'client_id', 'client_secret'];
+const DEFAULT_PORT = '443';
+const DEFAULT_SCHEME = 'https';
+const DEFAULT_CLIENT_CREDENTIALS_URL =
+  'https://login.relationalai.com/oauth/token';
+
+function readClientCredentials(configParser: ConfigIniParser, profile: string) {
+  for (const field of REQUIRED_FIELDS) {
+    if (!configParser.get(profile, field, '')) {
+      throw new Error(`Can't find ${field} field in ${profile} profile`);
+    }
+  }
+
+  const config: Config = {
+    host: configParser.get(profile, 'host', ''),
+    port: configParser.get(profile, 'port', DEFAULT_PORT),
+    scheme: configParser.get(profile, 'scheme', DEFAULT_SCHEME),
+    clientId: configParser.get(profile, 'client_id', ''),
+    clientSecret: configParser.get(profile, 'client_secret', ''),
+    clientCredentialsUrl: configParser.get(
+      profile,
+      'client_credentials_url',
+      DEFAULT_CLIENT_CREDENTIALS_URL,
+    ),
+  };
+
+  return config;
+}
+
+function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error;
+}
+
+function resolveHome(path: string) {
+  if (path.startsWith('~/')) {
+    return homedir() + '/' + path.slice(2);
+  }
+
+  return path;
 }

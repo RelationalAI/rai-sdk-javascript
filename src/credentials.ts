@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import fetch from 'isomorphic-unfetch';
+
+import { Config } from './types';
+
 // TODO consider dropping this
-export abstract class Credentials {}
+export abstract class Credentials {
+  abstract getToken(): Promise<string>;
+}
 
 type GetToken = () => Promise<string>;
 
@@ -39,24 +45,60 @@ class AccessToken {
   }
 }
 
-export const DEFAULT_CLIENT_CREDENTIALS_URL =
-  'https://login.relationalai.com/oauth/token';
+type ClientCredentialsConfig = Pick<
+  Config,
+  'host' | 'clientId' | 'clientSecret' | 'clientCredentialsUrl'
+>;
 
 export class ClientCredentials extends Credentials {
-  clientId: string;
-  clientSecret: string;
-  clientCredentialsUrl: string;
+  config: ClientCredentialsConfig;
   accessToken?: AccessToken;
 
-  constructor(
-    clientId: string,
-    clientSecret: string,
-    clientCredentialsUrl = DEFAULT_CLIENT_CREDENTIALS_URL,
-  ) {
+  constructor(config: ClientCredentialsConfig) {
     super();
 
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
-    this.clientCredentialsUrl = clientCredentialsUrl;
+    this.config = config;
+  }
+
+  async getToken() {
+    if (this.accessToken && !this.accessToken.isExpired) {
+      return this.accessToken.token;
+    }
+
+    return this.requestToken();
+  }
+
+  private async requestToken() {
+    const url = this.config.clientCredentialsUrl;
+    const headers = {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    };
+
+    const body = JSON.stringify({
+      client_id: this.config.clientId,
+      client_secret: this.config.clientSecret,
+      grant_type: 'client_credentials',
+      // ensure the audience contains the protocol scheme
+      audience: `https://${this.config.host}`,
+    });
+
+    const options: RequestInit = {
+      method: 'POST',
+      headers,
+      body,
+    };
+    const response = await fetch(url, options);
+
+    if (response.ok) {
+      const data = await response.json();
+      this.accessToken = new AccessToken(data.access_token, data.expires_in);
+
+      return this.accessToken.token;
+    }
+
+    throw new Error(
+      `getToken failed: ${response.status} ${response.statusText}`,
+    );
   }
 }

@@ -12,14 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import fetch from 'isomorphic-unfetch';
+
 import { Credentials } from './credentials';
 
 export class Context {
   constructor(
     public credentials: Credentials,
     public host: string,
-    public port = 443,
+    public port = '443',
     public scheme = 'https',
     public region = 'us-east',
   ) {}
+
+  async request(path: string, method = 'GET') {
+    const url = `${this.scheme}://${this.host}:${this.port}${path}`;
+    const token = await this.credentials.getToken();
+    const headers = {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+      authorization: `Bearer ${token}`,
+    };
+
+    const options: RequestInit = {
+      method,
+      headers,
+    };
+
+    const response = await fetch(url, options);
+
+    if (response.ok) {
+      return await response.json();
+    }
+
+    // TODO
+    throw response;
+  }
 }
