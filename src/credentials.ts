@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import fetch from 'isomorphic-unfetch';
+import urlParse from 'url-parse';
 
-import { Config } from './types';
+import { request } from './rest';
 
 // TODO consider dropping this
 export abstract class Credentials {
-  abstract getToken(): Promise<string>;
+  abstract getToken(url: string): Promise<string>;
 }
 
-type GetToken = () => Promise<string>;
+type GetToken = (url: string) => Promise<string>;
 
 export class GetTokenCredentials extends Credentials {
   getToken: GetToken;
@@ -45,60 +45,60 @@ class AccessToken {
   }
 }
 
-type ClientCredentialsConfig = Pick<
-  Config,
-  'host' | 'clientId' | 'clientSecret' | 'clientCredentialsUrl'
->;
+type TokenRequest = {
+  client_id: string;
+  client_secret: string;
+  grant_type: string;
+  audience: string;
+};
+
+type TokenResponse = {
+  access_token: string;
+  expires_in: number;
+};
 
 export class ClientCredentials extends Credentials {
-  config: ClientCredentialsConfig;
+  clientId: string;
+  clientSecret: string;
+  clientCredentialsUrl: string;
   accessToken?: AccessToken;
 
-  constructor(config: ClientCredentialsConfig) {
+  constructor(
+    clientId: string,
+    clientSecret: string,
+    clientCredentialsUrl: string,
+  ) {
     super();
 
-    this.config = config;
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.clientCredentialsUrl = clientCredentialsUrl;
   }
 
-  async getToken() {
+  async getToken(requestedUrl: string) {
     if (this.accessToken && !this.accessToken.isExpired) {
       return this.accessToken.token;
     }
 
-    return this.requestToken();
+    return this.requestToken(requestedUrl);
   }
 
-  private async requestToken() {
-    const url = this.config.clientCredentialsUrl;
-    const headers = {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    };
-
-    const body = JSON.stringify({
-      client_id: this.config.clientId,
-      client_secret: this.config.clientSecret,
+  private async requestToken(requestedUrl: string) {
+    const body: TokenRequest = {
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
       grant_type: 'client_credentials',
       // ensure the audience contains the protocol scheme
-      audience: `https://${this.config.host}`,
+      audience: `https://${urlParse(requestedUrl).host}`,
+    };
+
+    const data = await request<TokenResponse>(this.clientCredentialsUrl, {
+      method: 'POST',
+      body,
     });
 
-    const options: RequestInit = {
-      method: 'POST',
-      headers,
-      body,
-    };
-    const response = await fetch(url, options);
+    this.accessToken = new AccessToken(data.access_token, data.expires_in);
 
-    if (response.ok) {
-      const data = await response.json();
-      this.accessToken = new AccessToken(data.access_token, data.expires_in);
-
-      return this.accessToken.token;
-    }
-
-    throw new Error(
-      `getToken failed: ${response.status} ${response.statusText}`,
-    );
+    return this.accessToken.token;
   }
 }

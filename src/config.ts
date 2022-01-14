@@ -19,6 +19,7 @@ import { ConfigIniParser } from 'config-ini-parser';
 import { promises } from 'fs';
 import { homedir } from 'os';
 
+import { ClientCredentials } from './credentials';
 import { Config } from './types';
 
 const { readFile } = promises;
@@ -35,9 +36,7 @@ export async function readConfig(
 
     configParser.parse(strCfg);
 
-    const sections = configParser.sections();
-
-    if (!sections.includes(profile)) {
+    if (!configParser.isHaveSection(profile)) {
       throw new Error(`Profile '${profile}' not found in ${configPath}`);
     }
 
@@ -68,12 +67,14 @@ function readClientCredentials(configParser: ConfigIniParser, profile: string) {
     host: configParser.get(profile, 'host', ''),
     port: configParser.get(profile, 'port', DEFAULT_PORT),
     scheme: configParser.get(profile, 'scheme', DEFAULT_SCHEME),
-    clientId: configParser.get(profile, 'client_id', ''),
-    clientSecret: configParser.get(profile, 'client_secret', ''),
-    clientCredentialsUrl: configParser.get(
-      profile,
-      'client_credentials_url',
-      DEFAULT_CLIENT_CREDENTIALS_URL,
+    credentials: new ClientCredentials(
+      configParser.get(profile, 'client_id', ''),
+      configParser.get(profile, 'client_secret', ''),
+      configParser.get(
+        profile,
+        'client_credentials_url',
+        DEFAULT_CLIENT_CREDENTIALS_URL,
+      ),
     ),
   };
 

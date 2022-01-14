@@ -1,6 +1,5 @@
-import { Context } from './src/api';
+import * as api from './src/api';
 import { readConfig } from './src/config';
-import { ClientCredentials } from './src/credentials';
 
 describe('foo', () => {
   // it('foo test', async () => {
@@ -12,10 +11,10 @@ describe('foo', () => {
 
   it('config', async () => {
     const config = await readConfig();
-    const creds = new ClientCredentials(config);
-    const ctx = new Context(creds, config.host, config.port, config.scheme);
+    const ctx = new api.Context(config);
+    const res = await api.getEngine(ctx, 'dg-test123');
 
-    const res = await ctx.request('/compute');
+    //98768f5a-07e3-1568-caa2-06011081d0c1
 
     console.log('result', res);
   });
