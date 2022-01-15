@@ -12,5 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+export * from './src/api';
 export { readConfig } from './src/config';
 export * from './src/credentials';
+export { VERSION } from './src/types';

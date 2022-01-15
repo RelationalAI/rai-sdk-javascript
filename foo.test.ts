@@ -12,7 +12,7 @@ describe('foo', () => {
   it('config', async () => {
     const config = await readConfig();
     const ctx = new api.Context(config);
-    const res = await api.getEngine(ctx, 'dg-test123');
+    const res = await api.listEngines(ctx);
 
     //98768f5a-07e3-1568-caa2-06011081d0c1
 

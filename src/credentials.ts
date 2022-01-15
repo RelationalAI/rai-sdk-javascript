@@ -16,7 +16,6 @@ import urlParse from 'url-parse';
 
 import { request } from './rest';
 
-// TODO consider dropping this
 export abstract class Credentials {
   abstract getToken(url: string): Promise<string>;
 }

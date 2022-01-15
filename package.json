@@ -36,8 +36,8 @@
   "unpkg": "./dist/browser/rai-sdk-javascript.umd.js",
   "scripts": {
     "build": "rm -rf ./dist && npm run build:browser && npm run build:node",
-    "build:browser": "microbundle -i ./index.ts -o ./dist/browser --target web --alias ./src/config=./src/config.browser",
-    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --format cjs",
+    "build:browser": "microbundle -i ./index.ts -o ./dist/browser --target web --alias ./src/config=./src/config.browser --external none --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --format cjs --define __RAI_SDK_VERSION__=$npm_package_version",
     "dev:browser": "npm run build:browser -- -w",
     "dev:node": "npm run build:node -- -w",
     "format": "prettier --write ./src --loglevel warn",
@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "config-ini-parser": "1.5.9",
-    "isomorphic-unfetch": "^3.1.0",
+    "cross-fetch": "3.1.4",
     "url-parse": "1.5.4"
   }
 }

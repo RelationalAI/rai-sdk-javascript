@@ -1,5 +1,12 @@
-import fetch from 'isomorphic-unfetch';
+import fetch from 'cross-fetch';
 import urlParse from 'url-parse';
+
+import { VERSION } from './types';
+
+const isNode =
+  typeof process !== 'undefined' &&
+  process.versions != null &&
+  process.versions.node != null;
 
 export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -9,15 +16,20 @@ export type RequestOptions = {
 };
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
-  return {
+  const sdkUserAgent = `rai-sdk-javascript/${VERSION}`;
+  const defaultHeaders: RequestInit['headers'] = {
     Accept: 'application/json',
     'Content-type': 'application/json',
-    Host: urlParse(url).host,
-    // TODO version
-    // TODO real user agent
-    'User-agent': `rai-sdk-javascript/`,
-    ...headers,
+    'X-User-agent': sdkUserAgent,
   };
+
+  if (isNode) {
+    // Only in Node because Browsers won't allow to set
+    defaultHeaders['Host'] = urlParse(url).host;
+    defaultHeaders['User-agent'] = sdkUserAgent;
+  }
+
+  return { ...defaultHeaders, ...headers };
 }
 
 export async function request<T>(url: string, options: RequestOptions = {}) {
@@ -38,6 +50,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     return responseBody as T;
   }
 
+  // TODO figure out how to handle it better
   throw {
     statusCode: response.status,
     statusText: response.statusText,
