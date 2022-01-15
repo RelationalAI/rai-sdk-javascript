@@ -54,7 +54,7 @@ export enum EngineState {
   DELETION_FAILED = 'DELETION_FAILED',
 }
 
-const ENDPOINT = 'compute';
+export const ENDPOINT = 'compute';
 
 type ListReponse = { computes: Engine[] };
 type SingleReponse = { compute: Engine };

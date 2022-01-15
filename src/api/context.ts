@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { request, RequestOptions } from '../rest';
+import { mkUrl, request, RequestOptions } from '../rest';
 import { Config } from '../types';
 
 export class Context {
   baseUrl: string;
 
   constructor(public config: Config, public region = 'us-east') {
-    this.baseUrl = `${config.scheme}://${config.host}:${config.port}`;
+    // TODO impove to accept baseUrl, useful in the Console
+    this.baseUrl = mkUrl(config.scheme, config.host, config.port);
   }
 
   async request<T>(path: string, options: Omit<RequestOptions, 'body'> = {}) {

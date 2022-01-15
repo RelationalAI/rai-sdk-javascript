@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import urlParse from 'url-parse';
+import { stringify } from 'query-string';
 
 import { VERSION } from './types';
 
@@ -25,11 +25,19 @@ function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
 
   if (isNode) {
     // Only in Node because Browsers won't allow to set
-    defaultHeaders['Host'] = urlParse(url).host;
+    const parsedUrl = new URL(url);
+
+    defaultHeaders['Host'] = parsedUrl.hostname;
     defaultHeaders['User-agent'] = sdkUserAgent;
   }
 
   return { ...defaultHeaders, ...headers };
+}
+
+export function mkUrl(scheme: string, host: string, port: string) {
+  scheme = scheme.replace(/[^A-Za-z]/, '');
+
+  return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
 export async function request<T>(url: string, options: RequestOptions = {}) {
@@ -39,7 +47,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     headers: addDefaultHeaders(options.headers, url),
   };
   const fullUrl = options.query
-    ? `${url}?${urlParse.qs.stringify(options.query)}`
+    ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
     : url;
 
   const response = await fetch(fullUrl, opts);

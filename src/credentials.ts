@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import urlParse from 'url-parse';
-
 import { request } from './rest';
 
 export abstract class Credentials {
@@ -83,12 +81,13 @@ export class ClientCredentials extends Credentials {
   }
 
   private async requestToken(requestedUrl: string) {
+    const parsedUrl = new URL(requestedUrl);
     const body: TokenRequest = {
       client_id: this.clientId,
       client_secret: this.clientSecret,
       grant_type: 'client_credentials',
       // ensure the audience contains the protocol scheme
-      audience: `https://${urlParse(requestedUrl).host}`,
+      audience: `https://${parsedUrl.hostname}`,
     };
 
     const data = await request<TokenResponse>(this.clientCredentialsUrl, {
