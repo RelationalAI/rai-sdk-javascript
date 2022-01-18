@@ -24,5 +24,8 @@ jobs:
       - name: Types check
         run: npm run tscheck
 
+      - name: Tests
+        run: npm run test
+
       - name: Build
         run: npm run build
