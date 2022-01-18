@@ -33,9 +33,9 @@ describe('model', () => {
     );
     const result = await endpoint.installModels(
       context,
-      mockModels,
       database,
       engine,
+      mockModels,
     );
 
     scope.done();
@@ -84,7 +84,7 @@ describe('model', () => {
       database,
       engine,
     );
-    const result = await endpoint.getModel(context, 'model2', database, engine);
+    const result = await endpoint.getModel(context, database, engine, 'model2');
 
     scope.done();
 
@@ -109,9 +109,9 @@ describe('model', () => {
     );
     const result = await endpoint.deleteModel(
       context,
-      'model1',
       database,
       engine,
+      'model1',
     );
 
     scope.done();

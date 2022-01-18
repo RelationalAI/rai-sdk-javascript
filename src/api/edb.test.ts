@@ -66,7 +66,7 @@ describe('edb', () => {
       database,
       engine,
     );
-    const result = await endpoint.deleteEdb(context, 'edb1', database, engine);
+    const result = await endpoint.deleteEdb(context, database, engine, 'edb1');
 
     scope.done();
 

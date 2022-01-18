@@ -21,17 +21,28 @@ import {
   runActions,
 } from './transaction';
 
+export function mkModel(name: string, value: string) {
+  const model: Model = {
+    type: 'Source',
+    name,
+    value,
+    path: name,
+  };
+
+  return model;
+}
+
 export async function installModels(
   context: Context,
-  models: Model[],
   database: string,
-  engine?: string,
+  engine: string,
+  models: Model[],
 ) {
   const action: InstallAction = {
     type: 'InstallAction',
     sources: models,
   };
-  const result = await runActions(context, [action], database, engine);
+  const result = await runActions(context, database, engine, [action]);
 
   if (result.actions[0]?.result?.type === 'InstallActionResult') {
     return result.actions[0].result;
@@ -43,12 +54,12 @@ export async function installModels(
 export async function listModels(
   context: Context,
   database: string,
-  engine?: string,
+  engine: string,
 ) {
   const action: ListSourceAction = {
     type: 'ListSourceAction',
   };
-  const result = await runActions(context, [action], database, engine);
+  const result = await runActions(context, database, engine, [action]);
 
   if (result.actions[0]?.result?.type === 'ListSourceActionResult') {
     return result.actions[0].result.sources;
@@ -59,9 +70,9 @@ export async function listModels(
 
 export async function getModel(
   context: Context,
-  name: string,
   database: string,
-  engine?: string,
+  engine: string,
+  name: string,
 ) {
   const models = await listModels(context, database, engine);
   const model = models.find(m => m.name === name);
@@ -75,15 +86,15 @@ export async function getModel(
 
 export async function deleteModel(
   context: Context,
-  name: string,
   database: string,
-  engine?: string,
+  engine: string,
+  name: string,
 ) {
   const action: ModifyWorkspaceAction = {
     type: 'ModifyWorkspaceAction',
     delete_source: [name],
   };
-  const result = await runActions(context, [action], database, engine);
+  const result = await runActions(context, database, engine, [action]);
 
   if (result.actions[0]?.result?.type === 'ModifyWorkspaceActionResult') {
     return result.actions[0].result;

@@ -22,12 +22,12 @@ import {
 export async function listEdbs(
   context: Context,
   database: string,
-  engine?: string,
+  engine: string,
 ) {
   const action: ListEdbAction = {
     type: 'ListEdbAction',
   };
-  const result = await runActions(context, [action], database, engine);
+  const result = await runActions(context, database, engine, [action]);
 
   if (result.actions[0]?.result?.type === 'ListEdbActionResult') {
     return result.actions[0].result.rels;
@@ -38,15 +38,15 @@ export async function listEdbs(
 
 export async function deleteEdb(
   context: Context,
-  name: string,
   database: string,
-  engine?: string,
+  engine: string,
+  name: string,
 ) {
   const action: ModifyWorkspaceAction = {
     type: 'ModifyWorkspaceAction',
     delete_edb: name,
   };
-  const result = await runActions(context, [action], database, engine);
+  const result = await runActions(context, database, engine, [action]);
 
   if (result.actions[0]?.result?.type === 'ModifyWorkspaceActionResult') {
     return result.actions[0].result.delete_edb_result;

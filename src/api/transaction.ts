@@ -166,9 +166,9 @@ export type TransactionResult = {
 
 export async function runTransaction(
   context: Context,
-  transaction: Transaction,
   database: string,
-  engine?: string,
+  engine: string,
+  transaction: Transaction,
   mode = TransactionMode.OPEN,
 ) {
   const query = {
@@ -186,9 +186,9 @@ export async function runTransaction(
 
 export async function runActions(
   context: Context,
-  actions: LabeledAction['action'][],
   database: string,
-  engine?: string,
+  engine: string,
+  actions: LabeledAction['action'][],
   readonly = true,
 ) {
   const labeledActions = actions.map((action, i) => ({
@@ -208,5 +208,5 @@ export async function runActions(
     computeName: engine,
   };
 
-  return await runTransaction(context, transaction, database, engine);
+  return await runTransaction(context, database, engine, transaction);
 }
