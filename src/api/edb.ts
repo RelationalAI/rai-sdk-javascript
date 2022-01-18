@@ -46,7 +46,7 @@ export async function deleteEdb(
     type: 'ModifyWorkspaceAction',
     delete_edb: name,
   };
-  const result = await runActions(context, database, engine, [action]);
+  const result = await runActions(context, database, engine, [action], false);
 
   if (result.actions[0]?.result?.type === 'ModifyWorkspaceActionResult') {
     return result.actions[0].result.delete_edb_result;

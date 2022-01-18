@@ -164,6 +164,16 @@ export type TransactionResult = {
   actions: LabeledActionResult[];
 };
 
+export function mkLabeledAction(name: string, action: LabeledAction['action']) {
+  const labeledAction: LabeledAction = {
+    type: 'LabeledAction',
+    name: name,
+    action,
+  };
+
+  return labeledAction;
+}
+
 export async function runTransaction(
   context: Context,
   database: string,
@@ -191,11 +201,9 @@ export async function runActions(
   actions: LabeledAction['action'][],
   readonly = true,
 ) {
-  const labeledActions = actions.map((action, i) => ({
-    type: 'LabeledAction' as const,
-    name: `action-${i}`,
-    action,
-  }));
+  const labeledActions = actions.map((action, i) =>
+    mkLabeledAction(`action-${i}`, action),
+  );
   const transaction: Transaction = {
     type: 'Transaction',
     abort: false,

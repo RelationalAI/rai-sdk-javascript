@@ -58,10 +58,13 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     return responseBody as T;
   }
 
+  const error = await response.json();
+
   // TODO figure out how to handle it better
   throw {
     statusCode: response.status,
     statusText: response.statusText,
+    error,
     headers: response.headers,
   };
 }
