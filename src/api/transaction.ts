@@ -73,7 +73,7 @@ export type LabeledAction = {
 export type LabeledActionResult = {
   type: 'LabeledActionResult';
   name: string;
-  action:
+  result:
     | QueryActionResult
     | ModifyWorkspaceActionResult
     | InstallActionResult
@@ -161,7 +161,7 @@ export type TransactionResult = {
   version: number;
   output: Relation[];
   problems: Problem[];
-  actions: string[];
+  actions: LabeledActionResult[];
 };
 
 export async function runTransaction(
@@ -178,7 +178,7 @@ export async function runTransaction(
     region: context.region,
   };
 
-  return await context.post(ENDPOINT, {
+  return await context.post<TransactionResult>(ENDPOINT, {
     query,
     body: transaction,
   });
