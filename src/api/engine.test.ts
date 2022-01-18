@@ -3,6 +3,8 @@ import nock from 'nock';
 import * as endpoint from './engine';
 import { baseUrl, getMockContext } from './testUtils';
 
+const path = '/compute';
+
 describe('engine', () => {
   const context = getMockContext();
   const mockEngines = [{ name: 'engine-1' }, { name: 'engine-2' }];
@@ -13,7 +15,7 @@ describe('engine', () => {
   it('should create engine', async () => {
     const response = { compute: mockEngines[0] };
     const scope = nock(baseUrl)
-      .put(`/${endpoint.ENDPOINT}`, {
+      .put(path, {
         region: 'us-east',
         size: endpoint.EngineSize.S,
         name: 'test-engine',
@@ -32,9 +34,7 @@ describe('engine', () => {
 
   it('should list engines', async () => {
     const response = { computes: mockEngines };
-    const scope = nock(baseUrl)
-      .get(`/${endpoint.ENDPOINT}`)
-      .reply(200, response);
+    const scope = nock(baseUrl).get(path).reply(200, response);
     const result = await endpoint.listEngines(context);
 
     scope.done();
@@ -51,10 +51,7 @@ describe('engine', () => {
         endpoint.EngineState.PROVISIONING,
       ],
     };
-    const scope = nock(baseUrl)
-      .get(`/${endpoint.ENDPOINT}`)
-      .query(query)
-      .reply(200, response);
+    const scope = nock(baseUrl).get(path).query(query).reply(200, response);
     const result = await endpoint.listEngines(context, query);
 
     scope.done();
@@ -65,7 +62,7 @@ describe('engine', () => {
   it('should get engine', async () => {
     const response = { computes: mockEngines };
     const scope = nock(baseUrl)
-      .get(`/${endpoint.ENDPOINT}`)
+      .get(path)
       .query({ name: 'test-engine' })
       .reply(200, response);
     const result = await endpoint.getEngine(context, 'test-engine');
@@ -78,7 +75,7 @@ describe('engine', () => {
   it('should delete engine', async () => {
     const response = { status: { message: 'deleted' } };
     const scope = nock(baseUrl)
-      .delete(`/${endpoint.ENDPOINT}`, { name: 'test-engine' })
+      .delete(path, { name: 'test-engine' })
       .reply(200, response);
     const result = await endpoint.deleteEngine(context, 'test-engine');
 

@@ -14,3 +14,4 @@
 
 export * from './api/context';
 export * from './api/engine';
+export * from './api/transaction';
