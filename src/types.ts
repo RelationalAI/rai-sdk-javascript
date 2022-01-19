@@ -15,3 +15,9 @@ export type Config = {
   scheme: string;
   credentials: Credentials;
 };
+
+export interface AccessTokenCache {
+  access_token: string;
+  expires_in: number;
+  created_on: number;
+}

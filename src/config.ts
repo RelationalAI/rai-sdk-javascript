@@ -20,9 +20,9 @@ import { promises } from 'fs';
 import { homedir } from 'os';
 
 import { ClientCredentials } from './credentials';
-import { Config } from './types';
+import { AccessTokenCache, Config } from './types';
 
-const { readFile } = promises;
+const { readFile, writeFile } = promises;
 
 export async function readConfig(
   profile = 'default',
@@ -75,6 +75,8 @@ function readClientCredentials(configParser: ConfigIniParser, profile: string) {
         'client_credentials_url',
         DEFAULT_CLIENT_CREDENTIALS_URL,
       ),
+      async () => await readTokenCache(profile),
+      async cache => await writeTokenCache(cache, profile),
     ),
   };
 
@@ -91,4 +93,29 @@ function resolveHome(path: string) {
   }
 
   return path;
+}
+
+function mkTokenCachePath(profile: string) {
+  return resolveHome(`~/.rai/${profile}_cache.json`);
+}
+
+async function readTokenCache(profile = 'default') {
+  const cachePath = mkTokenCachePath(profile);
+
+  try {
+    const cachedStr = await readFile(cachePath, 'utf-8');
+    const cache = JSON.parse(cachedStr);
+
+    if (cache.access_token && cache.created_on && cache.expires_in) {
+      return cache as AccessTokenCache;
+    }
+    // eslint-disable-next-line no-empty
+  } catch {}
+}
+
+async function writeTokenCache(token: AccessTokenCache, profile = 'default') {
+  const cachePath = mkTokenCachePath(profile);
+  const cacheStr = JSON.stringify(token, null, 2);
+
+  await writeFile(cachePath, cacheStr, 'utf-8');
 }
