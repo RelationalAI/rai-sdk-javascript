@@ -65,6 +65,7 @@ describe('edb', () => {
       ],
       database,
       engine,
+      false,
     );
     const result = await endpoint.deleteEdb(context, database, engine, 'edb1');
 
