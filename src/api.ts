@@ -18,3 +18,4 @@ export * from './api/edb';
 export * from './api/engine';
 export * from './api/query';
 export * from './api/transaction';
+export * from './api/user';

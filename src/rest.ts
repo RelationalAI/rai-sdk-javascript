@@ -46,9 +46,10 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     body: JSON.stringify(options.body),
     headers: addDefaultHeaders(options.headers, url),
   };
-  const fullUrl = options.query
-    ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
-    : url;
+  const fullUrl =
+    options.query && Object.keys(options.query).length > 0
+      ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
+      : url;
 
   const response = await fetch(fullUrl, opts);
   const contentType = response.headers.get('content-type');
