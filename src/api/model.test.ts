@@ -30,6 +30,7 @@ describe('model', () => {
       ],
       database,
       engine,
+      false,
     );
     const result = await endpoint.installModels(
       context,
@@ -106,6 +107,7 @@ describe('model', () => {
       ],
       database,
       engine,
+      false,
     );
     const result = await endpoint.deleteModel(
       context,
