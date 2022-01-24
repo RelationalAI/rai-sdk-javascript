@@ -66,7 +66,7 @@ export async function query(
   );
 
   if (result.actions[0]?.result?.type === 'QueryActionResult') {
-    return result.actions[0].result.output;
+    return result.output.filter(r => r.rel_key.name === 'output');
   }
 
   throw new Error('QueryActionResult is missing');

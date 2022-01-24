@@ -1,7 +1,12 @@
 import nock from 'nock';
 
 import * as endpoint from './query';
-import { getMockContext, nockTransaction } from './testUtils';
+import {
+  baseUrl,
+  getMockContext,
+  mkTransactionRequest,
+  mkTransactionResult,
+} from './testUtils';
 import { Relation } from './transaction';
 
 describe('query', () => {
@@ -17,7 +22,18 @@ describe('query', () => {
       type: 'Relation',
       columns: [[123]],
     },
+    {
+      rel_key: {
+        values: [],
+        name: 'foo',
+        keys: ['Int64'],
+        type: 'RelKey',
+      },
+      type: 'Relation',
+      columns: [[111]],
+    },
   ];
+  const expectedOutput = [mockOutput[0]];
   const database = 'test-db';
   const engine = 'test-engine';
 
@@ -25,7 +41,7 @@ describe('query', () => {
   afterAll(() => nock.restore());
 
   it('should query', async () => {
-    const scope = nockTransaction(
+    const request = mkTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -40,15 +56,27 @@ describe('query', () => {
           },
         },
       ],
-      [
-        {
-          type: 'QueryActionResult',
-          output: mockOutput,
-        },
-      ],
       database,
       engine,
     );
+    const response = mkTransactionResult([
+      {
+        type: 'QueryActionResult',
+        output: [],
+      },
+    ]);
+    response.output = mockOutput;
+
+    const scope = nock(baseUrl)
+      .post('/transaction', request)
+      .query({
+        dbname: database,
+        open_mode: 'OPEN',
+        region: 'us-east',
+        compute_name: engine,
+      })
+      .reply(200, response);
+
     const result = await endpoint.query(
       context,
       database,
@@ -58,11 +86,11 @@ describe('query', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockOutput);
+    expect(result).toEqual(expectedOutput);
   });
 
   it('should query with inputs', async () => {
-    const scope = nockTransaction(
+    const request = mkTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -88,15 +116,26 @@ describe('query', () => {
           },
         },
       ],
-      [
-        {
-          type: 'QueryActionResult',
-          output: mockOutput,
-        },
-      ],
       database,
       engine,
     );
+    const response = mkTransactionResult([
+      {
+        type: 'QueryActionResult',
+        output: [],
+      },
+    ]);
+    response.output = mockOutput;
+
+    const scope = nock(baseUrl)
+      .post('/transaction', request)
+      .query({
+        dbname: database,
+        open_mode: 'OPEN',
+        region: 'us-east',
+        compute_name: engine,
+      })
+      .reply(200, response);
     const result = await endpoint.query(
       context,
       database,
@@ -107,6 +146,6 @@ describe('query', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockOutput);
+    expect(result).toEqual(expectedOutput);
   });
 });
