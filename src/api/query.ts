@@ -71,3 +71,24 @@ export async function query(
 
   throw new Error('QueryActionResult is missing');
 }
+
+export async function loadJson(
+  context: Context,
+  database: string,
+  engine: string,
+  relation: string,
+  json: any,
+) {
+  const queryString = [
+    `def config:data = data`,
+    `def insert:${relation} = load_json[config]`,
+  ].join('\n');
+  const inputs: QueryInput[] = [
+    {
+      name: 'data',
+      value: JSON.stringify(json),
+    },
+  ];
+
+  return query(context, database, engine, queryString, inputs, false);
+}

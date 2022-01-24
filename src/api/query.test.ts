@@ -148,4 +148,64 @@ describe('query', () => {
 
     expect(result).toEqual(expectedOutput);
   });
+
+  it('should load json', async () => {
+    const request = mkTransactionRequest(
+      [
+        {
+          type: 'QueryAction',
+          outputs: [],
+          persist: [],
+          inputs: [
+            {
+              rel_key: {
+                values: [],
+                name: 'data',
+                keys: ['RAI_VariableSizeStrings.VariableSizeString'],
+                type: 'RelKey',
+              },
+              type: 'Relation',
+              columns: [['{"test":123}']],
+            },
+          ],
+          source: {
+            type: 'Source',
+            path: 'query',
+            value: `def config:data = data\ndef insert:test_relation = load_json[config]`,
+            name: 'query',
+          },
+        },
+      ],
+      database,
+      engine,
+      false,
+    );
+    const response = mkTransactionResult([
+      {
+        type: 'QueryActionResult',
+        output: [],
+      },
+    ]);
+
+    const scope = nock(baseUrl)
+      .post('/transaction', request)
+      .query({
+        dbname: database,
+        open_mode: 'OPEN',
+        region: 'us-east',
+        compute_name: engine,
+      })
+      .reply(200, response);
+    const result = await endpoint.loadJson(
+      context,
+      database,
+      engine,
+      'test_relation',
+      { test: 123 },
+    );
+
+    scope.done();
+
+    expect(result).toEqual([]);
+  });
 });
