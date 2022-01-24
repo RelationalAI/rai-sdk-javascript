@@ -171,7 +171,10 @@ describe('query', () => {
           source: {
             type: 'Source',
             path: 'query',
-            value: `def config:data = data\ndef insert:test_relation = load_json[config]`,
+            value: [
+              'def config:data = data',
+              'def insert:test_relation = load_json[config]',
+            ].join('\n'),
             name: 'query',
           },
         },
@@ -202,6 +205,220 @@ describe('query', () => {
       engine,
       'test_relation',
       { test: 123 },
+    );
+
+    scope.done();
+
+    expect(result).toEqual([]);
+  });
+
+  it('should load csv', async () => {
+    const csv = 'foo,bar\n1,2';
+    const request = mkTransactionRequest(
+      [
+        {
+          type: 'QueryAction',
+          outputs: [],
+          persist: [],
+          inputs: [
+            {
+              rel_key: {
+                values: [],
+                name: 'data',
+                keys: ['RAI_VariableSizeStrings.VariableSizeString'],
+                type: 'RelKey',
+              },
+              type: 'Relation',
+              columns: [[csv]],
+            },
+          ],
+          source: {
+            type: 'Source',
+            path: 'query',
+            value: [
+              'def config:data = data',
+              'def insert:test_relation = load_csv[config]',
+            ].join('\n'),
+            name: 'query',
+          },
+        },
+      ],
+      database,
+      engine,
+      false,
+    );
+    const response = mkTransactionResult([
+      {
+        type: 'QueryActionResult',
+        output: [],
+      },
+    ]);
+
+    const scope = nock(baseUrl)
+      .post('/transaction', request)
+      .query({
+        dbname: database,
+        open_mode: 'OPEN',
+        region: 'us-east',
+        compute_name: engine,
+      })
+      .reply(200, response);
+    const result = await endpoint.loadCsv(
+      context,
+      database,
+      engine,
+      'test_relation',
+      csv,
+    );
+
+    scope.done();
+
+    expect(result).toEqual([]);
+  });
+
+  it('should load csv with syntax', async () => {
+    const csv = 'foo,bar\n1,2';
+    const request = mkTransactionRequest(
+      [
+        {
+          type: 'QueryAction',
+          outputs: [],
+          persist: [],
+          inputs: [
+            {
+              rel_key: {
+                values: [],
+                name: 'data',
+                keys: ['RAI_VariableSizeStrings.VariableSizeString'],
+                type: 'RelKey',
+              },
+              type: 'Relation',
+              columns: [[csv]],
+            },
+          ],
+          source: {
+            type: 'Source',
+            path: 'query',
+            value: [
+              'def config:data = data',
+              'def config:syntax:header = (1, "foo"); (2, "bar")',
+              `def config:syntax:delim = '|'`,
+              `def config:syntax:quotechar = '\\''`,
+              `def config:syntax:header_row = 1`,
+              `def config:syntax:escapechar = ']'`,
+              'def insert:test_relation = load_csv[config]',
+            ].join('\n'),
+            name: 'query',
+          },
+        },
+      ],
+      database,
+      engine,
+      false,
+    );
+    const response = mkTransactionResult([
+      {
+        type: 'QueryActionResult',
+        output: [],
+      },
+    ]);
+
+    const scope = nock(baseUrl)
+      .post('/transaction', request)
+      .query({
+        dbname: database,
+        open_mode: 'OPEN',
+        region: 'us-east',
+        compute_name: engine,
+      })
+      .reply(200, response);
+    const result = await endpoint.loadCsv(
+      context,
+      database,
+      engine,
+      'test_relation',
+      csv,
+      {
+        header: {
+          1: 'foo',
+          2: 'bar',
+        },
+        delim: '|',
+        quotechar: "'",
+        header_row: 1,
+        escapechar: ']',
+      },
+    );
+
+    scope.done();
+
+    expect(result).toEqual([]);
+  });
+
+  it('should load csv with schema', async () => {
+    const csv = 'foo,bar\n1,test';
+    const request = mkTransactionRequest(
+      [
+        {
+          type: 'QueryAction',
+          outputs: [],
+          persist: [],
+          inputs: [
+            {
+              rel_key: {
+                values: [],
+                name: 'data',
+                keys: ['RAI_VariableSizeStrings.VariableSizeString'],
+                type: 'RelKey',
+              },
+              type: 'Relation',
+              columns: [[csv]],
+            },
+          ],
+          source: {
+            type: 'Source',
+            path: 'query',
+            value: [
+              'def config:data = data',
+              'def config:schema:foo = "int"',
+              'def config:schema:bar = "string"',
+              'def insert:test_relation = load_csv[config]',
+            ].join('\n'),
+            name: 'query',
+          },
+        },
+      ],
+      database,
+      engine,
+      false,
+    );
+    const response = mkTransactionResult([
+      {
+        type: 'QueryActionResult',
+        output: [],
+      },
+    ]);
+
+    const scope = nock(baseUrl)
+      .post('/transaction', request)
+      .query({
+        dbname: database,
+        open_mode: 'OPEN',
+        region: 'us-east',
+        compute_name: engine,
+      })
+      .reply(200, response);
+    const result = await endpoint.loadCsv(
+      context,
+      database,
+      engine,
+      'test_relation',
+      csv,
+      undefined,
+      {
+        ':foo': 'int',
+        ':bar': 'string',
+      },
     );
 
     scope.done();
