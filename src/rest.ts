@@ -46,25 +46,30 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     body: JSON.stringify(options.body),
     headers: addDefaultHeaders(options.headers, url),
   };
-  const fullUrl = options.query
-    ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
-    : url;
+  const fullUrl =
+    options.query && Object.keys(options.query).length > 0
+      ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
+      : url;
 
   const response = await fetch(fullUrl, opts);
+  const contentType = response.headers.get('content-type');
+  let responseBody;
 
-  if (response.ok) {
-    const responseBody = await response.json();
-
-    return responseBody as T;
+  if (contentType && contentType.includes('application/json')) {
+    responseBody = await response.json();
+  } else {
+    responseBody = await response.text();
   }
 
-  const error = await response.json();
+  if (response.ok) {
+    return responseBody as T;
+  }
 
   // TODO figure out how to handle it better
   throw {
     statusCode: response.status,
     statusText: response.statusText,
-    error,
+    error: responseBody,
     headers: response.headers,
   };
 }

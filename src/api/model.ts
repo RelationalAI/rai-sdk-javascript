@@ -42,7 +42,7 @@ export async function installModels(
     type: 'InstallAction',
     sources: models,
   };
-  const result = await runActions(context, database, engine, [action]);
+  const result = await runActions(context, database, engine, [action], false);
 
   if (result.actions[0]?.result?.type === 'InstallActionResult') {
     return result.actions[0].result;
@@ -94,7 +94,7 @@ export async function deleteModel(
     type: 'ModifyWorkspaceAction',
     delete_source: [name],
   };
-  const result = await runActions(context, database, engine, [action]);
+  const result = await runActions(context, database, engine, [action], false);
 
   if (result.actions[0]?.result?.type === 'ModifyWorkspaceActionResult') {
     return result.actions[0].result;

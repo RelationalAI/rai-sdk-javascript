@@ -36,7 +36,7 @@ export class Context {
     return await request<T>(url, opts);
   }
 
-  async get<T>(path: string, query: RequestOptions['query']) {
+  async get<T>(path: string, query: RequestOptions['query'] = {}) {
     return this.request<T>(path, { query, method: 'GET' });
   }
 

@@ -13,7 +13,11 @@
 // limitations under the License.
 
 export * from './api/context';
+export * from './api/database';
 export * from './api/edb';
 export * from './api/engine';
+export * from './api/model';
+export * from './api/oauthClient';
 export * from './api/query';
 export * from './api/transaction';
+export * from './api/user';
