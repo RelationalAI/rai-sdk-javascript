@@ -37,7 +37,7 @@ async function run(name: string, permissions: Permission[], profile?: string) {
 
   try {
     await run(options.name, options.permissions, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

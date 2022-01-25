@@ -42,7 +42,7 @@ async function run(
       options.relation,
       options.profile,
     );
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

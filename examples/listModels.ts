@@ -22,7 +22,7 @@ async function run(database: string, engine: string, profile?: string) {
 
   try {
     await run(options.database, options.engine, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

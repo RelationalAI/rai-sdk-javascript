@@ -20,7 +20,7 @@ async function run(profile?: string) {
 
   try {
     await run(options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

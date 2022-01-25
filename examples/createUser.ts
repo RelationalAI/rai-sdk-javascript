@@ -22,7 +22,7 @@ async function run(email: string, role: UserRole, profile?: string) {
 
   try {
     await run(options.email, options.role, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

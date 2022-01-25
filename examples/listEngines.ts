@@ -21,7 +21,7 @@ async function run(state?: EngineState, profile?: string) {
 
   try {
     await run(options.state, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

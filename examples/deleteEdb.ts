@@ -28,7 +28,7 @@ async function run(
 
   try {
     await run(options.database, options.engine, options.name, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

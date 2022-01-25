@@ -22,7 +22,7 @@ async function run(name: string, size: EngineSize, profile?: string) {
 
   try {
     await run(options.name, options.size, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

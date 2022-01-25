@@ -40,6 +40,37 @@ export function mkUrl(scheme: string, host: string, port: string) {
   return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
+type InfraError = {
+  status: string;
+  message: string;
+  details?: string;
+};
+
+export class SdkError extends Error implements InfraError {
+  status: string;
+  message: string;
+  details?: string;
+  response: Response;
+
+  constructor(body: any, response: Response) {
+    const err = body as InfraError;
+
+    super(err.message);
+
+    this.name = 'SdkError';
+    this.status = err.status;
+    this.message = err.message;
+    this.details = err.details;
+    this.response = response;
+  }
+
+  toString() {
+    return `${this.response.status} ${this.status}: ${this.message} ${
+      this.details || ''
+    }`;
+  }
+}
+
 export async function request<T>(url: string, options: RequestOptions = {}) {
   const opts = {
     method: options.method || 'GET',
@@ -65,11 +96,5 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     return responseBody as T;
   }
 
-  // TODO figure out how to handle it better
-  throw {
-    statusCode: response.status,
-    statusText: response.statusText,
-    error: responseBody,
-    headers: response.headers,
-  };
+  throw new SdkError(responseBody, response);
 }

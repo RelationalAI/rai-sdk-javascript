@@ -21,7 +21,7 @@ async function run(userId: string, profile?: string) {
 
   try {
     await run(options.id, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();

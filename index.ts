@@ -15,4 +15,5 @@
 export * from './src/api';
 export { readConfig } from './src/config';
 export * from './src/credentials';
+export { SdkError } from './src/rest';
 export { VERSION } from './src/types';

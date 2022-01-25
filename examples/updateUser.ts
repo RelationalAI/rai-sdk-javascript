@@ -39,7 +39,7 @@ async function run(
 
   try {
     await run(options.id, options.status, options.role, options.profile);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.toString());
   }
 })();
