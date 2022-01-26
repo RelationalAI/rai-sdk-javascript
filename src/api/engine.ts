@@ -94,6 +94,12 @@ export async function getEngine(context: Context, name: string) {
   return engines[0];
 }
 
+/*
+ * Deletes an engine
+ * @param   {Context} context SDK context
+ * @param   {string}  name engine name to delete
+ * @returns {Promise}
+ */
 export async function deleteEngine(context: Context, name: string) {
   const result = await context.delete<DeleteResponse>(ENDPOINT, {
     body: { name },

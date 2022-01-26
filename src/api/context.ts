@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mkUrl, request, RequestOptions } from '../rest';
+import { makeUrl, request, RequestOptions } from '../rest';
 import { Config } from '../types';
 
 export class Context {
@@ -20,7 +20,7 @@ export class Context {
 
   constructor(public config: Config, public region = 'us-east') {
     // TODO impove to accept baseUrl, useful in the Console
-    this.baseUrl = mkUrl(config.scheme, config.host, config.port);
+    this.baseUrl = makeUrl(config.scheme, config.host, config.port);
   }
 
   async request<T>(path: string, options: Omit<RequestOptions, 'body'> = {}) {

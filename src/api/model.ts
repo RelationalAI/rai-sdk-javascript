@@ -21,7 +21,7 @@ import {
   runActions,
 } from './transaction';
 
-export function mkModel(name: string, value: string) {
+export function makeModel(name: string, value: string) {
   const model: Model = {
     type: 'Source',
     name,

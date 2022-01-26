@@ -89,18 +89,18 @@ function isNodeError(error: unknown): error is NodeJS.ErrnoException {
 
 function resolveHome(path: string) {
   if (path.startsWith('~/')) {
-    return homedir() + '/' + path.slice(2);
+    return `${homedir()}/${path.slice(2)}`;
   }
 
   return path;
 }
 
-function mkTokenCachePath(profile: string) {
+function makeTokenCachePath(profile: string) {
   return resolveHome(`~/.rai/${profile}_cache.json`);
 }
 
 async function readTokenCache(profile = 'default') {
-  const cachePath = mkTokenCachePath(profile);
+  const cachePath = makeTokenCachePath(profile);
 
   try {
     const cachedStr = await readFile(cachePath, 'utf-8');
@@ -114,7 +114,7 @@ async function readTokenCache(profile = 'default') {
 }
 
 async function writeTokenCache(token: AccessTokenCache, profile = 'default') {
-  const cachePath = mkTokenCachePath(profile);
+  const cachePath = makeTokenCachePath(profile);
   const cacheStr = JSON.stringify(token, null, 2);
 
   await writeFile(cachePath, cacheStr, 'utf-8');

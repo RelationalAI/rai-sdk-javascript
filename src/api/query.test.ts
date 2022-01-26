@@ -4,8 +4,8 @@ import * as endpoint from './query';
 import {
   baseUrl,
   getMockContext,
-  mkTransactionRequest,
-  mkTransactionResult,
+  makeTransactionRequest,
+  makeTransactionResult,
 } from './testUtils';
 import { Relation } from './transaction';
 
@@ -41,7 +41,7 @@ describe('query', () => {
   afterAll(() => nock.restore());
 
   it('should query', async () => {
-    const request = mkTransactionRequest(
+    const request = makeTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -59,7 +59,7 @@ describe('query', () => {
       database,
       engine,
     );
-    const response = mkTransactionResult([
+    const response = makeTransactionResult([
       {
         type: 'QueryActionResult',
         output: [],
@@ -90,7 +90,7 @@ describe('query', () => {
   });
 
   it('should query with inputs', async () => {
-    const request = mkTransactionRequest(
+    const request = makeTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -119,7 +119,7 @@ describe('query', () => {
       database,
       engine,
     );
-    const response = mkTransactionResult([
+    const response = makeTransactionResult([
       {
         type: 'QueryActionResult',
         output: [],
@@ -150,7 +150,7 @@ describe('query', () => {
   });
 
   it('should load json', async () => {
-    const request = mkTransactionRequest(
+    const request = makeTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -183,7 +183,7 @@ describe('query', () => {
       engine,
       false,
     );
-    const response = mkTransactionResult([
+    const response = makeTransactionResult([
       {
         type: 'QueryActionResult',
         output: [],
@@ -214,7 +214,7 @@ describe('query', () => {
 
   it('should load csv', async () => {
     const csv = 'foo,bar\n1,2';
-    const request = mkTransactionRequest(
+    const request = makeTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -247,7 +247,7 @@ describe('query', () => {
       engine,
       false,
     );
-    const response = mkTransactionResult([
+    const response = makeTransactionResult([
       {
         type: 'QueryActionResult',
         output: [],
@@ -278,7 +278,7 @@ describe('query', () => {
 
   it('should load csv with syntax', async () => {
     const csv = 'foo,bar\n1,2';
-    const request = mkTransactionRequest(
+    const request = makeTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -316,7 +316,7 @@ describe('query', () => {
       engine,
       false,
     );
-    const response = mkTransactionResult([
+    const response = makeTransactionResult([
       {
         type: 'QueryActionResult',
         output: [],
@@ -357,7 +357,7 @@ describe('query', () => {
 
   it('should load csv with schema', async () => {
     const csv = 'foo,bar\n1,test';
-    const request = mkTransactionRequest(
+    const request = makeTransactionRequest(
       [
         {
           type: 'QueryAction',
@@ -392,7 +392,7 @@ describe('query', () => {
       engine,
       false,
     );
-    const response = mkTransactionResult([
+    const response = makeTransactionResult([
       {
         type: 'QueryActionResult',
         output: [],

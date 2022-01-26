@@ -34,7 +34,7 @@ function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
   return { ...defaultHeaders, ...headers };
 }
 
-export function mkUrl(scheme: string, host: string, port: string) {
+export function makeUrl(scheme: string, host: string, port: string) {
   scheme = scheme.replace(/[^A-Za-z]/, '');
 
   return `${scheme}://${host}${port ? ':' + port : ''}`;

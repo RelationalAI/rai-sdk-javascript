@@ -14,7 +14,7 @@
 // limitations under the License.
 
 import { Context } from './context';
-import { mkModel } from './model';
+import { makeModel } from './model';
 import { QueryAction, Relation, RelValue, runActions } from './transaction';
 
 export type QueryInput = {
@@ -22,19 +22,22 @@ export type QueryInput = {
   value: RelValue;
 };
 
-export function mkQueryAction(queryString: string, inputs: QueryInput[] = []) {
+export function makeQueryAction(
+  queryString: string,
+  inputs: QueryInput[] = [],
+) {
   const action: QueryAction = {
     type: 'QueryAction',
     outputs: [],
     persist: [],
-    source: mkModel('query', queryString),
-    inputs: inputs.map(input => mkQueryInput(input.name, input.value)),
+    source: makeModel('query', queryString),
+    inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
   };
 
   return action;
 }
 
-export const mkQueryInput = (name: string, value: RelValue) => {
+export const makeQueryInput = (name: string, value: RelValue) => {
   const input: Relation = {
     rel_key: {
       values: [],
@@ -57,7 +60,7 @@ export async function query(
   inputs: QueryInput[] = [],
   readonly = true,
 ) {
-  const action = mkQueryAction(queryString, inputs);
+  const action = makeQueryAction(queryString, inputs);
   const result = await runActions(
     context,
     database,

@@ -1,7 +1,7 @@
 import nock from 'nock';
 
 import { GetTokenCredentials } from '../credentials';
-import { mkUrl } from '../rest';
+import { makeUrl } from '../rest';
 import { Context } from './context';
 import {
   LabeledAction,
@@ -14,7 +14,7 @@ import {
 export const host = 'example.com';
 export const scheme = 'https';
 export const port = '443';
-export const baseUrl = mkUrl(scheme, host, port);
+export const baseUrl = makeUrl(scheme, host, port);
 
 export function getMockContext() {
   const credentials = new GetTokenCredentials(() =>
@@ -30,7 +30,7 @@ export function getMockContext() {
   return context;
 }
 
-export function mkTransactionRequest(
+export function makeTransactionRequest(
   actions: LabeledAction['action'][],
   database: string,
   engine?: string,
@@ -55,7 +55,7 @@ export function mkTransactionRequest(
   return request;
 }
 
-export function mkTransactionResult(
+export function makeTransactionResult(
   actionResults: LabeledActionResult['result'][],
 ) {
   const result: TransactionResult = {
@@ -82,8 +82,8 @@ export function nockTransaction(
   engine?: string,
   readonly = true,
 ) {
-  const request = mkTransactionRequest(actions, database, engine, readonly);
-  const response = mkTransactionResult(actionResults);
+  const request = makeTransactionRequest(actions, database, engine, readonly);
+  const response = makeTransactionResult(actionResults);
   const scope = nock(baseUrl)
     .post('/transaction', request)
     .query({
