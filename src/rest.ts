@@ -1,4 +1,4 @@
-import fetch from 'cross-fetch';
+import fetch, { Response } from 'cross-fetch';
 import { stringify } from 'query-string';
 
 import { VERSION } from './types';
@@ -13,6 +13,7 @@ export type RequestOptions = {
   headers?: Record<string, string>;
   body?: any;
   query?: Record<string, any>;
+  onResponse?: (r: Response) => void;
 };
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
@@ -90,6 +91,13 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     responseBody = await response.json();
   } else {
     responseBody = await response.text();
+  }
+
+  if (options.onResponse) {
+    try {
+      options.onResponse(response.clone());
+      // eslint-disable-next-line no-empty
+    } catch {}
   }
 
   if (response.ok) {

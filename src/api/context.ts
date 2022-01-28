@@ -15,23 +15,36 @@
 import { makeUrl, request, RequestOptions } from '../rest';
 import { Config } from '../types';
 
+type OnResponse = RequestOptions['onResponse'];
+
 export class Context {
   baseUrl: string;
+
+  private _onResponse?: OnResponse;
 
   constructor(public config: Config, public region = 'us-east') {
     // TODO impove to accept baseUrl, useful in the Console
     this.baseUrl = makeUrl(config.scheme, config.host, config.port);
   }
 
+  onResponse(onResponse: OnResponse) {
+    this._onResponse = onResponse;
+  }
+
   async request<T>(path: string, options: Omit<RequestOptions, 'body'> = {}) {
     const url = `${this.baseUrl}/${path}`;
     const token = await this.config.credentials.getToken(url);
-    const opts = {
+    const opts: RequestOptions = {
       ...options,
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+
+      onResponse: this._onResponse,
     };
+
+    if (token) {
+      opts.headers = {
+        authorization: `Bearer ${token}`,
+      };
+    }
 
     return await request<T>(url, opts);
   }
