@@ -1,10 +1,10 @@
 import nock from 'nock';
 
-import * as endpoint from './model';
-import { getMockContext, nockTransaction } from './testUtils';
+import { getMockConfig, nockTransaction } from '../testUtils';
+import { ModelApi } from './modelApi';
 
-describe('model', () => {
-  const context = getMockContext();
+describe('ModelApi', () => {
+  const api = new ModelApi(getMockConfig());
   const mockModels = [
     { name: 'model1', value: 'value1', type: '' },
     { name: 'model2', value: 'value2', type: '' },
@@ -32,12 +32,7 @@ describe('model', () => {
       engine,
       false,
     );
-    const result = await endpoint.installModels(
-      context,
-      database,
-      engine,
-      mockModels,
-    );
+    const result = await api.installModels(database, engine, mockModels);
 
     scope.done();
 
@@ -62,7 +57,7 @@ describe('model', () => {
       database,
       engine,
     );
-    const result = await endpoint.listModels(context, database, engine);
+    const result = await api.listModels(database, engine);
 
     scope.done();
 
@@ -85,7 +80,7 @@ describe('model', () => {
       database,
       engine,
     );
-    const result = await endpoint.getModel(context, database, engine, 'model2');
+    const result = await api.getModel(database, engine, 'model2');
 
     scope.done();
 
@@ -109,12 +104,7 @@ describe('model', () => {
       engine,
       false,
     );
-    const result = await endpoint.deleteModel(
-      context,
-      database,
-      engine,
-      'model1',
-    );
+    const result = await api.deleteModel(database, engine, 'model1');
 
     scope.done();
 

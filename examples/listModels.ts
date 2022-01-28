@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, listModels, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(database: string, engine: string, profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await listModels(context, database, engine);
+  const client = new Client(config);
+  const result = await client.listModels(database, engine);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

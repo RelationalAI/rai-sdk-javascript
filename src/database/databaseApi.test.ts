@@ -1,12 +1,13 @@
 import nock from 'nock';
 
-import * as endpoint from './database';
-import { baseUrl, getMockContext } from './testUtils';
+import { baseUrl, getMockConfig } from '../testUtils';
+import { DatabaseApi } from './databaseApi';
+import { DatabaseState } from './types';
 
 const path = '/database';
 
-describe('database', () => {
-  const context = getMockContext();
+describe('DatabaseApi', () => {
+  const api = new DatabaseApi(getMockConfig());
   const mockDatabases = [{ name: 'database-1' }, { name: 'database-2' }];
 
   afterEach(() => nock.cleanAll());
@@ -19,7 +20,7 @@ describe('database', () => {
         name: 'test-database',
       })
       .reply(200, response);
-    const result = await endpoint.createDatabase(context, 'test-database');
+    const result = await api.createDatabase('test-database');
 
     scope.done();
 
@@ -29,7 +30,7 @@ describe('database', () => {
   it('should list databases', async () => {
     const response = { databases: mockDatabases };
     const scope = nock(baseUrl).get(path).reply(200, response);
-    const result = await endpoint.listDatabases(context);
+    const result = await api.listDatabases();
 
     scope.done();
 
@@ -40,10 +41,10 @@ describe('database', () => {
     const response = { databases: mockDatabases };
     const query = {
       name: ['n1', 'n2'],
-      state: endpoint.DatabaseState.CREATED,
+      state: DatabaseState.CREATED,
     };
     const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await endpoint.listDatabases(context, query);
+    const result = await api.listDatabases(query);
 
     scope.done();
 
@@ -56,7 +57,7 @@ describe('database', () => {
       .get(path)
       .query({ name: 'test-database' })
       .reply(200, response);
-    const result = await endpoint.getDatabase(context, 'test-database');
+    const result = await api.getDatabase('test-database');
 
     scope.done();
 
@@ -68,7 +69,7 @@ describe('database', () => {
     const scope = nock(baseUrl)
       .delete(path, { name: 'test-database' })
       .reply(200, response);
-    const result = await endpoint.deleteDatabase(context, 'test-database');
+    const result = await api.deleteDatabase('test-database');
 
     scope.done();
 

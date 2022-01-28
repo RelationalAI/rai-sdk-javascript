@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, deleteEngine, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(name: string, profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await deleteEngine(context, name);
+  const client = new Client(config);
+  const result = await client.deleteEngine(name);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

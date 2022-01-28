@@ -1,12 +1,6 @@
 import { Command } from 'commander';
 
-import {
-  Context,
-  readConfig,
-  updateUser,
-  UserRole,
-  UserStatus,
-} from '../index';
+import { Client, readConfig, UserRole, UserStatus } from '../index';
 
 async function run(
   userId: string,
@@ -15,9 +9,8 @@ async function run(
   profile?: string,
 ) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await updateUser(
-    context,
+  const client = new Client(config);
+  const result = await client.updateUser(
     userId,
     status,
     role ? [role] : undefined,

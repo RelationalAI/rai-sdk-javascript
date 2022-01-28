@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { promises } from 'fs';
 import path from 'path';
 
-import { Context, loadJson, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(
   database: string,
@@ -16,8 +16,8 @@ async function run(
   relation = relation || path.parse(filePath).name;
 
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await loadJson(context, database, engine, relation, json);
+  const client = new Client(config);
+  const result = await client.loadJson(database, engine, relation, json);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

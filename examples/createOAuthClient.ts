@@ -1,12 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, createOAuthClient, Permission, readConfig } from '../index';
+import { Client, Permission, readConfig } from '../index';
 
 async function run(name: string, permissions: Permission[], profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await createOAuthClient(
-    context,
+  const client = new Client(config);
+  const result = await client.createOAuthClient(
     name,
     permissions.length > 0 ? permissions : undefined,
   );

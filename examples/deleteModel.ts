@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 
-import { Context, deleteModel, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(
   database: string,
@@ -9,8 +9,8 @@ async function run(
   profile?: string,
 ) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await deleteModel(context, database, engine, name);
+  const client = new Client(config);
+  const result = await client.deleteModel(database, engine, name);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

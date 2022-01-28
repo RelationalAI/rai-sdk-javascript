@@ -1,33 +1,33 @@
 import nock from 'nock';
 
-import { GetTokenCredentials } from '../credentials';
-import { makeUrl } from '../rest';
-import { Context } from './context';
+import { GetTokenCredentials } from './credentials';
+import { makeUrl } from './rest';
 import {
   LabeledAction,
   LabeledActionResult,
   Transaction,
   TransactionMode,
   TransactionResult,
-} from './transaction';
+} from './transaction/types';
+import { Config } from './types';
 
 export const host = 'example.com';
 export const scheme = 'https';
 export const port = '443';
 export const baseUrl = makeUrl(scheme, host, port);
 
-export function getMockContext() {
+export function getMockConfig() {
   const credentials = new GetTokenCredentials(() =>
     Promise.resolve('mock token'),
   );
-  const context = new Context({
+  const config: Config = {
     host,
     port,
     scheme,
     credentials,
-  });
+  };
 
-  return context;
+  return config;
 }
 
 export function makeTransactionRequest(

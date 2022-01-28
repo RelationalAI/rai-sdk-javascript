@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { promises } from 'fs';
 import path from 'path';
 
-import { Context, installModels, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(
   database: string,
@@ -20,8 +20,8 @@ async function run(
   };
 
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await installModels(context, database, engine, [model]);
+  const client = new Client(config);
+  const result = await client.installModels(database, engine, [model]);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

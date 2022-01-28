@@ -1,12 +1,13 @@
 import nock from 'nock';
 
-import * as endpoint from './engine';
-import { baseUrl, getMockContext } from './testUtils';
+import { baseUrl, getMockConfig } from '../testUtils';
+import { EngineApi } from './engineApi';
+import { EngineSize, EngineState } from './types';
 
 const path = '/compute';
 
-describe('engine', () => {
-  const context = getMockContext();
+describe('EngineApi', () => {
+  const api = new EngineApi(getMockConfig());
   const mockEngines = [{ name: 'engine-1' }, { name: 'engine-2' }];
 
   afterEach(() => nock.cleanAll());
@@ -17,15 +18,11 @@ describe('engine', () => {
     const scope = nock(baseUrl)
       .put(path, {
         region: 'us-east',
-        size: endpoint.EngineSize.S,
+        size: EngineSize.S,
         name: 'test-engine',
       })
       .reply(200, response);
-    const result = await endpoint.createEngine(
-      context,
-      'test-engine',
-      endpoint.EngineSize.S,
-    );
+    const result = await api.createEngine('test-engine', EngineSize.S);
 
     scope.done();
 
@@ -35,7 +32,7 @@ describe('engine', () => {
   it('should list engines', async () => {
     const response = { computes: mockEngines };
     const scope = nock(baseUrl).get(path).reply(200, response);
-    const result = await endpoint.listEngines(context);
+    const result = await api.listEngines();
 
     scope.done();
 
@@ -46,13 +43,10 @@ describe('engine', () => {
     const response = { computes: mockEngines };
     const query = {
       id: 'test-id',
-      state: [
-        endpoint.EngineState.PROVISIONED,
-        endpoint.EngineState.PROVISIONING,
-      ],
+      state: [EngineState.PROVISIONED, EngineState.PROVISIONING],
     };
     const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await endpoint.listEngines(context, query);
+    const result = await api.listEngines(query);
 
     scope.done();
 
@@ -65,7 +59,7 @@ describe('engine', () => {
       .get(path)
       .query({ name: 'test-engine' })
       .reply(200, response);
-    const result = await endpoint.getEngine(context, 'test-engine');
+    const result = await api.getEngine('test-engine');
 
     scope.done();
 
@@ -77,7 +71,7 @@ describe('engine', () => {
     const scope = nock(baseUrl)
       .delete(path, { name: 'test-engine' })
       .reply(200, response);
-    const result = await endpoint.deleteEngine(context, 'test-engine');
+    const result = await api.deleteEngine('test-engine');
 
     scope.done();
 

@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, enableUser, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(userId: string, profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await enableUser(context, userId);
+  const client = new Client(config);
+  const result = await client.enableUser(userId);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

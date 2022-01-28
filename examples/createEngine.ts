@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, createEngine, EngineSize, readConfig } from '../index';
+import { Client, EngineSize, readConfig } from '../index';
 
 async function run(name: string, size: EngineSize, profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await createEngine(context, name, size);
+  const client = new Client(config);
+  const result = await client.createEngine(name, size);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

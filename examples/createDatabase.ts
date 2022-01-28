@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, createDatabase, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(name: string, clone?: string, profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await createDatabase(context, name, clone);
+  const client = new Client(config);
+  const result = await client.createDatabase(name, clone);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { promises } from 'fs';
 import path from 'path';
 
-import { Context, CsvConfigSyntax, loadCsv, readConfig } from '../index';
+import { Client, CsvConfigSyntax, readConfig } from '../index';
 
 async function run(
   database: string,
@@ -16,15 +16,8 @@ async function run(
   relation = relation || path.parse(filePath).name;
 
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await loadCsv(
-    context,
-    database,
-    engine,
-    relation,
-    csv,
-    syntax,
-  );
+  const client = new Client(config);
+  const result = await client.loadCsv(database, engine, relation, csv, syntax);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

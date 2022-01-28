@@ -1,16 +1,16 @@
 import nock from 'nock';
 
-import * as endpoint from './query';
 import {
   baseUrl,
-  getMockContext,
+  getMockConfig,
   makeTransactionRequest,
   makeTransactionResult,
-} from './testUtils';
-import { Relation } from './transaction';
+} from '../testUtils';
+import { Relation } from '../transaction/types';
+import { QueryApi } from './queryApi';
 
-describe('query', () => {
-  const context = getMockContext();
+describe('QueryApi', () => {
+  const api = new QueryApi(getMockConfig());
   const mockOutput: Relation[] = [
     {
       rel_key: {
@@ -77,12 +77,7 @@ describe('query', () => {
       })
       .reply(200, response);
 
-    const result = await endpoint.query(
-      context,
-      database,
-      engine,
-      'def output = 123',
-    );
+    const result = await api.query(database, engine, 'def output = 123');
 
     scope.done();
 
@@ -136,13 +131,9 @@ describe('query', () => {
         compute_name: engine,
       })
       .reply(200, response);
-    const result = await endpoint.query(
-      context,
-      database,
-      engine,
-      'def output = 123',
-      [{ name: 'input1', value: 'value1' }],
-    );
+    const result = await api.query(database, engine, 'def output = 123', [
+      { name: 'input1', value: 'value1' },
+    ]);
 
     scope.done();
 
@@ -199,13 +190,9 @@ describe('query', () => {
         compute_name: engine,
       })
       .reply(200, response);
-    const result = await endpoint.loadJson(
-      context,
-      database,
-      engine,
-      'test_relation',
-      { test: 123 },
-    );
+    const result = await api.loadJson(database, engine, 'test_relation', {
+      test: 123,
+    });
 
     scope.done();
 
@@ -263,13 +250,7 @@ describe('query', () => {
         compute_name: engine,
       })
       .reply(200, response);
-    const result = await endpoint.loadCsv(
-      context,
-      database,
-      engine,
-      'test_relation',
-      csv,
-    );
+    const result = await api.loadCsv(database, engine, 'test_relation', csv);
 
     scope.done();
 
@@ -332,23 +313,16 @@ describe('query', () => {
         compute_name: engine,
       })
       .reply(200, response);
-    const result = await endpoint.loadCsv(
-      context,
-      database,
-      engine,
-      'test_relation',
-      csv,
-      {
-        header: {
-          1: 'foo',
-          2: 'bar',
-        },
-        delim: '|',
-        quotechar: "'",
-        header_row: 1,
-        escapechar: ']',
+    const result = await api.loadCsv(database, engine, 'test_relation', csv, {
+      header: {
+        1: 'foo',
+        2: 'bar',
       },
-    );
+      delim: '|',
+      quotechar: "'",
+      header_row: 1,
+      escapechar: ']',
+    });
 
     scope.done();
 
@@ -408,8 +382,7 @@ describe('query', () => {
         compute_name: engine,
       })
       .reply(200, response);
-    const result = await endpoint.loadCsv(
-      context,
+    const result = await api.loadCsv(
       database,
       engine,
       'test_relation',

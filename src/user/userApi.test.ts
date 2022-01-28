@@ -1,12 +1,13 @@
 import nock from 'nock';
 
-import { baseUrl, getMockContext } from './testUtils';
-import * as endpoint from './user';
+import { baseUrl, getMockConfig } from '../testUtils';
+import { UserRole, UserStatus } from './types';
+import { UserApi } from './userApi';
 
 const path = '/users';
 
-describe('user', () => {
-  const context = getMockContext();
+describe('UserApi', () => {
+  const api = new UserApi(getMockConfig());
   const mockUsers = [{ email: 'test1@test.com' }, { name: 'test1@test.com' }];
 
   afterEach(() => nock.cleanAll());
@@ -17,12 +18,10 @@ describe('user', () => {
     const scope = nock(baseUrl)
       .post(path, {
         email: 'test1@test.com',
-        roles: [endpoint.UserRole.ADMIN],
+        roles: [UserRole.ADMIN],
       })
       .reply(200, response);
-    const result = await endpoint.createUser(context, 'test1@test.com', [
-      endpoint.UserRole.ADMIN,
-    ]);
+    const result = await api.createUser('test1@test.com', [UserRole.ADMIN]);
 
     scope.done();
 
@@ -32,7 +31,7 @@ describe('user', () => {
   it('should list users', async () => {
     const response = { users: mockUsers };
     const scope = nock(baseUrl).get(path).reply(200, response);
-    const result = await endpoint.listUsers(context);
+    const result = await api.listUsers();
 
     scope.done();
 
@@ -42,7 +41,7 @@ describe('user', () => {
   it('should get user', async () => {
     const response = { user: mockUsers[0] };
     const scope = nock(baseUrl).get(`${path}/id1`).reply(200, response);
-    const result = await endpoint.getUser(context, 'id1');
+    const result = await api.getUser('id1');
 
     scope.done();
 
@@ -53,12 +52,10 @@ describe('user', () => {
     const response = { user: mockUsers[0] };
     const scope = nock(baseUrl)
       .patch(`${path}/id1`, {
-        roles: [endpoint.UserRole.USER],
+        roles: [UserRole.USER],
       })
       .reply(200, response);
-    const result = await endpoint.updateUser(context, 'id1', undefined, [
-      endpoint.UserRole.USER,
-    ]);
+    const result = await api.updateUser('id1', undefined, [UserRole.USER]);
 
     scope.done();
 
@@ -69,10 +66,10 @@ describe('user', () => {
     const response = { user: mockUsers[0] };
     const scope = nock(baseUrl)
       .patch(`${path}/id1`, {
-        status: endpoint.UserStatus.ACTIVE,
+        status: UserStatus.ACTIVE,
       })
       .reply(200, response);
-    const result = await endpoint.enableUser(context, 'id1');
+    const result = await api.enableUser('id1');
 
     scope.done();
 
@@ -83,10 +80,10 @@ describe('user', () => {
     const response = { user: mockUsers[0] };
     const scope = nock(baseUrl)
       .patch(`${path}/id1`, {
-        status: endpoint.UserStatus.INACTIVE,
+        status: UserStatus.INACTIVE,
       })
       .reply(200, response);
-    const result = await endpoint.disableUser(context, 'id1');
+    const result = await api.disableUser('id1');
 
     scope.done();
 
@@ -96,7 +93,7 @@ describe('user', () => {
   it('should delete user', async () => {
     const response = { message: 'deleted' };
     const scope = nock(baseUrl).delete(`${path}/id1`).reply(200, response);
-    const result = await endpoint.deleteUser(context, 'id1');
+    const result = await api.deleteUser('id1');
 
     scope.done();
 

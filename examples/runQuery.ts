@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 
-import { Context, query, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(
   database: string,
@@ -9,8 +9,8 @@ async function run(
   profile?: string,
 ) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await query(context, database, engine, queryString);
+  const client = new Client(config);
+  const result = await client.query(database, engine, queryString);
 
   console.log(JSON.stringify(result, undefined, 2));
 }

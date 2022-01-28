@@ -1,11 +1,11 @@
 import nock from 'nock';
 
-import * as endpoint from './edb';
-import { getMockContext, nockTransaction } from './testUtils';
-import { RelKey } from './transaction';
+import { getMockConfig, nockTransaction } from '../testUtils';
+import { RelKey } from '../transaction/types';
+import { EdbApi } from './edbApi';
 
-describe('edb', () => {
-  const context = getMockContext();
+describe('EdbApi', () => {
+  const api = new EdbApi(getMockConfig());
   const mockEdbs: RelKey[] = [
     {
       values: ['RAI_VariableSizeStrings.VariableSizeString'],
@@ -42,7 +42,7 @@ describe('edb', () => {
       database,
       engine,
     );
-    const result = await endpoint.listEdbs(context, database, engine);
+    const result = await api.listEdbs(database, engine);
 
     scope.done();
 
@@ -67,7 +67,7 @@ describe('edb', () => {
       engine,
       false,
     );
-    const result = await endpoint.deleteEdb(context, database, engine, 'edb1');
+    const result = await api.deleteEdb(database, engine, 'edb1');
 
     scope.done();
 

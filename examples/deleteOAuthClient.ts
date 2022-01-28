@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 
-import { Context, deleteOAuthClient, readConfig } from '../index';
+import { Client, readConfig } from '../index';
 
 async function run(clientId: string, profile?: string) {
   const config = await readConfig(profile);
-  const context = new Context(config);
-  const result = await deleteOAuthClient(context, clientId);
+  const client = new Client(config);
+  const result = await client.deleteOAuthClient(clientId);
 
   console.log(JSON.stringify(result, undefined, 2));
 }
