@@ -21,7 +21,6 @@ function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
   const defaultHeaders: RequestInit['headers'] = {
     Accept: 'application/json',
     'Content-type': 'application/json',
-    'X-User-agent': sdkUserAgent,
   };
 
   if (isNode) {
