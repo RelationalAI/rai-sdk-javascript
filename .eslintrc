@@ -10,7 +10,8 @@
     "@typescript-eslint",
     "simple-import-sort",
     "unicorn",
-    "prettier"
+    "prettier",
+    "license-header"
   ],
   "env": {
     "browser": true,
@@ -46,6 +47,7 @@
       "error",
       { "varsIgnorePattern": "^_$", "argsIgnorePattern": "^_+$" }
     ],
+    "license-header/header": [ "error", "./license.ts" ],
     "prettier/prettier": "error",
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",
