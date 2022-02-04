@@ -1,22 +1,38 @@
 # The RelationalAI Software Development Kit for Javascript
 
 The RelationalAI (RAI) SDK for Javascript enables developers to access the RAI
-REST APIs from Javascript.
+REST APIs from Javascript both for Node.js and web. The SDK provides first class
+TypeScript support.
 
-- You can find RelationalAI Javascript SDK documentation at <https://docs.relational.ai/rkgms/sdk/js-sdk>
-  **TODO**
-- You can find RelationalAI product documentation at <https://docs.relational.ai>
+- You can find RelationalAI Javascript SDK documentation at
+  <https://docs.relational.ai/rkgms/sdk/js-sdk> **TODO**
+- You can find RelationalAI product documentation at
+  <https://docs.relational.ai>
 - You can learn more about RelationalAI at <https://relational.ai>
 
 ## Getting started
 
 ### Requirements
 
-**TODO**
+Node.js 14+
 
 ### Installing the SDK
 
-**TODO**
+Install from npm:
+
+```console
+$ npm install rai-sdk-javascript
+```
+
+**TODO**: it's not published yet
+
+Install from github:
+
+```console
+$ npm install git+https://github.com/RelationalAI/rai-sdk-javascript.git#main
+```
+
+**TODO**: git+https won't work until the repo is private
 
 ### Create a configuration file
 
@@ -35,11 +51,25 @@ client_credentials_url = <account login URL>  # optional
 # default: https://login.relationalai.com/oauth/token
 ```
 
-Client credentials can be created using the RAI console at https://console.relationalai.com/login
+Client credentials can be created using the RAI console at
+https://console.relationalai.com/login
 
 ## Examples
 
-**TODO**
+Each of the example files in the ./examples folder is standalone and can be run
+from the command line, eg:
+
+```console
+$ cd examples
+$ ts-node listEngines.ts
+```
+
+**Note:** [ts-node](https://www.npmjs.com/package/ts-node) has to be installed
+globally. Or you can call via npx like:
+
+```console
+$ npx ts-node listEngines.ts
+```
 
 ## Support
 
@@ -47,8 +77,8 @@ You can reach the RAI developer support team at `support@relational.ai`
 
 ## Contributing
 
-We value feedback and contributions from our developer community. Feel free
-to submit an issue or a PR here.
+We value feedback and contributions from our developer community. Feel free to
+submit an issue or a PR here.
 
 ## License
 
