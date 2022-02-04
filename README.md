@@ -1,10 +1,10 @@
-# The RelationalAI Software Development Kit for Javascript
+# The RelationalAI Software Development Kit for JavaScript
 
-The RelationalAI (RAI) SDK for Javascript enables developers to access the RAI
-REST APIs from Javascript both for Node.js and web. The SDK provides first class
+The RelationalAI (RAI) SDK for JavaScript enables developers to access the RAI
+REST APIs from JavaScript both for Node.js and web. The SDK provides first class
 TypeScript support.
 
-- You can find RelationalAI Javascript SDK documentation at
+- You can find RelationalAI JavaScript SDK documentation at
   <https://docs.relational.ai/rkgms/sdk/js-sdk> **TODO**
 - You can find RelationalAI product documentation at
   <https://docs.relational.ai>
@@ -82,6 +82,6 @@ submit an issue or a PR here.
 
 ## License
 
-The RelationalAI Software Development Kit for Javascript is licensed under the
+The RelationalAI Software Development Kit for JavaScript is licensed under the
 Apache License 2.0. See:
 https://github.com/RelationalAI/rai-sdk-javascript/blob/master/LICENSE
