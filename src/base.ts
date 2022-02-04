@@ -25,11 +25,9 @@ export abstract class Base {
   private _onResponse?: OnResponse;
 
   constructor(public config: Config, public region = 'us-east') {
-    // TODO impove to accept baseUrl, useful in the Console
     this.baseUrl = makeUrl(config.scheme, config.host, config.port);
   }
 
-  // TODO maybe something like client.on('response', handler) instead?
   onResponse(onResponse: OnResponse) {
     this._onResponse = onResponse;
   }

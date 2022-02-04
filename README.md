@@ -4,8 +4,6 @@ The RelationalAI (RAI) SDK for JavaScript enables developers to access the RAI
 REST APIs from JavaScript both for Node.js and web. The SDK provides first class
 TypeScript support.
 
-- You can find RelationalAI JavaScript SDK documentation at
-  <https://docs.relational.ai/rkgms/sdk/js-sdk> **TODO**
 - You can find RelationalAI product documentation at
   <https://docs.relational.ai>
 - You can learn more about RelationalAI at <https://relational.ai>
@@ -18,21 +16,11 @@ Node.js 14+
 
 ### Installing the SDK
 
-Install from npm:
-
-```console
-$ npm install rai-sdk-javascript
-```
-
-**TODO**: it's not published yet
-
 Install from github:
 
 ```console
 $ npm install git+https://github.com/RelationalAI/rai-sdk-javascript.git#main
 ```
-
-**TODO**: git+https won't work until the repo is private
 
 ### Create a configuration file
 
