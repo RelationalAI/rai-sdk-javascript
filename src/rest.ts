@@ -17,6 +17,7 @@
 import fetch, { Response } from 'cross-fetch';
 import { stringify } from 'query-string';
 
+import { Problem } from './transaction/types';
 import { VERSION } from './types';
 
 const isNode =
@@ -56,28 +57,29 @@ export function makeUrl(scheme: string, host: string, port: string) {
   return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
-type InfraError = {
+export class SdkError extends Error {
   status: string;
   message: string;
   details?: string;
-};
-
-export class SdkError extends Error implements InfraError {
-  status: string;
-  message: string;
-  details?: string;
+  problems?: Problem[];
   response: Response;
 
   constructor(body: any, response: Response) {
-    const err = body as InfraError;
-
-    super(err.message);
+    super('');
 
     this.name = 'SdkError';
-    this.status = err.status;
-    this.message = err.message;
-    this.details = err.details;
+    this.status = response.statusText;
     this.response = response;
+
+    if (body.message !== undefined) {
+      this.message = body.message;
+      this.details = body.details;
+    } else if (body.problems !== undefined) {
+      this.message = 'Database error. See problems.';
+      this.problems = body.problems;
+    } else {
+      this.message = 'Unknown error occured';
+    }
   }
 
   toString() {
