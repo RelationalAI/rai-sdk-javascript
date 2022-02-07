@@ -1,0 +1,77 @@
+{
+  "name": "rai-sdk-javascript",
+  "description": "RelationalAI SDK for JavaScript",
+  "version": "1.0.0",
+  "author": {
+    "name": "RelationalAI",
+    "url": "https://relational.ai"
+  },
+  "homepage": "https://github.com/RelationalAI/rai-sdk-javascript#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RelationalAI/rai-sdk-javascript.git"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "api",
+    "rel",
+    "relationalai",
+    "sdk"
+  ],
+  "engines": {
+    "node": "14.15.5",
+    "npm": "6.14.11"
+  },
+  "browserslist": [
+    "> 2%"
+  ],
+  "exports": {
+    "require": "./dist/node/rai-sdk-javascript.js",
+    "default": "./dist/browser/rai-sdk-javascript.modern.js"
+  },
+  "types": "dist/typings/index.d.ts",
+  "main": "./dist/node/rai-sdk-javascript.js",
+  "browser": "./dist/browser/rai-sdk-javascript.js",
+  "module": "./dist/browser/rai-sdk-javascript.module.js",
+  "unpkg": "./dist/browser/rai-sdk-javascript.umd.js",
+  "scripts": {
+    "postinstall": "npm run build",
+    "build": "rm -rf ./dist && npm run build:browser && npm run build:node",
+    "build:browser": "microbundle -i ./index.ts -o ./dist/browser --target web --alias ./src/config=./src/config.browser --external none --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --format cjs --define __RAI_SDK_VERSION__=$npm_package_version",
+    "dev:browser": "npm run build:browser -- -w",
+    "dev:node": "npm run build:node -- -w",
+    "format": "prettier --write ./src --loglevel warn",
+    "tscheck": "tsc --noEmit --pretty true",
+    "lint": "eslint --cache . --ext js --ext ts --ext tsx",
+    "fix": "eslint --cache --fix . --ext js --ext ts --ext tsx",
+    "test": "jest",
+    "test:debug": "npx --node-arg=--inspect jest --runInBand --testTimeout=60000 --verbose --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "27.4.0",
+    "@typescript-eslint/eslint-plugin": "5.2.0",
+    "@typescript-eslint/parser": "5.2.0",
+    "commander": "8.3.0",
+    "eslint": "7.28.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-jest": "24.1.3",
+    "eslint-plugin-license-header": "^0.4.0",
+    "eslint-plugin-prettier": "3.3.1",
+    "eslint-plugin-simple-import-sort": "7.0.0",
+    "eslint-plugin-unicorn": "27.0.0",
+    "jest": "27.4.7",
+    "nock": "13.2.2",
+    "prettier": "2.2.1",
+    "prettier-plugin-jsdoc": "0.3.8",
+    "ts-jest": "27.1.2",
+    "typescript": "4.4.4"
+  },
+  "dependencies": {
+    "config-ini-parser": "1.5.9",
+    "cross-fetch": "3.1.5",
+    "microbundle": "0.14.2",
+    "query-string": "7.1.0"
+  }
+}
