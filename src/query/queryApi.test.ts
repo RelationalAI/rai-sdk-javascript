@@ -49,7 +49,6 @@ describe('QueryApi', () => {
       columns: [[111]],
     },
   ];
-  const expectedOutput = [mockOutput[0]];
   const database = 'test-db';
   const engine = 'test-engine';
 
@@ -97,7 +96,7 @@ describe('QueryApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(expectedOutput);
+    expect(result).toEqual(response);
   });
 
   it('should query with inputs', async () => {
@@ -153,7 +152,7 @@ describe('QueryApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(expectedOutput);
+    expect(result).toEqual(response);
   });
 
   it('should load json', async () => {
@@ -212,7 +211,7 @@ describe('QueryApi', () => {
 
     scope.done();
 
-    expect(result).toEqual([]);
+    expect(result).toEqual(response);
   });
 
   it('should load csv', async () => {
@@ -270,7 +269,7 @@ describe('QueryApi', () => {
 
     scope.done();
 
-    expect(result).toEqual([]);
+    expect(result).toEqual(response);
   });
 
   it('should load csv with syntax', async () => {
@@ -342,7 +341,7 @@ describe('QueryApi', () => {
 
     scope.done();
 
-    expect(result).toEqual([]);
+    expect(result).toEqual(response);
   });
 
   it('should load csv with schema', async () => {
@@ -412,6 +411,6 @@ describe('QueryApi', () => {
 
     scope.done();
 
-    expect(result).toEqual([]);
+    expect(result).toEqual(response);
   });
 });

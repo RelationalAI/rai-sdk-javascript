@@ -29,13 +29,8 @@ export class QueryApi extends TransactionApi {
     readonly = true,
   ) {
     const action = makeQueryAction(queryString, inputs);
-    const result = await this.runActions(database, engine, [action], readonly);
 
-    if (result.actions[0]?.result?.type === 'QueryActionResult') {
-      return result.output.filter(r => r.rel_key.name === 'output');
-    }
-
-    throw new Error('QueryActionResult is missing');
+    return await this.runActions(database, engine, [action], readonly);
   }
 
   async loadJson(
