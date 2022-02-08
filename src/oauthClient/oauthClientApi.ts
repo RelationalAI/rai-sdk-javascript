@@ -50,6 +50,28 @@ export class OAuthClientApi extends Base {
     return result.client;
   }
 
+  async updateOAuthClient(
+    clientId: string,
+    name?: string,
+    permissions?: Permission[],
+  ) {
+    const body: any = {};
+
+    if (name) {
+      body.name = name;
+    }
+
+    if (permissions) {
+      body.permissions = permissions;
+    }
+
+    const result = await this.patch<SingleReponse>(`${ENDPOINT}/${clientId}`, {
+      body,
+    });
+
+    return result.client;
+  }
+
   async rotateOAuthClientSecret(clientId: string) {
     const result = await this.post<SingleReponse>(
       `${ENDPOINT}/${clientId}/rotate-secret`,

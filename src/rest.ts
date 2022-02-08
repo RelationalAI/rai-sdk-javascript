@@ -74,6 +74,7 @@ export class SdkError extends Error {
     if (body.message !== undefined) {
       this.message = body.message;
       this.details = body.details;
+      this.status = body.status;
     } else if (body.problems !== undefined) {
       this.message = 'Database error. See problems.';
       this.problems = body.problems;
