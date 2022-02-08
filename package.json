@@ -35,10 +35,9 @@
   "module": "./dist/browser/rai-sdk-javascript.module.js",
   "unpkg": "./dist/browser/rai-sdk-javascript.umd.js",
   "scripts": {
-    "postinstall": "npm run build",
     "build": "rm -rf ./dist && npm run build:browser && npm run build:node",
     "build:browser": "microbundle -i ./index.ts -o ./dist/browser --target web --alias ./src/config=./src/config.browser --external none --define __RAI_SDK_VERSION__=$npm_package_version",
-    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --format cjs --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
     "dev:browser": "npm run build:browser -- -w",
     "dev:node": "npm run build:node -- -w",
     "format": "prettier --write ./src --loglevel warn",
