@@ -19,7 +19,7 @@ export type User = {
   email: string;
   roles: UserRole[];
   id_providers: string[];
-  status: UserStatus | '';
+  status: UserStatus;
 };
 
 export enum UserStatus {

@@ -24,7 +24,10 @@ const path = '/oauth-clients';
 
 describe('OAuthClientApi', () => {
   const api = new OAuthClientApi(getMockConfig());
-  const mockClients = [{ name: 'client1' }, { name: 'client2' }];
+  const mockClients = [
+    { id: 'id1', name: 'client1' },
+    { id: 'id2', name: 'client2' },
+  ];
 
   afterEach(() => nock.cleanAll());
   afterAll(() => nock.restore());
@@ -61,6 +64,24 @@ describe('OAuthClientApi', () => {
     const response = { client: mockClients[0] };
     const scope = nock(baseUrl).get(`${path}/id1`).reply(200, response);
     const result = await api.getOAuthClient('id1');
+
+    scope.done();
+
+    expect(result).toEqual(mockClients[0]);
+  });
+
+  it('should update oauth client', async () => {
+    const response = { client: mockClients[0] };
+    const scope = nock(baseUrl)
+      .patch(`${path}/id1`, {
+        name: 'client1',
+        permissions: [Permission.CREATE_COMPUTE, Permission.CREATE_USER],
+      })
+      .reply(200, response);
+    const result = await api.updateOAuthClient('id1', 'client1', [
+      Permission.CREATE_COMPUTE,
+      Permission.CREATE_USER,
+    ]);
 
     scope.done();
 
