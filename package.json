@@ -25,19 +25,20 @@
   "browserslist": [
     "> 2%"
   ],
+  "type": "module",
   "exports": {
     "./node": {
-      "require": "./dist/node/rai-sdk-javascript.js",
+      "require": "./dist/node/rai-sdk-javascript.cjs",
       "import": "./dist/node/rai-sdk-javascript.modern.js"
     },
     "./web": {
-      "require": "./dist/web/rai-sdk-javascript.js",
+      "require": "./dist/web/rai-sdk-javascript.cjs",
       "import": "./dist/web/rai-sdk-javascript.modern.js"
     }
   },
   "types": "dist/typings/index.d.ts",
-  "main": "./dist/node/rai-sdk-javascript.js",
-  "browser": "./dist/web/rai-sdk-javascript.js",
+  "main": "./dist/node/rai-sdk-javascript.cjs",
+  "browser": "./dist/web/rai-sdk-javascript.cjs",
   "module": "./dist/web/rai-sdk-javascript.module.js",
   "unpkg": "./dist/web/rai-sdk-javascript.umd.js",
   "scripts": {
