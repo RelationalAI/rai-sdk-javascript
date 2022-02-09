@@ -1215,4 +1215,4 @@ exports.GetTokenCredentials = GetTokenCredentials;
 exports.SdkError = SdkError;
 exports.VERSION = VERSION;
 exports.readConfig = readConfig;
-//# sourceMappingURL=rai-sdk-javascript.js.map
+//# sourceMappingURL=rai-sdk-javascript.cjs.map
