@@ -25,9 +25,10 @@
   "browserslist": [
     "> 2%"
   ],
+  "type": "module",
   "exports": {
     "require": "./dist/node/rai-sdk-javascript.js",
-    "default": "./dist/browser/rai-sdk-javascript.modern.js"
+    "import": "./dist/node/rai-sdk-javascript.modern.js"
   },
   "types": "dist/typings/index.d.ts",
   "main": "./dist/node/rai-sdk-javascript.js",
