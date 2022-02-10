@@ -26,7 +26,7 @@ export function makeQueryAction(
     type: 'QueryAction',
     outputs: [],
     persist: [],
-    source: makeModel('query', queryString),
+    source: makeModel('query', queryString, ''),
     inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
   };
 
