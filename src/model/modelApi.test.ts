@@ -16,7 +16,11 @@
 
 import nock from 'nock';
 
-import { getMockConfig, nockTransaction } from '../testUtils';
+import {
+  getMockConfig,
+  makeTransactionResult,
+  nockTransaction,
+} from '../testUtils';
 import { ModelApi } from './modelApi';
 
 describe('ModelApi', () => {
@@ -52,9 +56,13 @@ describe('ModelApi', () => {
 
     scope.done();
 
-    expect(result).toEqual({
-      type: 'InstallActionResult',
-    });
+    expect(result).toEqual(
+      makeTransactionResult([
+        {
+          type: 'InstallActionResult',
+        },
+      ]),
+    );
   });
 
   it('should list models', async () => {
@@ -77,7 +85,14 @@ describe('ModelApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockModels);
+    expect(result).toEqual(
+      makeTransactionResult([
+        {
+          type: 'ListSourceActionResult',
+          sources: mockModels,
+        },
+      ]),
+    );
   });
 
   it('should get model', async () => {
