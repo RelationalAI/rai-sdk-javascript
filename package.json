@@ -27,13 +27,17 @@
   ],
   "type": "module",
   "exports": {
-    "./node": {
-      "require": "./dist/node/rai-sdk-javascript.cjs",
-      "import": "./dist/node/rai-sdk-javascript.modern.js"
+    ".": {
+      "require": "./dist/web/rai-sdk-javascript.cjs",
+      "import": "./dist/web/rai-sdk-javascript.modern.js"
     },
     "./web": {
       "require": "./dist/web/rai-sdk-javascript.cjs",
       "import": "./dist/web/rai-sdk-javascript.modern.js"
+    },
+    "./node": {
+      "require": "./dist/node/rai-sdk-javascript.cjs",
+      "import": "./dist/node/rai-sdk-javascript.modern.js"
     }
   },
   "types": "dist/typings/index.d.ts",
