@@ -28,34 +28,27 @@ export class ModelApi extends TransactionApi {
       type: 'InstallAction',
       sources: models,
     };
-    const result = await this.runActions(database, engine, [action], false);
 
-    if (result.actions[0]?.result?.type === 'InstallActionResult') {
-      return result.actions[0].result;
-    }
-
-    throw new Error('InstallActionResult is missing');
+    return await this.runActions(database, engine, [action], false);
   }
 
   async listModels(database: string, engine: string) {
     const action: ListSourceAction = {
       type: 'ListSourceAction',
     };
-    const result = await this.runActions(database, engine, [action]);
 
-    if (result.actions[0]?.result?.type === 'ListSourceActionResult') {
-      return result.actions[0].result.sources;
-    }
-
-    throw new Error('ListSourceActionResult is missing');
+    return await this.runActions(database, engine, [action]);
   }
 
   async getModel(database: string, engine: string, name: string) {
-    const models = await this.listModels(database, engine);
-    const model = models.find(m => m.name === name);
+    const result = await this.listModels(database, engine);
 
-    if (model) {
-      return model;
+    if (result.actions[0]?.result?.type === 'ListSourceActionResult') {
+      const model = result.actions[0].result.sources.find(m => m.name === name);
+
+      if (model) {
+        return model;
+      }
     }
 
     throw new Error(`Model '${name}' not found`);
