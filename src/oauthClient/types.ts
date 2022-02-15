@@ -35,11 +35,14 @@ export enum Permission {
   LIST_COMPUTES = 'list:compute',
   READ_COMPUTE = 'read:compute',
   // databases
+  CREATE_DATABASE = 'create:database',
   LIST_DATABASES = 'list:database',
   UPDATE_DATABASE = 'update:database',
   DELETE_DATABASE = 'delete:database',
   // transactions
   RUN_TRANSACTION = 'run:transaction',
+  DELETE_TRANSACTION = 'delete:transaction',
+  READ_TRANSACTION = 'read:transaction',
   // credits
   READ_CREDITS_USAGE = 'read:credits_usage',
   // oauth clients
@@ -54,6 +57,7 @@ export enum Permission {
   LIST_USERS = 'list:user',
   READ_USER = 'read:user',
   UPDATE_USER = 'update:user',
+  DELETE_USER = 'delete:user',
   // roles
   LIST_ROLES = 'list:role',
   READ_ROLE = 'read:role',
@@ -63,3 +67,8 @@ export enum Permission {
   CREATE_ACCESS_KEY = 'create:accesskey',
   LIST_ACCESS_KEYS = 'list:accesskey',
 }
+
+export type PermissionDescription = {
+  name: Permission;
+  description: string;
+};

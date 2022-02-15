@@ -15,7 +15,12 @@
  */
 
 import { Base } from '../base';
-import { CompactOAuthClient, OAuthClient, Permission } from './types';
+import {
+  CompactOAuthClient,
+  OAuthClient,
+  Permission,
+  PermissionDescription,
+} from './types';
 
 const ENDPOINT = 'oauth-clients';
 
@@ -24,6 +29,9 @@ type SingleReponse = { client: OAuthClient };
 type DeleteResponse = {
   client_id: string;
   message: string;
+};
+type ListPermissionResponse = {
+  permissions: PermissionDescription[];
 };
 
 export class OAuthClientApi extends Base {
@@ -88,5 +96,11 @@ export class OAuthClientApi extends Base {
     );
 
     return result;
+  }
+
+  async listPermissions() {
+    const result = await this.get<ListPermissionResponse>('permissions', {});
+
+    return result.permissions;
   }
 }
