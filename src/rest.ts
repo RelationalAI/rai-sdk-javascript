@@ -62,6 +62,7 @@ export class SdkError extends Error {
   message: string;
   details?: string;
   problems?: Problem[];
+  body: any;
   response: Response;
 
   constructor(body: any, response: Response) {
@@ -69,6 +70,7 @@ export class SdkError extends Error {
 
     this.name = 'SdkError';
     this.status = response.statusText;
+    this.body = body;
     this.response = response;
 
     if (body.message !== undefined) {

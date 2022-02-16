@@ -28,6 +28,10 @@ describe('OAuthClientApi', () => {
     { id: 'id1', name: 'client1' },
     { id: 'id2', name: 'client2' },
   ];
+  const mockPermissions = [
+    { name: 'create:database', description: 'Create databases' },
+    { name: 'delete:user', description: 'Delete users' },
+  ];
 
   afterEach(() => nock.cleanAll());
   afterAll(() => nock.restore());
@@ -108,5 +112,15 @@ describe('OAuthClientApi', () => {
     scope.done();
 
     expect(result).toEqual(response);
+  });
+
+  it('should list permissions', async () => {
+    const response = { permissions: mockPermissions };
+    const scope = nock(baseUrl).get('/permissions').reply(200, response);
+    const result = await api.listPermissions();
+
+    scope.done();
+
+    expect(result).toEqual(mockPermissions);
   });
 });
