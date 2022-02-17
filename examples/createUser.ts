@@ -16,7 +16,7 @@
 
 import { Command } from 'commander';
 
-import { Client, readConfig, UserRole } from '../index';
+import { Client, readConfig, UserRole } from '../index.node';
 
 async function run(email: string, role: UserRole, profile?: string) {
   const config = await readConfig(profile);

@@ -18,7 +18,7 @@ import { Command } from 'commander';
 import { promises } from 'fs';
 import path from 'path';
 
-import { Client, CsvConfigSyntax, readConfig } from '../index';
+import { Client, CsvConfigSyntax, readConfig } from '../index.node';
 
 async function run(
   database: string,

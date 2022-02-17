@@ -16,7 +16,7 @@
 
 import { Command } from 'commander';
 
-import { Client, EngineSize, readConfig } from '../index';
+import { Client, EngineSize, readConfig } from '../index.node';
 
 async function run(name: string, size: EngineSize, profile?: string) {
   const config = await readConfig(profile);
