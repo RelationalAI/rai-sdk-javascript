@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import fetch, { Response } from 'cross-fetch';
+import fetch from 'cross-fetch';
 import { stringify } from 'query-string';
 
 import { Problem } from './transaction/types';

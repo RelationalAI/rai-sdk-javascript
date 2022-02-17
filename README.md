@@ -12,7 +12,8 @@ TypeScript support.
 
 ### Requirements
 
-Node.js 14+
+- Node.js 14+
+- `npx browserslist "> 2%"` for web
 
 ### Installing the SDK
 
@@ -41,6 +42,59 @@ client_credentials_url = <account login URL>  # optional
 
 Client credentials can be created using the RAI console at
 https://console.relationalai.com/login
+
+### Usage Node.js
+
+Node.js package provides `readConfig` helper that reads the configuration file
+
+```javascript
+import { Client, readConfig } from 'rai-sdk-javascript/node';
+
+const config = await readConfig();
+const client = new Client(config);
+
+const result = await client.listEngines();
+```
+
+or you can build the config object
+
+```javascript
+import { Client, ClientCredentials } from 'rai-sdk-javascript/node';
+
+const credentials = new ClientCredentials(
+  'your client_id',
+  'your client_secret',
+  'https://login.relationalai.com/oauth/token',
+);
+const config = {
+  credentials,
+  host: 'azure.relationalai.com',
+  scheme: 'https',
+  port: '443',
+};
+const client = new Client(config);
+
+const result = await client.listEngines();
+```
+
+### Usage Web
+
+```javascript
+import { Client, ClientCredentials } from 'rai-sdk-javascript/web';
+
+const credentials = new GetTokenCredentials(async () => {
+  return await functionThatReturnsAccessToken();
+});
+const config = {
+  credentials,
+  host: 'azure.relationalai.com',
+  scheme: 'https',
+  port: '443',
+};
+const client = new Client(config);
+
+const result = await client.listEngines();
+```
 
 ## Examples
 

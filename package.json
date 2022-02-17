@@ -28,29 +28,43 @@
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/web/rai-sdk-javascript.cjs",
-      "import": "./dist/web/rai-sdk-javascript.modern.js"
-    },
-    "./web": {
-      "require": "./dist/web/rai-sdk-javascript.cjs",
-      "import": "./dist/web/rai-sdk-javascript.modern.js"
+      "require": "./dist/node/rai-sdk-javascript.cjs",
+      "import": "./dist/node/rai-sdk-javascript.modern.js"
     },
     "./node": {
       "require": "./dist/node/rai-sdk-javascript.cjs",
       "import": "./dist/node/rai-sdk-javascript.modern.js"
+    },
+    "./web": {
+      "require": "./dist/web/rai-sdk-javascript.cjs",
+      "import": "./dist/web/rai-sdk-javascript.modern.js"
     }
   },
-  "types": "dist/typings/index.d.ts",
+  "types": "./dist/typings/index.node.d.ts",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/typings/index.node.d.ts"
+      ],
+      "node": [
+        "./dist/typings/index.node.d.ts"
+      ],
+      "web": [
+        "./dist/typings/index.web.d.ts"
+      ]
+    }
+  },
   "main": "./dist/node/rai-sdk-javascript.cjs",
   "browser": "./dist/web/rai-sdk-javascript.cjs",
-  "module": "./dist/web/rai-sdk-javascript.module.js",
+  "module": "./dist/node/rai-sdk-javascript.module.js",
   "unpkg": "./dist/web/rai-sdk-javascript.umd.js",
   "scripts": {
-    "build": "rm -rf ./dist && npm run build:web && npm run build:node",
-    "build:web": "microbundle -i ./index.ts -o ./dist/web --target web --alias ./src/config=./src/config.web --external none --define __RAI_SDK_VERSION__=$npm_package_version",
-    "build:node": "microbundle -i ./index.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
-    "dev:web": "npm run build:web -- -w",
-    "dev:node": "npm run build:node -- -w",
+    "postinstall": "$npm_execpath run build",
+    "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node",
+    "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --external none --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:node": "microbundle -i ./index.node.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
+    "dev:web": "$npm_execpath run build:web -- -w",
+    "dev:node": "$npm_execpath run build:node -- -w",
     "format": "prettier --write ./src --loglevel warn",
     "tscheck": "tsc --noEmit --pretty true",
     "lint": "eslint --cache . --ext js --ext ts --ext tsx",
