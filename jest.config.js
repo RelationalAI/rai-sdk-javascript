@@ -14,13 +14,18 @@
  * under the License.
  */
 
-const pkg = require('./package.json');
+import { readFileSync } from 'fs';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-module.exports = {
-  preset: 'ts-jest',
+const exports = {
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   globals: {
     __RAI_SDK_VERSION__: pkg.version,
   },
+  transform: {},
 };
+
+export default exports;

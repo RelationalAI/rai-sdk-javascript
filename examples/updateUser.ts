@@ -16,7 +16,7 @@
 
 import { Command } from 'commander';
 
-import { Client, readConfig, UserRole, UserStatus } from '../index';
+import { Client, readConfig, UserRole, UserStatus } from '../index.node';
 
 async function run(
   userId: string,
