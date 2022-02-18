@@ -19,11 +19,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  },
   "include": [
     "./*.ts",
     "./src/**/*.ts",
