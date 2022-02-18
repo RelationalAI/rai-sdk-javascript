@@ -25,6 +25,9 @@ const exports = {
   globals: {
     __RAI_SDK_VERSION__: pkg.version,
   },
+  moduleNameMapper: {
+    '^lodash-es$': 'lodash',
+  },
   transform: {},
 };
 
