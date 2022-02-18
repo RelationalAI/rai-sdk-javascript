@@ -17,7 +17,7 @@
 import fetch from 'cross-fetch';
 import { stringify } from 'query-string';
 
-import { TransactionResult } from './transaction/types';
+import { makeError } from './errors';
 import { VERSION } from './types';
 
 const isNode =
@@ -92,54 +92,4 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   }
 
   throw makeError(responseBody, responseClone.clone());
-}
-
-export class ApiError extends Error {
-  constructor(
-    public message: string,
-    public status = '',
-    public details = '',
-    public response: Response,
-  ) {
-    super(message);
-
-    this.name = 'ApiError';
-  }
-
-  toString() {
-    return `${this.status}: ${this.message}\n${this.details}`;
-  }
-}
-
-export class TransactionError extends Error {
-  message: string;
-  result: TransactionResult;
-  response: Response;
-
-  constructor(result: TransactionResult, response: Response) {
-    const msg = 'Transaction error. See transaction result';
-
-    super(msg);
-
-    this.name = 'TransactionError';
-    this.message = msg;
-    this.response = response;
-    this.result = result;
-  }
-
-  toString() {
-    return `${this.message}:\n ${JSON.stringify(this.result, undefined, 2)}`;
-  }
-}
-
-function makeError(body: any, response: Response) {
-  if (body?.type === 'TransactionResult') {
-    return new TransactionError(body, response);
-  }
-
-  if (body?.message) {
-    return new ApiError(body.message, body.status, body.details, response);
-  }
-
-  return new Error(response.statusText);
 }
