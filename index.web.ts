@@ -20,7 +20,7 @@ export * from './src/database/types';
 export * from './src/engine/types';
 export * from './src/oauthClient/types';
 export * from './src/query/types';
-export { SdkError } from './src/rest';
+export { ApiError, TransactionError } from './src/rest';
 export * from './src/transaction/types';
 export { VERSION } from './src/types';
 export * from './src/user/types';
