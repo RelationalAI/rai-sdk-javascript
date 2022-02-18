@@ -102,15 +102,11 @@ Each of the example files in the ./examples folder is standalone and can be run
 from the command line, eg:
 
 ```console
-$ cd examples
-$ ts-node listEngines.ts
+$ npm run example -- ./examples/listEngines.ts
 ```
 
-**Note:** [ts-node](https://www.npmjs.com/package/ts-node) has to be installed
-globally. Or you can call via npx like:
-
 ```console
-$ npx ts-node listEngines.ts
+$ npm run example -- ./examples/runQuery.ts -d dbName -e engineName -c "def output = 1 + 2"
 ```
 
 ## Support

@@ -17,7 +17,7 @@
 import fetch from 'cross-fetch';
 import { stringify } from 'query-string';
 
-import { Problem } from './transaction/types';
+import { makeError } from './errors';
 import { VERSION } from './types';
 
 const isNode =
@@ -57,41 +57,6 @@ export function makeUrl(scheme: string, host: string, port: string) {
   return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
-export class SdkError extends Error {
-  status: string;
-  message: string;
-  details?: string;
-  problems?: Problem[];
-  body: any;
-  response: Response;
-
-  constructor(body: any, response: Response) {
-    super('');
-
-    this.name = 'SdkError';
-    this.status = response.statusText;
-    this.body = body;
-    this.response = response;
-
-    if (body.message !== undefined) {
-      this.message = body.message;
-      this.details = body.details;
-      this.status = body.status;
-    } else if (body.problems !== undefined) {
-      this.message = 'Database error. See problems.';
-      this.problems = body.problems;
-    } else {
-      this.message = 'Unknown error occured';
-    }
-  }
-
-  toString() {
-    return `${this.response.status} ${this.status}: ${this.message} ${
-      this.details || ''
-    }`;
-  }
-}
-
 export async function request<T>(url: string, options: RequestOptions = {}) {
   const opts = {
     method: options.method || 'GET',
@@ -107,6 +72,8 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   const contentType = response.headers.get('content-type');
   let responseBody;
 
+  const responseClone = response.clone();
+
   if (contentType && contentType.includes('application/json')) {
     responseBody = await response.json();
   } else {
@@ -115,7 +82,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   if (options.onResponse) {
     try {
-      options.onResponse(response.clone());
+      options.onResponse(responseClone.clone());
       // eslint-disable-next-line no-empty
     } catch {}
   }
@@ -124,5 +91,5 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     return responseBody as T;
   }
 
-  throw new SdkError(responseBody, response);
+  throw makeError(responseBody, responseClone.clone());
 }
