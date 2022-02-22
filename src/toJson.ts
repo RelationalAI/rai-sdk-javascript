@@ -63,9 +63,7 @@ export function toJson(output: Relation[]) {
 
   // scalar value shortcut
   if (output.length === 1 && output[0].rel_key.keys[0][0] !== SYMBOL_PREFIX) {
-    return {
-      data: output[0].columns[0][0],
-    };
+    return output[0].columns[0][0];
   }
 
   const rootArrayNumber = output.reduce((memo, relation) => {
@@ -77,9 +75,7 @@ export function toJson(output: Relation[]) {
   }, 0);
 
   if (rootArrayNumber > 0 && rootArrayNumber < output.length) {
-    return {
-      error: new Error('toJSON: Inconsistent root array relations.'),
-    };
+    throw new Error('toJSON: Inconsistent root array relations.');
   }
 
   const result = rootArrayNumber === 0 ? {} : [];
@@ -153,7 +149,5 @@ export function toJson(output: Relation[]) {
     }
   });
 
-  return {
-    data: result,
-  };
+  return result;
 }

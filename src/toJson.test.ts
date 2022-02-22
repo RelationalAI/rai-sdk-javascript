@@ -47,6 +47,29 @@ export const arrayOutput: Relation[] = [
   },
 ];
 
+export const arrayErrorOutput: Relation[] = [
+  {
+    rel_key: {
+      name: 'output',
+      type: 'RelKey',
+      keys: [':[]', 'Int64', 'Int64'],
+      values: [],
+    },
+    type: 'Relation',
+    columns: [[1, 2, 3], jsonArray],
+  },
+  {
+    rel_key: {
+      name: 'output',
+      type: 'RelKey',
+      keys: [':foo', 'Int64'],
+      values: [],
+    },
+    type: 'Relation',
+    columns: [[1]],
+  },
+];
+
 export const emptyArrayOutput: Relation[] = [
   {
     rel_key: {
@@ -2112,37 +2135,43 @@ export const rootPropOutput: Relation[] = [
 
 describe('toJSON', () => {
   it('should handle empty inputs', () => {
-    const { data: json } = toJson([]);
+    const json = toJson([]);
 
     expect(json).toEqual({});
   });
 
   it('should construct a scalar from scalar output', () => {
-    const { data: json } = toJson(scalarOutput);
+    const json = toJson(scalarOutput);
 
     expect(json).toEqual(jsonScalar);
   });
 
   it('should construct an array from relational output', () => {
-    const { data: json } = toJson(arrayOutput);
+    const json = toJson(arrayOutput);
 
     expect(json).toEqual(jsonArray);
   });
 
   it('should handle an empty array', () => {
-    const { data: json } = toJson(emptyArrayOutput);
+    const json = toJson(emptyArrayOutput);
 
     expect(json).toEqual([]);
   });
 
+  it('should handle inconsistent array', () => {
+    expect(() => {
+      toJson(arrayErrorOutput);
+    }).toThrowError();
+  });
+
   it('should construct a simple JSON object from relational output', () => {
-    const { data: json } = toJson(simpleOutput);
+    const json = toJson(simpleOutput);
 
     expect(json).toEqual({ name: 'Anton', age: 56 });
   });
 
   it('should construct a nested JSON object from relational output', () => {
-    const { data: json } = toJson(nestedOutput);
+    const json = toJson(nestedOutput);
 
     expect(json).toEqual({
       name: 'Anton',
@@ -2152,7 +2181,7 @@ describe('toJSON', () => {
   });
 
   it('should construct a nested JSON object with array leaf node from relational output', () => {
-    const { data: json } = toJson(leafArrayOutput);
+    const json = toJson(leafArrayOutput);
 
     expect(json).toEqual({
       name: 'Anton',
@@ -2166,25 +2195,25 @@ describe('toJSON', () => {
   });
 
   it('should construct JSON with an array root node from relational output', () => {
-    const { data: json } = toJson(rootArrayOutput);
+    const json = toJson(rootArrayOutput);
 
     expect(json).toEqual([{ a: 1 }]);
   });
 
   it('should construct JSON with only array nodes from relational output', () => {
-    const { data: json } = toJson(onlyArrayOutput);
+    const json = toJson(onlyArrayOutput);
 
     expect(json).toEqual([[[[1, 2, 3, 4, 5, 6], 2], 3], 4]);
   });
 
   it('should construct JSON with mixed array and object nodes from relational output', () => {
-    const { data: json } = toJson(mixedArraysOutput);
+    const json = toJson(mixedArraysOutput);
 
     expect(json).toEqual([[[[1], 2, 4, 5, { a: 1 }], 3], { b: 2 }]);
   });
 
   it('should construct a nested JSON object with an array as a nested node from relational output', () => {
-    const { data: json } = toJson(nestedArrayOutput);
+    const json = toJson(nestedArrayOutput);
 
     expect(json).toEqual({
       name: 'Anton',
@@ -2194,7 +2223,7 @@ describe('toJSON', () => {
   });
 
   it('should construct a nested JSON object with doubly nested array nodes from relational output', () => {
-    const { data: json } = toJson(doublyNestedArrayOutput);
+    const json = toJson(doublyNestedArrayOutput);
 
     expect(json).toEqual({
       name: 'Anton',
@@ -2207,7 +2236,7 @@ describe('toJSON', () => {
   });
 
   it('should construct a cake recipe from relational output', () => {
-    const { data: json } = toJson(cakeOutput);
+    const json = toJson(cakeOutput);
 
     expect(json).toEqual({
       id: '0001',
@@ -2235,7 +2264,7 @@ describe('toJSON', () => {
   });
 
   it('should construct funky JSON from relational output', () => {
-    const { data: json } = toJson(funkyOutput);
+    const json = toJson(funkyOutput);
 
     expect(json).toEqual({
       y: [
@@ -2249,7 +2278,7 @@ describe('toJSON', () => {
   });
 
   it('should produce vega spec with tooltip', () => {
-    const { data: json } = toJson(vegaTooltipOutput);
+    const json = toJson(vegaTooltipOutput);
 
     expect(json).toEqual({
       $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -2351,7 +2380,7 @@ describe('toJSON', () => {
   });
 
   it('should handle multiple iterators for the same path', () => {
-    const { data: json } = toJson(multipleIteratorsSamePathOutput);
+    const json = toJson(multipleIteratorsSamePathOutput);
 
     expect(json).toEqual({
       b: ['test', 2, 1.2],
@@ -2359,7 +2388,7 @@ describe('toJSON', () => {
   });
 
   it('should handle not strictly increasing keys at a given offset', () => {
-    const { data: json } = toJson(notStrictlyIncreasingKeysOutput);
+    const json = toJson(notStrictlyIncreasingKeysOutput);
 
     expect(json).toEqual({
       metadata: { notebookFormatVersion: '0.0.1' },
@@ -2381,13 +2410,13 @@ describe('toJSON', () => {
   });
 
   it('should handle present values', () => {
-    const { data: json } = toJson(trueOutput);
+    const json = toJson(trueOutput);
 
     expect(json).toEqual([[{ a: {} }]]);
   });
 
   it('should handle file inputs', () => {
-    const { data: json } = toJson(fileInputOutput);
+    const json = toJson(fileInputOutput);
 
     expect(json).toEqual({
       metadata: { notebookFormatVersion: '0.0.1' },
@@ -2415,7 +2444,7 @@ describe('toJSON', () => {
   });
 
   it('should handle only missing values', () => {
-    const { data: json } = toJson(missingOutput);
+    const json = toJson(missingOutput);
 
     expect(json).toEqual({
       cells: [
@@ -2430,13 +2459,13 @@ describe('toJSON', () => {
   });
 
   it('should handle non-number keys', () => {
-    const { data: json } = toJson(stringKeyOutput);
+    const json = toJson(stringKeyOutput);
 
     expect(json).toEqual({ a: [{ b: 1 }, { b: 2 }] });
   });
 
   it('should handle empty tuple for iterators', () => {
-    const { data: json } = toJson(emptyIteratorOutput);
+    const json = toJson(emptyIteratorOutput);
 
     expect(json).toEqual({
       metadata: { notebookFormatVersion: '0.0.1' },
@@ -2445,19 +2474,19 @@ describe('toJSON', () => {
   });
 
   it('should handle sparse arrays', () => {
-    const { data: json } = toJson(sparseArrayOutput);
+    const json = toJson(sparseArrayOutput);
 
     expect(json).toEqual({ root: [null, { a: 1 }, null, null, { a: 2 }] });
   });
 
   it('should construct array output with missing value column', () => {
-    const { data: json } = toJson(noKeyArrayOutput);
+    const json = toJson(noKeyArrayOutput);
 
     expect(json).toEqual({ a: [{ b: {} }, { b: {} }, { b: {} }] });
   });
 
   it('should construct array output with non-comparable key columns', () => {
-    const { data: json } = toJson(nonComparableOutput);
+    const json = toJson(nonComparableOutput);
 
     expect(json).toEqual({
       a: [
@@ -2469,7 +2498,7 @@ describe('toJSON', () => {
   });
 
   it('should handle invalid container change', () => {
-    const { data: json } = toJson(updateContainerExceptionOutput);
+    const json = toJson(updateContainerExceptionOutput);
 
     expect(json).toEqual({
       a: [{ d: 2 }, { d: 3 }],
@@ -2478,7 +2507,7 @@ describe('toJSON', () => {
   });
 
   it('should handle array like prop string', () => {
-    const { data: json } = toJson(arrayLikePropStringOutput);
+    const json = toJson(arrayLikePropStringOutput);
 
     expect(json).toEqual({
       foo: {
@@ -2489,7 +2518,7 @@ describe('toJSON', () => {
   });
 
   it('should handle array like prop int', () => {
-    const { data: json } = toJson(arrayLikePropIntOutput);
+    const json = toJson(arrayLikePropIntOutput);
 
     expect(json).toEqual({
       foo: {
@@ -2500,7 +2529,7 @@ describe('toJSON', () => {
   });
 
   it('should handle array like prop object', () => {
-    const { data: json } = toJson(arrayLikePropObjectOutput);
+    const json = toJson(arrayLikePropObjectOutput);
 
     expect(json).toEqual({
       foo: {
@@ -2513,7 +2542,7 @@ describe('toJSON', () => {
   });
 
   it('should handle array like prop object', () => {
-    const { data: json } = toJson(arrayLikePropArrayOutput);
+    const json = toJson(arrayLikePropArrayOutput);
 
     expect(json).toEqual({
       foo: {
@@ -2524,7 +2553,7 @@ describe('toJSON', () => {
   });
 
   it('should handle root prop', () => {
-    const { data: json } = toJson(rootPropOutput);
+    const json = toJson(rootPropOutput);
 
     expect(json).toEqual({
       nb1: {
