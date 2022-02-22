@@ -60,9 +60,10 @@
   "unpkg": "./dist/web/rai-sdk-javascript.umd.js",
   "scripts": {
     "postinstall": "$npm_execpath run build",
-    "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node",
+    "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node && $npm_execpath run build:node:cjs",
     "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --external none --define __RAI_SDK_VERSION__=$npm_package_version",
     "build:node": "microbundle -i ./index.node.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:node:cjs": "$npm_execpath run build:node -- --format cjs --alias lodash-es=lodash --generateTypes false",
     "dev:web": "$npm_execpath run build:web -- -w",
     "dev:node": "$npm_execpath run build:node -- -w",
     "format": "prettier --write ./src --loglevel warn",
@@ -98,6 +99,7 @@
   "dependencies": {
     "config-ini-parser": "1.5.9",
     "cross-fetch": "3.1.5",
+    "lodash": "4.17.21",
     "lodash-es": "4.17.21",
     "microbundle": "0.14.2",
     "query-string": "7.1.0"
