@@ -1,8 +1,7 @@
 # The RelationalAI Software Development Kit for JavaScript
 
 The RelationalAI (RAI) SDK for JavaScript enables developers to access the RAI
-REST APIs from JavaScript both for Node.js and web. The SDK provides first class
-TypeScript support.
+REST APIs from JavaScript. The SDK provides first class TypeScript support.
 
 - You can find RelationalAI product documentation at
   <https://docs.relational.ai>
@@ -13,14 +12,13 @@ TypeScript support.
 ### Requirements
 
 - Node.js 14+
-- `npx browserslist "> 2%"` for web
 
 ### Installing the SDK
 
-Install from github:
+Install
 
 ```console
-$ npm install git+https://github.com/RelationalAI/rai-sdk-javascript.git#main
+$ npm install @relationalai/rai-sdk-javascript
 ```
 
 ### Create a configuration file
@@ -43,12 +41,12 @@ client_credentials_url = <account login URL>  # optional
 Client credentials can be created using the RAI console at
 https://console.relationalai.com/login
 
-### Usage Node.js
+### Usage
 
-Node.js package provides `readConfig` helper that reads the configuration file
+The package provides `readConfig` helper that reads the configuration file
 
 ```javascript
-import { Client, readConfig } from 'rai-sdk-javascript/node';
+import { Client, readConfig } from '@relationalai/rai-sdk-javascript';
 
 const config = await readConfig();
 const client = new Client(config);
@@ -59,32 +57,13 @@ const result = await client.listEngines();
 or you can build the config object
 
 ```javascript
-import { Client, ClientCredentials } from 'rai-sdk-javascript/node';
+import { Client, ClientCredentials } from '@relationalai/rai-sdk-javascript';
 
 const credentials = new ClientCredentials(
   'your client_id',
   'your client_secret',
   'https://login.relationalai.com/oauth/token',
 );
-const config = {
-  credentials,
-  host: 'azure.relationalai.com',
-  scheme: 'https',
-  port: '443',
-};
-const client = new Client(config);
-
-const result = await client.listEngines();
-```
-
-### Usage Web
-
-```javascript
-import { Client, ClientCredentials } from 'rai-sdk-javascript/web';
-
-const credentials = new GetTokenCredentials(async () => {
-  return await functionThatReturnsAccessToken();
-});
 const config = {
   credentials,
   host: 'azure.relationalai.com',
