@@ -17,9 +17,11 @@
 export type Database = {
   id: string;
   name: string;
+  account_name: string;
   state: DatabaseState;
   region: string;
   created_by: string;
+  created_on: string;
 };
 
 export type DatabaseOptions = {
