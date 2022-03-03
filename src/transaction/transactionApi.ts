@@ -45,6 +45,10 @@ export class TransactionApi extends Base {
     });
   }
 
+  async listTransactions() {
+    return await this.get<Transaction>('transactions');
+  }
+
   async runActions(
     database: string,
     engine: string,
