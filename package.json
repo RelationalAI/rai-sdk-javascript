@@ -1,7 +1,7 @@
 {
   "name": "@relationalai/rai-sdk-javascript",
   "description": "RelationalAI SDK for JavaScript",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "RelationalAI",
     "url": "https://relational.ai"
@@ -18,10 +18,6 @@
     "relationalai",
     "sdk"
   ],
-  "engines": {
-    "node": "14.15.5",
-    "npm": "6.14.11"
-  },
   "browserslist": [
     "> 2%"
   ],
