@@ -27,7 +27,7 @@ async function run(
 ) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.query(
+  const result = await client.queryAsync(
     database,
     engine,
     queryString,

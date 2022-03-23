@@ -21,7 +21,9 @@ import { EngineApi } from './engine/engineApi';
 import { ModelApi } from './model/modelApi';
 import { OAuthClientApi } from './oauthClient/oauthClientApi';
 import { QueryApi } from './query/queryApi';
+import { QueryAsyncApi } from './query/queryAsyncApi';
 import { TransactionApi } from './transaction/transactionApi';
+import { TransactionAsyncApi } from './transaction/transactionAsyncApi';
 import { UserApi } from './user/userApi';
 import { applyMixins } from './utils';
 
@@ -35,7 +37,9 @@ interface Client
     ModelApi,
     OAuthClientApi,
     QueryApi,
+    QueryAsyncApi,
     TransactionApi,
+    TransactionAsyncApi,
     UserApi {}
 
 applyMixins(Client, [
@@ -45,7 +49,9 @@ applyMixins(Client, [
   ModelApi,
   OAuthClientApi,
   QueryApi,
+  QueryAsyncApi,
   TransactionApi,
+  TransactionAsyncApi,
   UserApi,
 ]);
 

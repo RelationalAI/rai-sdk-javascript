@@ -18,22 +18,10 @@ import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
 
-async function run(
-  database: string,
-  engine: string,
-  queryString: string,
-  readonly: boolean,
-  profile?: string,
-) {
+async function run(id: string, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.query(
-    database,
-    engine,
-    queryString,
-    [],
-    readonly,
-  );
+  const result = await client.deleteTransaction(id);
 
   console.log(JSON.stringify(result, undefined, 2));
 }
@@ -42,22 +30,13 @@ async function run(
   const program = new Command();
 
   const options = program
-    .requiredOption('-d, --database <type>', 'database name')
-    .requiredOption('-e, --engine <type>', 'engine name')
-    .requiredOption('-c, --command <type>', 'rel source string')
-    .option('-r, --readonly', 'readonly', false)
+    .requiredOption('--id <type>', 'transaction id')
     .option('-p, --profile <type>', 'profile', 'default')
     .parse(process.argv)
     .opts();
 
   try {
-    await run(
-      options.database,
-      options.engine,
-      options.command,
-      options.readonly,
-      options.profile,
-    );
+    await run(options.id, options.profile);
   } catch (error: any) {
     console.error(error.toString());
   }

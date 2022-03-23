@@ -161,3 +161,36 @@ export type TransactionResult = {
   problems: Problem[];
   actions: LabeledActionResult[];
 };
+
+export enum TransactionAsyncState {
+  CREATED = 'CREATED',
+  ABORTED = 'ABORTED',
+  COMPLETED = 'COMPLETED',
+}
+
+export type TransactionAsyncPayload = {
+  dbname: string;
+  nowait_durable: boolean;
+  readonly: boolean;
+  engine_name?: string;
+  query: string;
+  inputs: Relation[];
+};
+
+export type TransactionAsync = {
+  id: string;
+  account_name: string;
+  state: TransactionAsyncState;
+  created_by: string;
+  created_on: string;
+  database_name: string;
+  read_only: boolean;
+  last_requested_interval: string;
+};
+
+export type TransactionAsyncCompact = Pick<TransactionAsync, 'id' | 'state'>;
+
+export type TransactionMetadata = {
+  relationId: string;
+  types: string[];
+};
