@@ -17,13 +17,14 @@
 import { Command } from 'commander';
 
 import { Client, readConfig, UserRole } from '../index.node';
+import { show } from './show';
 
 async function run(email: string, role: UserRole, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
   const result = await client.createUser(email, [role]);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

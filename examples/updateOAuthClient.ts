@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 
 import { Client, Permission, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(
   clientId: string,
@@ -28,7 +29,7 @@ async function run(
   const client = new Client(config);
   const result = await client.updateOAuthClient(clientId, name, permissions);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {
