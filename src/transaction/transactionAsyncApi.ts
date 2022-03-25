@@ -15,16 +15,18 @@
  */
 
 import { Base } from '../base';
+import { readTransactionResult } from './transactionUtils';
 import {
   TransactionAsync,
-  TransactionAsyncCompact,
   TransactionAsyncFile,
   TransactionAsyncPayload,
+  TransactionAsyncResult,
   TransactionMetadata,
 } from './types';
 
 const ENDPOINT = 'transactions';
 
+type TransactionCompact = Pick<TransactionAsyncResult, 'id' | 'state'>;
 type ListReponse = { transactions: TransactionAsync[] };
 type SingleReponse = { transaction: TransactionAsync };
 type DeleteResponse = {
@@ -33,12 +35,19 @@ type DeleteResponse = {
 };
 
 export class TransactionAsyncApi extends Base {
-  async runTransactionAsync(transaction: TransactionAsyncPayload) {
-    const result = await this.post<
-      TransactionAsyncCompact | TransactionAsyncFile[]
-    >(ENDPOINT, {
-      body: transaction,
-    });
+  async runTransactionAsync(
+    transaction: TransactionAsyncPayload,
+  ): Promise<TransactionAsyncResult> {
+    const result = await this.post<TransactionCompact | TransactionAsyncFile[]>(
+      ENDPOINT,
+      {
+        body: transaction,
+      },
+    );
+
+    if (Array.isArray(result)) {
+      return await readTransactionResult(result);
+    }
 
     return result;
   }
@@ -62,7 +71,7 @@ export class TransactionAsyncApi extends Base {
       `${ENDPOINT}/${transactionId}/results`,
     );
 
-    return result;
+    return await readTransactionResult(result);
   }
 
   async getTransactionMetadata(transactionId: string) {

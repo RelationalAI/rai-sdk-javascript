@@ -17,13 +17,14 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
+import { showTransactionResult } from './show';
 
 async function run(id: string, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
   const result = await client.getTransactionResults(id);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  showTransactionResult(result);
 }
 
 (async () => {

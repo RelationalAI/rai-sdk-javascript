@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
+import { showTransactionResult } from './show';
 
 async function run(
   database: string,
@@ -35,7 +36,7 @@ async function run(
     readonly,
   );
 
-  console.log(JSON.stringify(result, undefined, 2));
+  showTransactionResult(result);
 }
 
 (async () => {

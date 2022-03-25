@@ -14,6 +14,8 @@
  * under the License.
  */
 
+import { Table } from 'apache-arrow';
+
 export type RelValue = string | number | boolean | null | number[];
 
 export type RelKey = {
@@ -188,8 +190,6 @@ export type TransactionAsync = {
   last_requested_interval: string;
 };
 
-export type TransactionAsyncCompact = Pick<TransactionAsync, 'id' | 'state'>;
-
 export type TransactionMetadata = {
   relationId: string;
   types: string[];
@@ -200,4 +200,17 @@ export type TransactionAsyncFile = {
   data: Uint8Array;
   filename?: string;
   contentType?: string;
+};
+
+export type ArrowRelation = {
+  relationId: string;
+  table: Table;
+};
+
+export type TransactionAsyncResult = {
+  id: string;
+  state: TransactionAsyncState;
+  metadata?: TransactionMetadata;
+  problems?: Problem[];
+  relations?: ArrowRelation[];
 };

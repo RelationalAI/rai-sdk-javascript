@@ -14,7 +14,14 @@
  * under the License.
  */
 
-import { LabeledAction } from '../transaction/types';
+import { tableFromIPC } from 'apache-arrow';
+
+import {
+  ArrowRelation,
+  LabeledAction,
+  TransactionAsyncFile,
+  TransactionAsyncResult,
+} from '../transaction/types';
 
 export function makeLabeledAction(
   name: string,
@@ -27,4 +34,41 @@ export function makeLabeledAction(
   };
 
   return labeledAction;
+}
+
+export async function readTransactionResult(files: TransactionAsyncFile[]) {
+  const transaction = files.find(x => x.name === 'transaction');
+
+  if (!transaction) {
+    throw new Error('transaction part not found');
+  }
+
+  const txn = readJson(transaction.data);
+  const result: TransactionAsyncResult = {
+    id: txn.id,
+    state: txn.state,
+  };
+
+  const relations: ArrowRelation[] = [];
+
+  for (const file of files) {
+    if (file.contentType === 'application/vnd.apache.arrow.stream') {
+      const table = await tableFromIPC(file.data);
+
+      relations.push({
+        relationId: file.name,
+        table,
+      });
+    }
+  }
+
+  result.relations = relations;
+
+  return result;
+}
+
+function readJson(data: Uint8Array) {
+  const str = new TextDecoder().decode(data);
+
+  return JSON.parse(str);
 }
