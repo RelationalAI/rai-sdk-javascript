@@ -14,6 +14,7 @@
  * under the License.
  */
 
+import { readFileSync } from 'fs';
 import nock from 'nock';
 
 import { baseUrl, getMockConfig } from '../testUtils';
@@ -21,6 +22,23 @@ import { TransactionAsyncState } from '../transaction/types';
 import { TransactionAsyncApi } from './transactionAsyncApi';
 
 const path = '/transactions';
+
+const multipartMock = readFileSync(__dirname + '/multipartMock');
+const multopartContentType =
+  'multipart/form-data; boundary=865f68321ad9001da3f3b61785a72b25';
+const transactionAsyncMock = {
+  id: '2b23ad8b-f94d-4194-aab0-5ac2aa82d067',
+  state: 'COMPLETED',
+  problems: [],
+  metadata: [
+    { relationId: '/:output/:foo', types: [':output', ':foo'] },
+    { relationId: '/:output/Int64', types: [':output', 'Int64'] },
+  ],
+  relations: [
+    { relationId: '/:output/:foo', table: expect.anything() },
+    { relationId: '/:output/Int64', table: expect.anything() },
+  ],
+};
 
 describe('TransactionAsyncApi', () => {
   const api = new TransactionAsyncApi(getMockConfig());
@@ -53,6 +71,26 @@ describe('TransactionAsyncApi', () => {
     expect(result).toEqual(mockTransactions[0]);
   });
 
+  it('should run async transaction and parse results', async () => {
+    const query = '1 + 2 ';
+    const payload = {
+      dbname: database,
+      engine_name: engine,
+      query: query,
+      nowait_durable: false,
+      readonly: true,
+      inputs: [],
+    };
+    const scope = nock(baseUrl).post(path, payload).reply(200, multipartMock, {
+      'Content-type': multopartContentType,
+    });
+    const result = await api.runTransactionAsync(payload);
+
+    scope.done();
+
+    expect(result).toEqual(transactionAsyncMock);
+  });
+
   it('should list transactions', async () => {
     const response = {
       transactions: mockTransactions,
@@ -77,17 +115,17 @@ describe('TransactionAsyncApi', () => {
     expect(result).toEqual(mockTransactions[0]);
   });
 
-  // TODO
-  it.skip('should get transaction results', async () => {
-    const response = {
-      transaction: mockTransactions[0],
-    };
-    const scope = nock(baseUrl).get(`${path}/id1`).reply(200, response);
+  it('should get transaction results', async () => {
+    const scope = nock(baseUrl)
+      .get(`${path}/id1/results`)
+      .reply(200, multipartMock, {
+        'Content-type': multopartContentType,
+      });
     const result = await api.getTransactionResults('id1');
 
     scope.done();
 
-    expect(result).toEqual(mockTransactions[0]);
+    expect(result).toEqual(transactionAsyncMock);
   });
 
   it('should get transaction metadata', async () => {

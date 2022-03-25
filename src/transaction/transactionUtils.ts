@@ -38,6 +38,8 @@ export function makeLabeledAction(
 
 export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
+  const problems = files.find(x => x.name === 'problems');
+  const metadata = files.find(x => x.name === 'metadata');
 
   if (!transaction) {
     throw new Error('transaction part not found');
@@ -63,6 +65,14 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   }
 
   result.relations = relations;
+
+  if (problems) {
+    result.problems = readJson(problems.data);
+  }
+
+  if (metadata) {
+    result.metadata = readJson(metadata.data);
+  }
 
   return result;
 }
