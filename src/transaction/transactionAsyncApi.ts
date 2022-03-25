@@ -18,6 +18,7 @@ import { Base } from '../base';
 import {
   TransactionAsync,
   TransactionAsyncCompact,
+  TransactionAsyncFile,
   TransactionAsyncPayload,
   TransactionMetadata,
 } from './types';
@@ -33,9 +34,13 @@ type DeleteResponse = {
 
 export class TransactionAsyncApi extends Base {
   async runTransactionAsync(transaction: TransactionAsyncPayload) {
-    return await this.post<TransactionAsyncCompact>(ENDPOINT, {
+    const result = await this.post<
+      TransactionAsyncCompact | TransactionAsyncFile[]
+    >(ENDPOINT, {
       body: transaction,
     });
+
+    return result;
   }
 
   async listTransactions() {
@@ -53,7 +58,7 @@ export class TransactionAsyncApi extends Base {
   }
 
   async getTransactionResults(transactionId: string) {
-    const result = await this.get<SingleReponse>(
+    const result = await this.get<TransactionAsyncFile[]>(
       `${ENDPOINT}/${transactionId}/results`,
     );
 

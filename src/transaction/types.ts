@@ -194,3 +194,10 @@ export type TransactionMetadata = {
   relationId: string;
   types: string[];
 };
+
+export type TransactionAsyncFile = {
+  name: string;
+  data: Uint8Array;
+  filename?: string;
+  contentType?: string;
+};

@@ -14,7 +14,8 @@
  * under the License.
  */
 
-import fetch from 'cross-fetch';
+import fetch from '@web-std/fetch';
+import { iterateMultipart } from '@web3-storage/multipart-parser';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
@@ -76,6 +77,8 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   if (contentType && contentType.includes('application/json')) {
     responseBody = await response.json();
+  } else if (contentType?.includes('multipart/form-data') && response.body) {
+    responseBody = await parseMultipart(response.body, contentType);
   } else {
     responseBody = await response.text();
   }
@@ -92,4 +95,24 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   }
 
   throw makeError(responseBody, responseClone.clone());
+}
+
+async function parseMultipart(
+  body: ReadableStream<Uint8Array>,
+  contentType: string,
+) {
+  const [, boundary] = contentType.split(/\s*;\s*boundary=/);
+  const parts = iterateMultipart(body, boundary);
+  const files = [];
+
+  for await (const { name, data, filename, contentType } of parts) {
+    files.push({
+      name,
+      data,
+      filename,
+      contentType,
+    });
+  }
+
+  return files;
 }
