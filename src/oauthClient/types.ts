@@ -41,6 +41,7 @@ export enum Permission {
   DELETE_DATABASE = 'delete:database',
   // transactions
   RUN_TRANSACTION = 'run:transaction',
+  LIST_TRANSACTION = 'list:transaction',
   DELETE_TRANSACTION = 'delete:transaction',
   READ_TRANSACTION = 'read:transaction',
   // credits
