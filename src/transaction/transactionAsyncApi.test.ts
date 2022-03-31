@@ -34,7 +34,7 @@ const transactionAsyncMock = {
     { relationId: '/:output/:foo', types: [':output', ':foo'] },
     { relationId: '/:output/Int64', types: [':output', 'Int64'] },
   ],
-  relations: [
+  results: [
     { relationId: '/:output/:foo', table: expect.anything() },
     { relationId: '/:output/Int64', table: expect.anything() },
   ],
@@ -125,7 +125,7 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(transactionAsyncMock);
+    expect(result).toEqual(transactionAsyncMock.results);
   });
 
   it('should get transaction metadata', async () => {

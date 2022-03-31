@@ -14,26 +14,45 @@
  * under the License.
  */
 
-import { TransactionAsyncResult } from '../index.node';
+import {
+  ArrowRelation,
+  TransactionAsyncCompact,
+  TransactionAsyncFastResult,
+} from '../index.node';
 
 export function show(data: any) {
   console.log(JSON.stringify(data, undefined, 2));
 }
 
-export function showTransactionResult(result: TransactionAsyncResult) {
+export function showTransactionResult(
+  result:
+    | TransactionAsyncFastResult
+    | TransactionAsyncCompact
+    | ArrowRelation[],
+) {
+  if (Array.isArray(result)) {
+    showArrow(result);
+
+    return;
+  }
+
   const copy = {
     ...result,
-  };
+  } as any;
 
-  delete copy.relations;
+  delete copy.results;
 
   show(copy);
 
-  if (result.relations) {
-    result.relations.forEach(relation => {
-      console.log(relation.relationId);
-      console.table(relation.table.toArray());
-      console.log();
-    });
+  if ('results' in result) {
+    showArrow(result.results);
   }
+}
+
+function showArrow(results: ArrowRelation[]) {
+  results.forEach(relation => {
+    console.log(relation.relationId);
+    console.table(relation.table.toArray());
+    console.log();
+  });
 }

@@ -19,8 +19,8 @@ import { tableFromIPC } from 'apache-arrow';
 import {
   ArrowRelation,
   LabeledAction,
+  TransactionAsyncFastResult,
   TransactionAsyncFile,
-  TransactionAsyncResult,
 } from '../transaction/types';
 
 export function makeLabeledAction(
@@ -45,36 +45,40 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     throw new Error('transaction part not found');
   }
 
+  if (!metadata) {
+    throw new Error('metadata part not found');
+  }
+
   const txn = readJson(transaction.data);
-  const result: TransactionAsyncResult = {
+  const result: TransactionAsyncFastResult = {
     id: txn.id,
     state: txn.state,
+    results: await readArrowFiles(files),
+    metadata: readJson(metadata.data),
   };
 
-  const relations: ArrowRelation[] = [];
+  if (problems) {
+    result.problems = readJson(problems.data);
+  }
+
+  return result;
+}
+
+export async function readArrowFiles(files: TransactionAsyncFile[]) {
+  const results: ArrowRelation[] = [];
 
   for (const file of files) {
     if (file.contentType === 'application/vnd.apache.arrow.stream') {
       const table = await tableFromIPC(file.data);
 
-      relations.push({
+      results.push({
         relationId: file.name,
         table,
       });
     }
   }
 
-  result.relations = relations;
-
-  if (problems) {
-    result.problems = readJson(problems.data);
-  }
-
-  if (metadata) {
-    result.metadata = readJson(metadata.data);
-  }
-
-  return result;
+  return results;
 }
 
 function readJson(data: Uint8Array) {

@@ -207,10 +207,15 @@ export type ArrowRelation = {
   table: Table;
 };
 
-export type TransactionAsyncResult = {
+export type TransactionAsyncCompact = {
   id: string;
   state: TransactionAsyncState;
-  metadata?: TransactionMetadata;
+};
+
+export type TransactionAsyncFastResult = {
+  id: string;
+  state: TransactionAsyncState;
+  metadata: TransactionMetadata;
   problems?: Problem[];
-  relations?: ArrowRelation[];
+  results: ArrowRelation[];
 };
