@@ -27,8 +27,8 @@ import {
 const ENDPOINT = 'transactions';
 
 type TransactionCompact = Pick<TransactionAsyncResult, 'id' | 'state'>;
-type ListReponse = { transactions: TransactionAsync[] };
-type SingleReponse = { transaction: TransactionAsync };
+type ListResponse = { transactions: TransactionAsync[] };
+type SingleResponse = { transaction: TransactionAsync };
 type DeleteResponse = {
   txn_id: string;
   message: string;
@@ -53,13 +53,13 @@ export class TransactionAsyncApi extends Base {
   }
 
   async listTransactions() {
-    const result = await this.get<ListReponse>(ENDPOINT);
+    const result = await this.get<ListResponse>(ENDPOINT);
 
     return result.transactions;
   }
 
   async getTransaction(transactionId: string) {
-    const result = await this.get<SingleReponse>(
+    const result = await this.get<SingleResponse>(
       `${ENDPOINT}/${transactionId}`,
     );
 
