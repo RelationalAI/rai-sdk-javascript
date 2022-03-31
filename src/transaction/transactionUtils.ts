@@ -19,8 +19,9 @@ import { tableFromIPC } from 'apache-arrow';
 import {
   ArrowRelation,
   LabeledAction,
-  TransactionAsyncFastResult,
   TransactionAsyncFile,
+  TransactionAsyncResult,
+  TransactionAsyncState,
 } from '../transaction/types';
 
 export function makeLabeledAction(
@@ -50,7 +51,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   }
 
   const txn = readJson(transaction.data);
-  const result: TransactionAsyncFastResult = {
+  const result: TransactionAsyncResult = {
     transaction: txn,
     results: await readArrowFiles(files),
     metadata: readJson(metadata.data),
@@ -84,4 +85,11 @@ function readJson(data: Uint8Array) {
   const str = new TextDecoder().decode(data);
 
   return JSON.parse(str);
+}
+
+export function isTransactionDone(state: TransactionAsyncState) {
+  return (
+    state === TransactionAsyncState.ABORTED ||
+    state === TransactionAsyncState.COMPLETED
+  );
 }

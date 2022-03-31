@@ -17,7 +17,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
-import { TransactionAsyncPayload } from '../transaction/types';
+import { isTransactionDone } from '../transaction/transactionUtils';
+import {
+  TransactionAsyncCompact,
+  TransactionAsyncPayload,
+  TransactionAsyncResult,
+} from '../transaction/types';
 import { makeQueryInput } from './queryUtils';
 import { QueryInput } from './types';
 
@@ -42,5 +47,66 @@ export class QueryAsyncApi extends TransactionAsyncApi {
     }
 
     return await this.runTransactionAsync(transaction);
+  }
+
+  async queryPoll(
+    database: string,
+    engine: string,
+    queryString: string,
+    inputs: QueryInput[] = [],
+    readonly = true,
+    interval = 3 * 1000, // 3 seconds
+    timeout = 120 * 1000, // 2 mins
+  ) {
+    const result = await this.queryAsync(
+      database,
+      engine,
+      queryString,
+      inputs,
+      readonly,
+    );
+    const txnId = result.transaction.id;
+    const startedAt = Date.now();
+
+    if ('results' in result) {
+      return result;
+    }
+
+    let transaction: TransactionAsyncCompact;
+
+    await new Promise<void>((resolve, reject) => {
+      const checkState = () => {
+        setTimeout(async () => {
+          transaction = await this.getTransaction(txnId);
+
+          if (isTransactionDone(transaction.state)) {
+            resolve();
+          } else {
+            if (Date.now() - startedAt > timeout) {
+              reject(
+                new Error(
+                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
+                ),
+              );
+            }
+
+            checkState();
+          }
+        }, interval);
+      };
+
+      checkState();
+    });
+
+    const metadata = await this.getTransactionMetadata(txnId);
+    const results = await this.getTransactionResults(txnId);
+
+    const res: TransactionAsyncResult = {
+      transaction: transaction!,
+      metadata,
+      results,
+    };
+
+    return res;
   }
 }

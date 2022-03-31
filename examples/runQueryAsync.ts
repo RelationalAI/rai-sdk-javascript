@@ -24,17 +24,14 @@ async function run(
   engine: string,
   queryString: string,
   readonly: boolean,
+  poll: boolean,
   profile?: string,
 ) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.queryAsync(
-    database,
-    engine,
-    queryString,
-    [],
-    readonly,
-  );
+  const result = poll
+    ? await client.queryPoll(database, engine, queryString, [], readonly)
+    : await client.queryAsync(database, engine, queryString, [], readonly);
 
   showTransactionResult(result);
 }
@@ -47,6 +44,7 @@ async function run(
     .requiredOption('-e, --engine <type>', 'engine name')
     .requiredOption('-c, --command <type>', 'rel source string')
     .option('-r, --readonly', 'readonly', false)
+    .option('--poll', 'poll results', false)
     .option('-p, --profile <type>', 'profile', 'default')
     .parse(process.argv)
     .opts();
@@ -57,6 +55,7 @@ async function run(
       options.engine,
       options.command,
       options.readonly,
+      options.poll,
       options.profile,
     );
   } catch (error: any) {

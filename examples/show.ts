@@ -17,7 +17,7 @@
 import {
   ArrowRelation,
   TransactionAsyncCompact,
-  TransactionAsyncFastResult,
+  TransactionAsyncResult,
 } from '../index.node';
 
 export function show(data: any) {
@@ -26,8 +26,8 @@ export function show(data: any) {
 
 export function showTransactionResult(
   result:
-    | TransactionAsyncFastResult
-    | TransactionAsyncCompact
+    | TransactionAsyncResult
+    | { transaction: TransactionAsyncCompact }
     | ArrowRelation[],
 ) {
   if (Array.isArray(result)) {

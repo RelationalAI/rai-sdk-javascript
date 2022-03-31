@@ -212,9 +212,9 @@ export type ArrowRelation = {
   table: Table;
 };
 
-export type TransactionAsyncFastResult = {
-  transaction: TransactionAsyncCompact;
-  metadata: TransactionMetadata;
+export type TransactionAsyncResult = {
+  transaction: TransactionAsyncCompact | TransactionAsync;
+  metadata: TransactionMetadata[];
   problems?: Problem[];
   results: ArrowRelation[];
 };
