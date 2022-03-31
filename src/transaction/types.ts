@@ -190,6 +190,11 @@ export type TransactionAsync = {
   last_requested_interval: string;
 };
 
+export type TransactionAsyncCompact = {
+  id: string;
+  state: TransactionAsyncState;
+};
+
 export type TransactionMetadata = {
   relationId: string;
   types: string[];
@@ -207,14 +212,8 @@ export type ArrowRelation = {
   table: Table;
 };
 
-export type TransactionAsyncCompact = {
-  id: string;
-  state: TransactionAsyncState;
-};
-
 export type TransactionAsyncFastResult = {
-  id: string;
-  state: TransactionAsyncState;
+  transaction: TransactionAsyncCompact;
   metadata: TransactionMetadata;
   problems?: Problem[];
   results: ArrowRelation[];

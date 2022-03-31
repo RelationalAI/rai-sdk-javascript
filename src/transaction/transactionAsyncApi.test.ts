@@ -27,8 +27,11 @@ const multipartMock = readFileSync(__dirname + '/multipartMock');
 const multopartContentType =
   'multipart/form-data; boundary=865f68321ad9001da3f3b61785a72b25';
 const transactionAsyncMock = {
-  id: '2b23ad8b-f94d-4194-aab0-5ac2aa82d067',
-  state: 'COMPLETED',
+  transaction: {
+    id: '2b23ad8b-f94d-4194-aab0-5ac2aa82d067',
+    state: 'COMPLETED',
+    results_format_version: '2.0.1',
+  },
   problems: [],
   metadata: [
     { relationId: '/:output/:foo', types: [':output', ':foo'] },
@@ -68,7 +71,7 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockTransactions[0]);
+    expect(result).toEqual({ transaction: mockTransactions[0] });
   });
 
   it('should run async transaction and parse results', async () => {

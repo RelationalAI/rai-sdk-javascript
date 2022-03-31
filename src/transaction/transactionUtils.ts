@@ -51,8 +51,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
 
   const txn = readJson(transaction.data);
   const result: TransactionAsyncFastResult = {
-    id: txn.id,
-    state: txn.state,
+    transaction: txn,
     results: await readArrowFiles(files),
     metadata: readJson(metadata.data),
   };

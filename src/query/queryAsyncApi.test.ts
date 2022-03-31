@@ -24,7 +24,9 @@ const path = '/transactions';
 
 describe('QueryAsyncApi', () => {
   const api = new QueryAsyncApi(getMockConfig());
-  const mockTransaction = { id: 'id1', state: TransactionAsyncState.COMPLETED };
+  const mockTransaction = {
+    transaction: { id: 'id1', state: TransactionAsyncState.COMPLETED },
+  };
   const database = 'test-db';
   const engine = 'test-engine';
 
@@ -33,7 +35,7 @@ describe('QueryAsyncApi', () => {
 
   it('should query async', async () => {
     const query = '1 + 2 ';
-    const response = mockTransaction;
+    const response = mockTransaction.transaction;
     const scope = nock(baseUrl)
       .post(path, {
         dbname: database,

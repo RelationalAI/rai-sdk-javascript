@@ -19,7 +19,6 @@ import { readArrowFiles, readTransactionResult } from './transactionUtils';
 import {
   TransactionAsync,
   TransactionAsyncCompact,
-  TransactionAsyncFastResult,
   TransactionAsyncFile,
   TransactionAsyncPayload,
   TransactionMetadata,
@@ -35,9 +34,7 @@ type DeleteResponse = {
 };
 
 export class TransactionAsyncApi extends Base {
-  async runTransactionAsync(
-    transaction: TransactionAsyncPayload,
-  ): Promise<TransactionAsyncCompact | TransactionAsyncFastResult> {
+  async runTransactionAsync(transaction: TransactionAsyncPayload) {
     const result = await this.post<
       TransactionAsyncCompact | TransactionAsyncFile[]
     >(ENDPOINT, {
@@ -48,7 +45,9 @@ export class TransactionAsyncApi extends Base {
       return await readTransactionResult(result);
     }
 
-    return result;
+    return {
+      transaction: result,
+    };
   }
 
   async listTransactions() {
