@@ -148,6 +148,23 @@ describe('TransactionAsyncApi', () => {
     expect(result).toEqual(response);
   });
 
+  it('should get transaction problems', async () => {
+    const response = [
+      {
+        type: 'IntegrityConstraintViolation',
+        sources: [],
+      },
+    ];
+    const scope = nock(baseUrl)
+      .get(`${path}/id1/problems`)
+      .reply(200, response);
+    const result = await api.getTransactionProblems('id1');
+
+    scope.done();
+
+    expect(result).toEqual(response);
+  });
+
   it('should delete transaction', async () => {
     const response = { txn_id: 'id1', message: 'deleted' };
     const scope = nock(baseUrl).delete(`${path}/id1`).reply(200, response);

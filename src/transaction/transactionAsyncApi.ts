@@ -17,6 +17,7 @@
 import { Base } from '../base';
 import { readArrowFiles, readTransactionResult } from './transactionUtils';
 import {
+  Problem,
   TransactionAsync,
   TransactionAsyncCompact,
   TransactionAsyncFile,
@@ -75,6 +76,14 @@ export class TransactionAsyncApi extends Base {
   async getTransactionMetadata(transactionId: string) {
     const result = await this.get<TransactionMetadata[]>(
       `${ENDPOINT}/${transactionId}/metadata`,
+    );
+
+    return result;
+  }
+
+  async getTransactionProblems(transactionId: string) {
+    const result = await this.get<Problem[]>(
+      `${ENDPOINT}/${transactionId}/problems`,
     );
 
     return result;

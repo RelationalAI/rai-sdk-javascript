@@ -98,13 +98,17 @@ export class QueryAsyncApi extends TransactionAsyncApi {
       checkState();
     });
 
-    const metadata = await this.getTransactionMetadata(txnId);
-    const results = await this.getTransactionResults(txnId);
+    const data = await Promise.all([
+      this.getTransactionMetadata(txnId),
+      this.getTransactionProblems(txnId),
+      this.getTransactionResults(txnId),
+    ]);
 
     const res: TransactionAsyncResult = {
       transaction: transaction!,
-      metadata,
-      results,
+      metadata: data[0],
+      problems: data[1],
+      results: data[2],
     };
 
     return res;
