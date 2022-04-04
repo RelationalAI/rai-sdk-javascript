@@ -18,12 +18,12 @@ import nock from 'nock';
 
 import { baseUrl, getMockConfig } from '../testUtils';
 import { TransactionAsyncState } from '../transaction/types';
-import { QueryAsyncApi } from './queryAsyncApi';
+import { ExecAsyncApi } from './execAsyncApi';
 
 const path = '/transactions';
 
 describe('QueryAsyncApi', () => {
-  const api = new QueryAsyncApi(getMockConfig());
+  const api = new ExecAsyncApi(getMockConfig());
   const mockTransaction = {
     transaction: { id: 'id1', state: TransactionAsyncState.COMPLETED },
   };
@@ -33,7 +33,7 @@ describe('QueryAsyncApi', () => {
   afterEach(() => nock.cleanAll());
   afterAll(() => nock.restore());
 
-  it('should query async', async () => {
+  it('should exec query async', async () => {
     const query = '1 + 2 ';
     const response = mockTransaction.transaction;
     const scope = nock(baseUrl)
@@ -46,7 +46,7 @@ describe('QueryAsyncApi', () => {
         inputs: [],
       })
       .reply(200, response);
-    const result = await api.queryAsync(database, engine, query, [], true);
+    const result = await api.execAsync(database, engine, query, [], true);
 
     scope.done();
 

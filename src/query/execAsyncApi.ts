@@ -26,8 +26,8 @@ import {
 import { makeQueryInput } from './queryUtils';
 import { QueryInput } from './types';
 
-export class QueryAsyncApi extends TransactionAsyncApi {
-  async queryAsync(
+export class ExecAsyncApi extends TransactionAsyncApi {
+  async execAsync(
     database: string,
     engine: string,
     queryString: string,
@@ -49,7 +49,7 @@ export class QueryAsyncApi extends TransactionAsyncApi {
     return await this.runTransactionAsync(transaction);
   }
 
-  async queryPoll(
+  async exec(
     database: string,
     engine: string,
     queryString: string,
@@ -58,7 +58,7 @@ export class QueryAsyncApi extends TransactionAsyncApi {
     interval = 3 * 1000, // 3 seconds
     timeout = 120 * 1000, // 2 mins
   ) {
-    const result = await this.queryAsync(
+    const result = await this.execAsync(
       database,
       engine,
       queryString,

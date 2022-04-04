@@ -20,8 +20,8 @@ import { EdbApi } from './edb/edbApi';
 import { EngineApi } from './engine/engineApi';
 import { ModelApi } from './model/modelApi';
 import { OAuthClientApi } from './oauthClient/oauthClientApi';
+import { ExecAsyncApi } from './query/execAsyncApi';
 import { QueryApi } from './query/queryApi';
-import { QueryAsyncApi } from './query/queryAsyncApi';
 import { TransactionApi } from './transaction/transactionApi';
 import { TransactionAsyncApi } from './transaction/transactionAsyncApi';
 import { UserApi } from './user/userApi';
@@ -36,8 +36,8 @@ interface Client
     EngineApi,
     ModelApi,
     OAuthClientApi,
+    ExecAsyncApi,
     QueryApi,
-    QueryAsyncApi,
     TransactionApi,
     TransactionAsyncApi,
     UserApi {}
@@ -48,8 +48,8 @@ applyMixins(Client, [
   EngineApi,
   ModelApi,
   OAuthClientApi,
+  ExecAsyncApi,
   QueryApi,
-  QueryAsyncApi,
   TransactionApi,
   TransactionAsyncApi,
   UserApi,

@@ -30,8 +30,8 @@ async function run(
   const config = await readConfig(profile);
   const client = new Client(config);
   const result = poll
-    ? await client.queryPoll(database, engine, queryString, [], readonly)
-    : await client.queryAsync(database, engine, queryString, [], readonly);
+    ? await client.exec(database, engine, queryString, [], readonly)
+    : await client.execAsync(database, engine, queryString, [], readonly);
 
   showTransactionResult(result);
 }
