@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 
 import { Client, readConfig, UserRole, UserStatus } from '../index.node';
+import { show } from './show';
 
 async function run(
   userId: string,
@@ -32,7 +33,7 @@ async function run(
     role ? [role] : undefined,
   );
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

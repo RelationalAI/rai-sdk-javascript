@@ -17,18 +17,26 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(
   database: string,
   engine: string,
   queryString: string,
+  readonly: boolean,
   profile?: string,
 ) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.query(database, engine, queryString);
+  const result = await client.query(
+    database,
+    engine,
+    queryString,
+    [],
+    readonly,
+  );
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {
@@ -38,6 +46,7 @@ async function run(
     .requiredOption('-d, --database <type>', 'database name')
     .requiredOption('-e, --engine <type>', 'engine name')
     .requiredOption('-c, --command <type>', 'rel source string')
+    .option('-r, --readonly', 'readonly', false)
     .option('-p, --profile <type>', 'profile', 'default')
     .parse(process.argv)
     .opts();
@@ -47,6 +56,7 @@ async function run(
       options.database,
       options.engine,
       options.command,
+      options.readonly,
       options.profile,
     );
   } catch (error: any) {

@@ -16,29 +16,48 @@
 
 import { Command } from 'commander';
 
-import { Client, readConfig, UserRole } from '../index.node';
-import { show } from './show';
+import { Client, readConfig } from '../index.node';
+import { showTransactionResult } from './show';
 
-async function run(email: string, role: UserRole, profile?: string) {
+async function run(
+  database: string,
+  engine: string,
+  queryString: string,
+  readonly: boolean,
+  poll: boolean,
+  profile?: string,
+) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.createUser(email, [role]);
+  const result = poll
+    ? await client.exec(database, engine, queryString, [], readonly)
+    : await client.execAsync(database, engine, queryString, [], readonly);
 
-  show(result);
+  showTransactionResult(result);
 }
 
 (async () => {
   const program = new Command();
 
   const options = program
-    .requiredOption('-e, --email <type>', 'user email')
-    .option('-r, --role <type>', 'user role', UserRole.USER)
+    .requiredOption('-d, --database <type>', 'database name')
+    .requiredOption('-e, --engine <type>', 'engine name')
+    .requiredOption('-c, --command <type>', 'rel source string')
+    .option('-r, --readonly', 'readonly', false)
+    .option('--poll', 'poll results', false)
     .option('-p, --profile <type>', 'profile', 'default')
     .parse(process.argv)
     .opts();
 
   try {
-    await run(options.email, options.role, options.profile);
+    await run(
+      options.database,
+      options.engine,
+      options.command,
+      options.readonly,
+      options.poll,
+      options.profile,
+    );
   } catch (error: any) {
     console.error(error.toString());
   }

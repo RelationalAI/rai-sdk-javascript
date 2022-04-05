@@ -14,6 +14,8 @@
  * under the License.
  */
 
+import { Table } from 'apache-arrow';
+
 export type RelValue = string | number | boolean | null | number[];
 
 export type RelKey = {
@@ -160,4 +162,59 @@ export type TransactionResult = {
   output: Relation[];
   problems: Problem[];
   actions: LabeledActionResult[];
+};
+
+export enum TransactionAsyncState {
+  CREATED = 'CREATED',
+  ABORTED = 'ABORTED',
+  COMPLETED = 'COMPLETED',
+}
+
+export type TransactionAsyncPayload = {
+  dbname: string;
+  nowait_durable: boolean;
+  readonly: boolean;
+  engine_name?: string;
+  query: string;
+  inputs: Relation[];
+};
+
+export type TransactionAsync = {
+  id: string;
+  account_name: string;
+  state: TransactionAsyncState;
+  created_by: string;
+  created_on: string;
+  database_name: string;
+  read_only: boolean;
+  last_requested_interval: string;
+};
+
+export type TransactionAsyncCompact = {
+  id: string;
+  state: TransactionAsyncState;
+};
+
+export type TransactionMetadata = {
+  relationId: string;
+  types: string[];
+};
+
+export type TransactionAsyncFile = {
+  name: string;
+  data: Uint8Array;
+  filename?: string;
+  contentType?: string;
+};
+
+export type ArrowRelation = {
+  relationId: string;
+  table: Table;
+};
+
+export type TransactionAsyncResult = {
+  transaction: TransactionAsyncCompact | TransactionAsync;
+  metadata: TransactionMetadata[];
+  problems?: Problem[];
+  results: ArrowRelation[];
 };

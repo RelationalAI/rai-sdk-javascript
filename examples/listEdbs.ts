@@ -17,13 +17,14 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(database: string, engine: string, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
   const result = await client.listEdbs(database, engine);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(
   database: string,
@@ -28,7 +29,7 @@ async function run(
   const client = new Client(config);
   const result = await client.deleteEdb(database, engine, name);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

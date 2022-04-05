@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 
 import { Client, Permission, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(name: string, permissions: Permission[], profile?: string) {
   const config = await readConfig(profile);
@@ -26,7 +27,7 @@ async function run(name: string, permissions: Permission[], profile?: string) {
     permissions.length > 0 ? permissions : undefined,
   );
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

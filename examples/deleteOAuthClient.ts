@@ -17,13 +17,14 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(clientId: string, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
   const result = await client.deleteOAuthClient(clientId);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

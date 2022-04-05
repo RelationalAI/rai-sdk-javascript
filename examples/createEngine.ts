@@ -17,13 +17,14 @@
 import { Command } from 'commander';
 
 import { Client, EngineSize, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(name: string, size: EngineSize, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
   const result = await client.createEngine(name, size);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

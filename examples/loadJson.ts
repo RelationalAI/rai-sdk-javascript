@@ -19,6 +19,7 @@ import { promises } from 'fs';
 import path from 'path';
 
 import { Client, readConfig } from '../index.node';
+import { show } from './show';
 
 async function run(
   database: string,
@@ -35,7 +36,7 @@ async function run(
   const client = new Client(config);
   const result = await client.loadJson(database, engine, relation, json);
 
-  console.log(JSON.stringify(result, undefined, 2));
+  show(result);
 }
 
 (async () => {

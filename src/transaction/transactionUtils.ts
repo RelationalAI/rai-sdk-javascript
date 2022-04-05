@@ -14,7 +14,15 @@
  * under the License.
  */
 
-import { LabeledAction } from '../transaction/types';
+import { tableFromIPC } from 'apache-arrow';
+
+import {
+  ArrowRelation,
+  LabeledAction,
+  TransactionAsyncFile,
+  TransactionAsyncResult,
+  TransactionAsyncState,
+} from '../transaction/types';
 
 export function makeLabeledAction(
   name: string,
@@ -27,4 +35,61 @@ export function makeLabeledAction(
   };
 
   return labeledAction;
+}
+
+export async function readTransactionResult(files: TransactionAsyncFile[]) {
+  const transaction = files.find(x => x.name === 'transaction');
+  const problems = files.find(x => x.name === 'problems');
+  const metadata = files.find(x => x.name === 'metadata');
+
+  if (!transaction) {
+    throw new Error('transaction part not found');
+  }
+
+  if (!metadata) {
+    throw new Error('metadata part not found');
+  }
+
+  const txn = readJson(transaction.data);
+  const result: TransactionAsyncResult = {
+    transaction: txn,
+    results: await readArrowFiles(files),
+    metadata: readJson(metadata.data),
+  };
+
+  if (problems) {
+    result.problems = readJson(problems.data);
+  }
+
+  return result;
+}
+
+export async function readArrowFiles(files: TransactionAsyncFile[]) {
+  const results: ArrowRelation[] = [];
+
+  for (const file of files) {
+    if (file.contentType === 'application/vnd.apache.arrow.stream') {
+      const table = await tableFromIPC(file.data);
+
+      results.push({
+        relationId: file.name,
+        table,
+      });
+    }
+  }
+
+  return results;
+}
+
+function readJson(data: Uint8Array) {
+  const str = new TextDecoder().decode(data);
+
+  return JSON.parse(str);
+}
+
+export function isTransactionDone(state: TransactionAsyncState) {
+  return (
+    state === TransactionAsyncState.ABORTED ||
+    state === TransactionAsyncState.COMPLETED
+  );
 }
