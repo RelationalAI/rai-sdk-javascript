@@ -22,7 +22,7 @@ export type { SdkError } from './src/errors';
 export { ApiError, TransactionError } from './src/errors';
 export * from './src/oauthClient/types';
 export * from './src/query/types';
-export * from './src/toJson';
+export * from './src/relationUtils';
 export * from './src/transaction/types';
 export { VERSION } from './src/types';
 export * from './src/user/types';

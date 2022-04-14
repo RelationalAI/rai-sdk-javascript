@@ -14,9 +14,76 @@
  * under the License.
  */
 
+import { Table, tableFromArrays } from 'apache-arrow';
 import { set } from 'lodash-es';
 
-import { Relation } from './transaction/types';
+import { ArrowRelation, Relation } from './transaction/types';
+
+type Primitive = string | boolean | number | null;
+
+export type PlainRelation = {
+  relationId: string;
+  columns: Primitive[][];
+};
+
+export function getKeys(relPath: string) {
+  return relPath.split('/').filter(k => k);
+}
+
+export function arrowTableToJsonRows(table: Table) {
+  return table.toArray().map(arr => (arr ? arr.toJSON() : []));
+}
+
+export function arrowTableToArrayRows(table: Table) {
+  return table.toArray().map(arr => (arr ? arr.toArray() : []));
+}
+
+export function plainToArrow(plainRelations: PlainRelation[]) {
+  return plainRelations.map(plainRelation => {
+    const { relationId, columns } = plainRelation;
+    const plainTable: { [c: string]: Primitive[] } = {};
+
+    columns.forEach((col, index) => {
+      plainTable[`v${index + 1}`] = col;
+    });
+
+    const relation: ArrowRelation = {
+      relationId,
+      table: tableFromArrays(plainTable),
+    };
+
+    return relation;
+  });
+}
+
+export function arrowToPlain(arrowRelations: ArrowRelation[]) {
+  return arrowRelations.map(r => {
+    const plainRelation: PlainRelation = {
+      relationId: r.relationId,
+      columns: [],
+    };
+
+    for (let i = 0; i < r.table.numCols; i++) {
+      const col = r.table.getChildAt(i);
+
+      plainRelation.columns.push(col?.toJSON() || []);
+    }
+
+    return plainRelation;
+  });
+}
+
+function v1ToPlain(v1Relations: Relation[]) {
+  return v1Relations.map(r => {
+    const keys = [...r.rel_key.keys, ...r.rel_key.values];
+    const plainRelation: PlainRelation = {
+      relationId: `/${keys.join('/')}`,
+      columns: r.columns as Primitive[][],
+    };
+
+    return plainRelation;
+  });
+}
 
 const SYMBOL_PREFIX = ':';
 const ARRAY_MARKER = '[]';
@@ -56,18 +123,35 @@ const EMPTY_ARRAY_MARKER = 'Missing';
 //   }
 // }
 
-export function toJson(output: Relation[]) {
-  output = output.filter(
-    relation => relation.rel_key.keys.length || relation.rel_key.values.length,
-  );
-
-  // scalar value shortcut
-  if (output.length === 1 && output[0].rel_key.keys[0][0] !== SYMBOL_PREFIX) {
-    return output[0].columns[0][0];
+export function toJson(output: Relation[] | ArrowRelation[]) {
+  if (!output.length) {
+    return {};
   }
 
-  const rootArrayNumber = output.reduce((memo, relation) => {
-    if (relation.rel_key.keys[0] === ARRAY_SYMBOL) {
+  let relations: PlainRelation[] = [];
+
+  if ('rel_key' in output[0] && 'table' in output[0]) {
+    relations = v1ToPlain(output as Relation[]);
+  } else if ('relationId' in output[0] && 'table' in output[0]) {
+    relations = arrowToPlain(output as ArrowRelation[]);
+  } else {
+    throw new Error('Unknown relation format');
+  }
+
+  relations = relations.filter(r => getKeys(r.relationId).length);
+
+  // scalar value shortcut
+  if (
+    relations.length === 1 &&
+    getKeys(relations[0].relationId)[0][0] !== SYMBOL_PREFIX
+  ) {
+    return relations[0].columns[0][0];
+  }
+
+  const rootArrayNumber = relations.reduce((memo, relation) => {
+    const keys = getKeys(relation.relationId);
+
+    if (keys[0] === ARRAY_SYMBOL) {
       return memo + 1;
     }
 
@@ -80,8 +164,8 @@ export function toJson(output: Relation[]) {
 
   const result = rootArrayNumber === 0 ? {} : [];
 
-  output.forEach(relation => {
-    const keys = [...relation.rel_key.keys, ...relation.rel_key.values];
+  relations.forEach(relation => {
+    const keys = getKeys(relation.relationId);
 
     if (keys.length === 0) {
       return;
