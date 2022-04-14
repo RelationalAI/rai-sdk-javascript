@@ -123,7 +123,7 @@ const EMPTY_ARRAY_MARKER = 'Missing';
 //   }
 // }
 
-export function toJson(output: Relation[] | ArrowRelation[]) {
+export function toJson(output: Relation[] | ArrowRelation[]): any {
   if (!output.length) {
     return {};
   }
