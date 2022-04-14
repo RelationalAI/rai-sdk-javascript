@@ -130,7 +130,7 @@ export function toJson(output: Relation[] | ArrowRelation[]) {
 
   let relations: PlainRelation[] = [];
 
-  if ('rel_key' in output[0] && 'table' in output[0]) {
+  if ('rel_key' in output[0] && 'columns' in output[0]) {
     relations = v1ToPlain(output as Relation[]);
   } else if ('relationId' in output[0] && 'table' in output[0]) {
     relations = arrowToPlain(output as ArrowRelation[]);

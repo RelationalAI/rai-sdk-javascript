@@ -24,7 +24,7 @@ import {
   plainToArrow,
   toJson,
 } from './relationUtils';
-import { ArrowRelation, Relation } from './transaction/types';
+import { ArrowRelation } from './transaction/types';
 
 describe('relationUtils', () => {
   it('should get keys from relation id', () => {
@@ -111,264 +111,83 @@ describe('relationUtils', () => {
   describe('toJson', () => {
     const jsonScalar = 1;
 
-    const scalarOutput: Relation[] = [
+    const scalarOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/Int64',
         columns: [[jsonScalar]],
       },
-    ];
+    ]);
 
     const jsonArray = [1, 2, 3];
 
-    const arrayOutput: Relation[] = [
+    const arrayOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/Int64',
         columns: [[1, 2, 3], jsonArray],
       },
-    ];
+    ]);
 
-    const arrayErrorOutput: Relation[] = [
+    const arrayErrorOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/Int64',
         columns: [[1, 2, 3], jsonArray],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:foo/Int64',
         columns: [[1]],
       },
-    ];
+    ]);
 
-    const emptyArrayOutput: Relation[] = [
-      {
-        rel_key: {
-          values: [],
-          name: 'output',
-          keys: [':[]', 'Missing'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
-        columns: [[null]],
-      },
-    ];
+    const emptyArrayOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:[]/Missing', columns: [[null]] },
+    ]);
 
-    const simpleOutput: Relation[] = [
-      {
-        rel_key: {
-          values: [],
-          name: 'foo',
-          keys: [],
-          type: 'RelKey',
-        },
-        type: 'Relation',
-        columns: [],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':name', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Anton']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':age', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[56]],
-      },
-    ];
+    const simpleOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/', columns: [] },
+      { relationId: '/:name/String', columns: [['Anton']] },
+      { relationId: '/:age/Int64', columns: [[56]] },
+    ]);
 
-    const nestedOutput: Relation[] = [
+    const nestedOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':citizenship', ':countryName', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:citizenship/:countryName/String',
+        columns: [['Switzerland']],
+      },
+      { relationId: '/:citizenship/:countryCode/String', columns: [['CH']] },
+      { relationId: '/:name/String', columns: [['Anton']] },
+      { relationId: '/:age/Int64', columns: [[56]] },
+    ]);
+
+    const leafArrayOutput: ArrowRelation[] = plainToArrow([
+      {
+        relationId: '/:citizenship/:countryName/String',
         columns: [['Switzerland']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':citizenship', ':countryCode', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['CH']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':name', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Anton']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':age', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[56]],
-      },
-    ];
-
-    const leafArrayOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':citizenship', ':countryName', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Switzerland']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':citizenship', ':currencies', ':[]', 'Int64', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:citizenship/:currencies/:[]/Int64/String',
         columns: [
           [1, 2],
           ['CHF', 'Swiss Frank'],
         ],
       },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':citizenship', ':countryCode', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['CH']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':name', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Anton']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':age', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[56]],
-      },
-    ];
+      { relationId: '/:citizenship/:countryCode/String', columns: [['CH']] },
+      { relationId: '/:name/String', columns: [['Anton']] },
+      { relationId: '/:age/Int64', columns: [[56]] },
+    ]);
 
-    const rootArrayOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':a', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[1], [1]],
-      },
-    ];
+    const rootArrayOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:[]/Int64/:a/Int64', columns: [[1], [1]] },
+    ]);
 
-    const onlyArrayOutput: Relation[] = [
+    const onlyArrayOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:[]/Int64/:[]/Int64/Int64', columns: [[1], [2], [3]] },
+      { relationId: '/:[]/Int64/Int64', columns: [[2], [4]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[1], [2], [3]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[2], [4]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':[]', 'Int64', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/:[]/Int64/:[]/Int64/Int64',
         columns: [[1], [1], [2], [2]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            'Int64',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/:[]/Int64/:[]/Int64/:[]/Int64/Int64',
         columns: [
           [1, 1, 1, 1, 1, 1],
           [1, 1, 1, 1, 1, 1],
@@ -377,27 +196,12 @@ describe('relationUtils', () => {
           [1, 2, 3, 4, 5, 6],
         ],
       },
-    ];
+    ]);
 
-    const mixedArraysOutput: Relation[] = [
+    const mixedArraysOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:[]/Int64/:[]/Int64/Int64', columns: [[1], [2], [3]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[1], [2], [3]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':[]', 'Int64', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/:[]/Int64/:[]/Int64/Int64',
         columns: [
           [1, 1, 1],
           [1, 1, 1],
@@ -405,133 +209,39 @@ describe('relationUtils', () => {
           [2, 4, 5],
         ],
       },
+      { relationId: '/:[]/Int64/:b/Int64', columns: [[2], [2]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':b', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[2], [2]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':[]', 'Int64', ':[]', 'Int64', ':a', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/:[]/Int64/:[]/Int64/:a/Int64',
         columns: [[1], [1], [5], [1]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            'Int64',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:[]/Int64/:[]/Int64/:[]/Int64/:[]/Int64/Int64',
         columns: [[1], [1], [1], [1], [1]],
       },
-    ];
+    ]);
 
-    const nestedArrayOutput: Relation[] = [
+    const nestedArrayOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':vals', ':[]', 'Int64', ':b', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:vals/:[]/Int64/:b/Int64',
         columns: [
           [1, 2],
           [2, 2],
         ],
       },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':name', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Anton']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':vals', ':[]', 'Int64', ':a', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[1], [1]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':age', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[56]],
-      },
-    ];
+      { relationId: '/:name/String', columns: [['Anton']] },
+      { relationId: '/:vals/:[]/Int64/:a/Int64', columns: [[1], [1]] },
+      { relationId: '/:age/Int64', columns: [[56]] },
+    ]);
 
-    const doublyNestedArrayOutput: Relation[] = [
+    const doublyNestedArrayOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:age/Int64', columns: [[56]] },
+      { relationId: '/:name/String', columns: [['Anton']] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':age', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[56]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':name', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Anton']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':vals', ':[]', 'Int64', ':b', ':[]', 'Int64', ':q', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:vals/:[]/Int64/:b/:[]/Int64/:q/Int64',
         columns: [[1], [2], [3]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':vals', ':[]', 'Int64', ':b', ':[]', 'Int64', ':p', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:vals/:[]/Int64/:b/:[]/Int64/:p/Int64',
         columns: [
           [1, 1, 2],
           [1, 2, 1],
@@ -539,65 +249,32 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':vals', ':[]', 'Int64', ':a', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:vals/:[]/Int64/:a/Int64',
         columns: [
           [1, 2],
           [1, 2],
         ],
       },
-    ];
+    ]);
 
-    const cakeOutput: Relation[] = [
+    const cakeOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':batters', ':batter', ':[]', 'Int64', ':type', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:batters/:batter/:[]/Int64/:type/String',
         columns: [
           [1, 2, 3, 4],
           ['Regular', 'Chocolate', 'Blueberry', "Devil's Food"],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':topping', ':[]', 'Int64', ':id', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:topping/:[]/Int64/:id/String',
         columns: [
           [1, 2, 3, 4, 5, 6, 7],
           ['5001', '5002', '5005', '5007', '5006', '5003', '5004'],
         ],
       },
+      { relationId: '/:ppu/Float64', columns: [[0.55]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':ppu', 'Float64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[0.55]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':topping', ':[]', 'Int64', ':type', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:topping/:[]/Int64/:type/String',
         columns: [
           [1, 2, 3, 4, 5, 6, 7],
           [
@@ -611,70 +288,22 @@ describe('relationUtils', () => {
           ],
         ],
       },
+      { relationId: '/:name/String', columns: [['Cake']] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':name', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['Cake']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':batters', ':batter', ':[]', 'Int64', ':id', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:batters/:batter/:[]/Int64/:id/String',
         columns: [
           [1, 2, 3, 4],
           ['1001', '1002', '1003', '1004'],
         ],
       },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':id', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['0001']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':type', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['donut']],
-      },
-    ];
+      { relationId: '/:id/String', columns: [['0001']] },
+      { relationId: '/:type/String', columns: [['donut']] },
+    ]);
 
-    const funkyOutput: Relation[] = [
+    const funkyOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:y/:[]/Int64/:[]/Int64/Int64', columns: [[1], [2], [3]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':y', ':[]', 'Int64', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[1], [2], [3]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':y', ':[]', 'Int64', ':[]', 'Int64', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:y/:[]/Int64/:[]/Int64/:[]/Int64/Int64',
         columns: [
           [1, 1, 1],
           [1, 1, 1],
@@ -683,117 +312,27 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':y',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':q',
-            ':p',
-            ':[]',
-            'Int64',
-            ':o',
-            'Int64',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId:
+          '/:y/:[]/Int64/:[]/Int64/:[]/Int64/:[]/Int64/:q/:p/:[]/Int64/:o/Int64',
         columns: [[1], [1], [1], [1], [3], [4]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':q', ':[]', 'Int64', 'Float64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:q/:[]/Int64/Float64',
         columns: [
           [1, 2, 3, 4],
           [2.1, 1, 2, 3],
         ],
       },
+      { relationId: '/:y/:[]/Int64/Int64', columns: [[3], [4]] },
+      { relationId: '/:y/:[]/Int64/:b/Int64', columns: [[2], [2]] },
+      { relationId: '/:p/String', columns: [['hello']] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':y', ':[]', 'Int64', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[3], [4]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':y', ':[]', 'Int64', ':b', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [[2], [2]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':p', 'String'],
-          values: [],
-        },
-        type: 'Relation',
-        columns: [['hello']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':y',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':a',
-            'Int64',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:y/:[]/Int64/:[]/Int64/:[]/Int64/:a/Int64',
         columns: [[1], [1], [5], [1]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':y',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':[]',
-            'Int64',
-            ':q',
-            ':p',
-            ':[]',
-            'Int64',
-            'Int64',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId:
+          '/:y/:[]/Int64/:[]/Int64/:[]/Int64/:[]/Int64/:q/:p/:[]/Int64/Int64',
         columns: [
           [1, 1],
           [1, 1],
@@ -803,242 +342,89 @@ describe('relationUtils', () => {
           [1, 2],
         ],
       },
-    ];
+    ]);
 
-    const noKeyArrayOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':a', ':[]', 'Int64', ':b'],
-          values: ['String'],
-        },
-        type: 'Relation',
-        columns: [['a', 'b', 'c']],
-      },
-    ];
+    const noKeyArrayOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:a/:[]/Int64/:b/String', columns: [['a', 'b', 'c']] },
+    ]);
 
-    const nonComparableOutput: Relation[] = [
+    const nonComparableOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':a', ':[]', 'Int64', ':b'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:a/:[]/Int64/:b/Int64',
         columns: [
           ['a', 'b', 'c'],
           [1, 2, 3],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':a', ':[]', 'Int64', ':c', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:a/:[]/Int64/:c/Int64',
         columns: [
           [1, 2, 3],
           [1, 2, 3],
         ],
       },
-    ];
+    ]);
 
-    const updateContainerExceptionOutput: Relation[] = [
+    const updateContainerExceptionOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:b/:[]/Int64/:c/Int64', columns: [[1], [1]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':b', ':[]', 'Int64', ':c'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[1], [1]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':a', ':[]', 'Int64', ':d'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:a/:[]/Int64/:d/Int64',
         columns: [
           [1, 2],
           [2, 3],
         ],
       },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':b', ':[]', 'Int64', ':[]', 'Int64'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[1], [1], [2]],
-      },
-    ];
+      { relationId: '/:b/:[]/Int64/:[]/Int64/Int64', columns: [[1], [1], [2]] },
+    ]);
 
-    const multipleIteratorsSamePathOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':b', ':[]', 'Int64'],
-          values: ['String'],
-        },
-        type: 'Relation',
-        columns: [[1], ['test']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':b', ':[]', 'Int64'],
-          values: ['Float64'],
-        },
-        type: 'Relation',
-        columns: [[3], [1.2]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':b', ':[]', 'Int64'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[2], [2]],
-      },
-    ];
+    const multipleIteratorsSamePathOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:b/:[]/Int64/String', columns: [[1], ['test']] },
+      { relationId: '/:b/:[]/Int64/Float64', columns: [[3], [1.2]] },
+      { relationId: '/:b/:[]/Int64/Int64', columns: [[2], [2]] },
+    ]);
 
-    const trueOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':[]', 'Int64', ':[]', 'Int64', ':a'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[1], [1]],
-      },
-    ];
+    const trueOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:[]/Int64/:[]/Int64/:a/Int64', columns: [[1], [1]] },
+    ]);
 
-    const stringKeyOutput: Relation[] = [
+    const stringKeyOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':a', ':[]', 'String', ':b', 'Int64'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:a/:[]/String/:b/Int64',
         columns: [
           ['first', 'second'],
           [1, 2],
         ],
       },
-    ];
+    ]);
 
-    const emptyIteratorOutput: Relation[] = [
+    const emptyIteratorOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          values: ['String'],
-          name: 'output',
-          keys: [':metadata', ':notebookFormatVersion'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
+        relationId: '/:metadata/:notebookFormatVersion/String',
         columns: [['0.0.1']],
       },
+      { relationId: '/:cells/:[]/Int64/:source/String', columns: [[], []] },
       {
-        rel_key: {
-          values: [],
-          name: 'output',
-          keys: [':cells', ':[]', 'Int64', ':source', 'String'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
-        columns: [[], []],
-      },
-      {
-        rel_key: {
-          values: ['String'],
-          name: 'output',
-          keys: [':cells', ':[]', 'Int64', ':id'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:id/String',
         columns: [[1], ['1527e46a-3188-4020-8096-6f766c5e1f2c']],
       },
+      { relationId: '/:cells/:[]/Int64/:isCodeFolded/Bool', columns: [[], []] },
       {
-        rel_key: {
-          values: [],
-          name: 'output',
-          keys: [':cells', ':[]', 'Int64', ':isCodeFolded', 'Bool'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
-        columns: [[], []],
-      },
-      {
-        rel_key: {
-          values: ['String'],
-          name: 'output',
-          keys: [':cells', ':[]', 'Int64', ':type'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:type/String',
         columns: [[1], ['query']],
       },
-      {
-        rel_key: {
-          values: [],
-          name: 'output',
-          keys: [':cells', ':[]', 'Int64', ':name', 'String'],
-          type: 'RelKey',
-        },
-        type: 'Relation',
-        columns: [[], []],
-      },
-    ];
+      { relationId: '/:cells/:[]/Int64/:name/String', columns: [[], []] },
+    ]);
 
-    const notStrictlyIncreasingKeysOutput: Relation[] = [
+    const notStrictlyIncreasingKeysOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':source', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:source/String',
         columns: [
           [1, 2],
           ['def output = foo123', 'def output = concat[file1, file2]'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':cells',
-            ':[]',
-            'Int64',
-            ':inputs',
-            ':[]',
-            'Int64',
-            ':relation',
-            'String',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:inputs/:[]/Int64/:relation/String',
         columns: [
           [1, 2, 2],
           [1, 1, 2],
@@ -1046,23 +432,11 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':metadata', ':notebookFormatVersion'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:metadata/:notebookFormatVersion/String',
         columns: [['0.0.1']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':id'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:id/String',
         columns: [
           [1, 2],
           [
@@ -1072,101 +446,43 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':type'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:type/String',
         columns: [
           [1, 2],
           ['query', 'query'],
         ],
       },
-    ];
+    ]);
 
-    const vegaTooltipOutput: Relation[] = [
+    const vegaTooltipOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':type'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:type/String',
         columns: [
           [1, 2],
           ['rect', 'text'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':from', ':data'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:from/:data/String',
         columns: [[1], ['table']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':fill',
-            ':value',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:fill/:value/String',
         columns: [[2], ['#333']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':y',
-            ':offset',
-          ],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:y/:offset/Int64',
         columns: [[2], [-2]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':name'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:scales/:[]/Int64/:name/String',
         columns: [
           [1, 2],
           ['xscale', 'yscale'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':data', ':[]', 'Int64', ':values', ':[]', 'Int64', ':amount'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:data/:[]/Int64/:values/:[]/Int64/:amount/Int64',
         columns: [
           [1, 1, 1, 1, 1, 1, 1, 1],
           [1, 2, 3, 4, 5, 6, 7, 8],
@@ -1174,79 +490,21 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':encode', ':update', ':x', ':band'],
-          values: ['Float64'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:x/:band/Float64',
         columns: [[2], [0.5]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':text',
-            ':signal',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:text/:signal/String',
         columns: [[2], ['tooltip.amount']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':fill',
-            ':value',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:fill/:value/String',
         columns: [[1], ['steelblue']],
       },
+      { relationId: '/:scales/:[]/Int64/:nice/Bool', columns: [[2], [true]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':nice'],
-          values: ['Bool'],
-        },
-        type: 'Relation',
-        columns: [[2], [true]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':fillOpacity',
-            ':[]',
-            'Int64',
-            ':value',
-          ],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId:
+          '/:marks/:[]/Int64/:encode/:update/:fillOpacity/:[]/Int64/:value/Int64',
         columns: [
           [2, 2],
           [1, 2],
@@ -1254,150 +512,45 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':signals', ':[]', 'Int64', ':name'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:signals/:[]/Int64/:name/String',
         columns: [[1], ['tooltip']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':x',
-            ':scale',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:x/:scale/String',
         columns: [[2], ['xscale']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':padding'],
-          values: ['Float64'],
-        },
-        type: 'Relation',
+        relationId: '/:scales/:[]/Int64/:padding/Float64',
         columns: [[1], [0.05]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':range'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:scales/:[]/Int64/:range/String',
         columns: [
           [1, 2],
           ['width', 'height'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':encode', ':enter', ':y', ':field'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:y/:field/String',
         columns: [[1], ['amount']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':y',
-            ':scale',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:y/:scale/String',
         columns: [[2], ['yscale']],
       },
+      { relationId: '/:scales/:[]/Int64/:round/Bool', columns: [[1], [true]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':round'],
-          values: ['Bool'],
-        },
-        type: 'Relation',
-        columns: [[1], [true]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':encode', ':enter', ':x', ':field'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:x/:field/String',
         columns: [[1], ['category']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':width',
-            ':band',
-          ],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:width/:band/Int64',
         columns: [[1], [1]],
       },
+      { relationId: '/:padding/Int64', columns: [[5]] },
+      { relationId: '/:height/Int64', columns: [[200]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':padding'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[5]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':height'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[200]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':signals', ':[]', 'Int64', ':on', ':[]', 'Int64', ':events'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:signals/:[]/Int64/:on/:[]/Int64/:events/String',
         columns: [
           [1, 1],
           [1, 2],
@@ -1405,105 +558,38 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':domain', ':data'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:scales/:[]/Int64/:domain/:data/String',
         columns: [
           [1, 2],
           ['table', 'table'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':y2',
-            ':value',
-          ],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:y2/:value/Int64',
         columns: [[1], [0]],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':data', ':[]', 'Int64', ':name'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:data/:[]/Int64/:name/String',
         columns: [[1], ['table']],
       },
+      { relationId: '/:width/Int64', columns: [[400]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':width'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[400]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':width',
-            ':scale',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:width/:scale/String',
         columns: [[1], ['xscale']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':axes', ':[]', 'Int64', ':orient'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:axes/:[]/Int64/:orient/String',
         columns: [
           [1, 2],
           ['bottom', 'left'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':encode', ':enter', ':y', ':scale'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:y/:scale/String',
         columns: [[1], ['yscale']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':description'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:description/String',
         columns: [
           [
             'A basic bar chart example, with value labels shown upon mouse hover.',
@@ -1511,34 +597,14 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':axes', ':[]', 'Int64', ':scale'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:axes/:[]/Int64/:scale/String',
         columns: [
           [1, 2],
           ['xscale', 'yscale'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':data',
-            ':[]',
-            'Int64',
-            ':values',
-            ':[]',
-            'Int64',
-            ':category',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:data/:[]/Int64/:values/:[]/Int64/:category/String',
         columns: [
           [1, 1, 1, 1, 1, 1, 1, 1],
           [1, 2, 3, 4, 5, 6, 7, 8],
@@ -1546,176 +612,52 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':$schema'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:$schema/String',
         columns: [['https://vega.github.io/schema/vega/v5.json']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':baseline',
-            ':value',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:baseline/:value/String',
         columns: [[2], ['bottom']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':hover',
-            ':fill',
-            ':value',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:hover/:fill/:value/String',
         columns: [[1], ['red']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':domain', ':field'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:scales/:[]/Int64/:domain/:field/String',
         columns: [
           [1, 2],
           ['category', 'amount'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':y',
-            ':signal',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:y/:signal/String',
         columns: [[2], ['tooltip.amount']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':scales', ':[]', 'Int64', ':type'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:scales/:[]/Int64/:type/String',
         columns: [[1], ['band']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':marks', ':[]', 'Int64', ':encode', ':enter', ':x', ':scale'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:x/:scale/String',
         columns: [[1], ['xscale']],
       },
+      { relationId: '/:signals/:[]/Int64/:value/String', columns: [[1]] },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':signals', ':[]', 'Int64', ':value'],
-          values: ['String'],
-        },
-        type: 'Relation',
-        columns: [[1]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':x',
-            ':signal',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:update/:x/:signal/String',
         columns: [[2], ['tooltip.category']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':align',
-            ':value',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:align/:value/String',
         columns: [[2], ['center']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':update',
-            ':fillOpacity',
-            ':[]',
-            'Int64',
-            ':test',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId:
+          '/:marks/:[]/Int64/:encode/:update/:fillOpacity/:[]/Int64/:test/String',
         columns: [[2], [1], ['datum === tooltip']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':signals', ':[]', 'Int64', ':on', ':[]', 'Int64', ':update'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:signals/:[]/Int64/:on/:[]/Int64/:update/String',
         columns: [
           [1, 1],
           [1, 2],
@@ -1723,44 +665,18 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':marks',
-            ':[]',
-            'Int64',
-            ':encode',
-            ':enter',
-            ':y2',
-            ':scale',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:marks/:[]/Int64/:encode/:enter/:y2/:scale/String',
         columns: [[1], ['yscale']],
       },
-    ];
+    ]);
 
-    const fileInputOutput: Relation[] = [
+    const fileInputOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':metadata', ':notebookFormatVersion'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:metadata/:notebookFormatVersion/String',
         columns: [['0.0.1']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':source', 'String'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:source/String',
         columns: [
           [1, 2, 3],
           [
@@ -1771,32 +687,11 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            ':cells',
-            ':[]',
-            'Int64',
-            ':inputs',
-            ':[]',
-            'Int64',
-            ':relation',
-            'String',
-          ],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:inputs/:[]/Int64/:relation/String',
         columns: [[3], [1], ['mystring']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':id'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:id/String',
         columns: [
           [1, 2, 3],
           [
@@ -1807,182 +702,77 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':type'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:type/String',
         columns: [
           [1, 2, 3],
           ['query', 'query', 'query'],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':inputs', ':[]', 'Missing'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:inputs/:[]/Missing',
         columns: [
           [1, 2],
           [null, null],
         ],
       },
-    ];
+    ]);
 
-    const missingOutput: Relation[] = [
+    const missingOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':cells', ':[]', 'Int64', ':inputs', ':[]', 'Missing'],
-          values: [],
-        },
-        type: 'Relation',
+        relationId: '/:cells/:[]/Int64/:inputs/:[]/Missing',
         columns: [
           [1, 2, 3, 4, 5, 6],
           [null, null, null, null, null, null],
         ],
       },
-    ];
+    ]);
 
-    const sparseArrayOutput: Relation[] = [
+    const sparseArrayOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':root', ':[]', 'Int64', ':a'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:root/:[]/Int64/:a/Int64',
         columns: [
           [2, 5],
           [1, 2],
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':root', ':[]', 'Int64'],
-          values: ['Missing'],
-        },
-        type: 'Relation',
+        relationId: '/:root/:[]/Int64/Missing',
         columns: [
           [1, 3, 4],
           [null, null, null],
         ],
       },
-    ];
+    ]);
 
-    const arrayLikePropStringOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':[]'],
-          values: ['String'],
-        },
-        type: 'Relation',
-        columns: [['oops']],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':bar'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[123]],
-      },
-    ];
+    const arrayLikePropStringOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:foo/:[]/String', columns: [['oops']] },
+      { relationId: '/:foo/:bar/Int64', columns: [[123]] },
+    ]);
 
-    const arrayLikePropIntOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':bar'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[123]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':[]'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[321]],
-      },
-    ];
+    const arrayLikePropIntOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:foo/:bar/Int64', columns: [[123]] },
+      { relationId: '/:foo/:[]/Int64', columns: [[321]] },
+    ]);
 
-    const arrayLikePropObjectOutput: Relation[] = [
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':[]', ':baz'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[321]],
-      },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':bar'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[123]],
-      },
-    ];
+    const arrayLikePropObjectOutput: ArrowRelation[] = plainToArrow([
+      { relationId: '/:foo/:[]/:baz/Int64', columns: [[321]] },
+      { relationId: '/:foo/:bar/Int64', columns: [[123]] },
+    ]);
 
-    const arrayLikePropArrayOutput: Relation[] = [
+    const arrayLikePropArrayOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':[]', ':[]', 'Int64', ':a'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
+        relationId: '/:foo/:[]/:[]/Int64/:a/Int64',
         columns: [
           [1, 2],
           [1, 2],
         ],
       },
-      {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [':foo', ':bar'],
-          values: ['Int64'],
-        },
-        type: 'Relation',
-        columns: [[123]],
-      },
-    ];
+      { relationId: '/:foo/:bar/Int64', columns: [[123]] },
+    ]);
 
-    const rootPropOutput: Relation[] = [
+    const rootPropOutput: ArrowRelation[] = plainToArrow([
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['String', ':cells', ':[]', 'Int64', ':name'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/String/:cells/:[]/Int64/:name/String',
         columns: [
           ['nb1', 'nb2'],
           [2, 2],
@@ -1990,13 +780,7 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['String', ':cells', ':[]', 'Int64', ':type'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/String/:cells/:[]/Int64/:type/String',
         columns: [
           ['nb1', 'nb1', 'nb2', 'nb2'],
           [1, 2, 1, 2],
@@ -2004,13 +788,7 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['String', ':cells', ':[]', 'Int64', ':id'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/String/:cells/:[]/Int64/:id/String',
         columns: [
           ['nb1', 'nb1', 'nb2', 'nb2'],
           [1, 2, 1, 2],
@@ -2023,13 +801,7 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['String', ':cells', ':[]', 'Int64', ':source'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/String/:cells/:[]/Int64/:source/String',
         columns: [
           ['nb1', 'nb1', 'nb2', 'nb2'],
           [1, 2, 1, 2],
@@ -2042,32 +814,12 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: [
-            'String',
-            ':cells',
-            ':[]',
-            'Int64',
-            ':inputs',
-            ':[]',
-            'Int64',
-            ':relation',
-          ],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId:
+          '/String/:cells/:[]/Int64/:inputs/:[]/Int64/:relation/String',
         columns: [['nb1'], [2], [1], ['input_file']],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['String', ':cells', ':[]', 'Int64', ':inputs', ':[]'],
-          values: ['Missing'],
-        },
-        type: 'Relation',
+        relationId: '/String/:cells/:[]/Int64/:inputs/:[]/Missing',
         columns: [
           ['nb1', 'nb2', 'nb2'],
           [1, 1, 2],
@@ -2075,19 +827,13 @@ describe('relationUtils', () => {
         ],
       },
       {
-        rel_key: {
-          name: 'output',
-          type: 'RelKey',
-          keys: ['String', ':metadata', ':notebookFormatVersion'],
-          values: ['String'],
-        },
-        type: 'Relation',
+        relationId: '/String/:metadata/:notebookFormatVersion/String',
         columns: [
           ['nb1', 'nb2'],
           ['0.0.1', '0.0.1'],
         ],
       },
-    ];
+    ]);
 
     it('should handle empty inputs', () => {
       const json = toJson([]);
