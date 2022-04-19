@@ -166,6 +166,7 @@ export type TransactionResult = {
 
 export enum TransactionAsyncState {
   CREATED = 'CREATED',
+  RUNNING = 'RUNNING',
   ABORTED = 'ABORTED',
   COMPLETED = 'COMPLETED',
 }

@@ -19,6 +19,7 @@ import { tableFromArrays } from 'apache-arrow';
 import {
   arrowTableToArrayRows,
   arrowTableToJsonRows,
+  arrowToJson,
   arrowToPlain,
   getKeys,
   plainToArrow,
@@ -92,10 +93,36 @@ describe('relationUtils', () => {
         table: tableFromArrays({
           foo: [1, 2, 3],
           bar: ['a', 'b', 'c'],
+          baz: [BigInt(1), BigInt(2), BigInt(3)],
         }),
       },
     ];
     const plainRelations = arrowToPlain(relations);
+
+    expect(plainRelations).toEqual([
+      {
+        relationId: id,
+        columns: [
+          Float64Array.from([1, 2, 3]),
+          ['a', 'b', 'c'],
+          BigInt64Array.from([BigInt(1), BigInt(2), BigInt(3)]),
+        ],
+      },
+    ]);
+  });
+
+  it('should convert arrow relation to json', () => {
+    const id = '/:foo/Int64/:bar/String';
+    const relations: ArrowRelation[] = [
+      {
+        relationId: id,
+        table: tableFromArrays({
+          foo: [BigInt(1), BigInt(2), BigInt(3)],
+          bar: ['a', 'b', 'c'],
+        }),
+      },
+    ];
+    const plainRelations = arrowToJson(relations);
 
     expect(plainRelations).toEqual([
       {
@@ -106,6 +133,21 @@ describe('relationUtils', () => {
         ],
       },
     ]);
+  });
+
+  it('should throw an error when converting arrow relation to json and number is outside of safe range', () => {
+    const id = '/:foo/Int64/:bar/String';
+    const relations: ArrowRelation[] = [
+      {
+        relationId: id,
+        table: tableFromArrays({
+          foo: [BigInt(1), BigInt(2), BigInt(Number.MAX_SAFE_INTEGER + 1)],
+          bar: ['a', 'b', 'c'],
+        }),
+      },
+    ];
+
+    expect(() => arrowToJson(relations)).toThrowError();
   });
 
   describe('toJson', () => {
