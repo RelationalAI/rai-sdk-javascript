@@ -19,11 +19,12 @@ import { set } from 'lodash-es';
 
 import { ArrowRelation, Relation } from './transaction/types';
 
+type Value = string | boolean | number | BigInt | null;
 type Primitive = string | boolean | number | null;
 
-export type PlainRelation = {
+export type PlainRelation<T = Value> = {
   relationId: string;
-  columns: Primitive[][];
+  columns: T[][];
 };
 
 export function getKeys(relPath: string) {
@@ -41,7 +42,7 @@ export function arrowTableToArrayRows(table: Table) {
 export function plainToArrow(plainRelations: PlainRelation[]) {
   return plainRelations.map(plainRelation => {
     const { relationId, columns } = plainRelation;
-    const plainTable: { [c: string]: Primitive[] } = {};
+    const plainTable: { [c: string]: Value[] } = {};
 
     columns.forEach((col, index) => {
       plainTable[`v${index + 1}`] = col;
@@ -56,9 +57,12 @@ export function plainToArrow(plainRelations: PlainRelation[]) {
   });
 }
 
-export function arrowToPlain(arrowRelations: ArrowRelation[]) {
+const MIN_SAFE = BigInt(Number.MIN_SAFE_INTEGER);
+const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER);
+
+export function arrowToJson(arrowRelations: ArrowRelation[]) {
   return arrowRelations.map(r => {
-    const plainRelation: PlainRelation = {
+    const plainRelation: PlainRelation<Primitive> = {
       relationId: r.relationId,
       columns: [],
     };
@@ -66,7 +70,44 @@ export function arrowToPlain(arrowRelations: ArrowRelation[]) {
     for (let i = 0; i < r.table.numCols; i++) {
       const col = r.table.getChildAt(i);
 
-      plainRelation.columns.push(col?.toJSON() || []);
+      if (col) {
+        const val = col.get(0);
+
+        if (typeof val === 'bigint') {
+          const arr: BigInt[] = Array.from(col.toArray());
+
+          for (const num of arr) {
+            if (num < MIN_SAFE || num > MAX_SAFE) {
+              throw new Error(
+                `${num} doesn't fit in safe numbers range. Relation ${r.relationId}`,
+              );
+            }
+          }
+
+          plainRelation.columns.push(arr.map(n => Number(n)));
+        } else {
+          plainRelation.columns.push(col.toJSON());
+        }
+      } else {
+        plainRelation.columns.push([]);
+      }
+    }
+
+    return plainRelation;
+  });
+}
+
+export function arrowToPlain(arrowRelations: ArrowRelation[]) {
+  return arrowRelations.map(r => {
+    const plainRelation: PlainRelation<Primitive> = {
+      relationId: r.relationId,
+      columns: [],
+    };
+
+    for (let i = 0; i < r.table.numCols; i++) {
+      const col = r.table.getChildAt(i);
+
+      plainRelation.columns.push(col?.toArray() || []);
     }
 
     return plainRelation;
@@ -78,7 +119,7 @@ function v1ToPlain(v1Relations: Relation[]) {
     const keys = [...r.rel_key.keys, ...r.rel_key.values];
     const plainRelation: PlainRelation = {
       relationId: `/${keys.join('/')}`,
-      columns: r.columns as Primitive[][],
+      columns: r.columns as Value[][],
     };
 
     return plainRelation;
@@ -133,7 +174,7 @@ export function toJson(output: Relation[] | ArrowRelation[]): any {
   if ('rel_key' in output[0] && 'columns' in output[0]) {
     relations = v1ToPlain(output as Relation[]);
   } else if ('relationId' in output[0] && 'table' in output[0]) {
-    relations = arrowToPlain(output as ArrowRelation[]);
+    relations = arrowToJson(output as ArrowRelation[]);
   } else {
     throw new Error('Unknown relation format');
   }
