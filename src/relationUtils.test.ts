@@ -21,11 +21,133 @@ import {
   arrowTableToJsonRows,
   arrowToJson,
   arrowToPlain,
+  Diagnostic,
+  filterRelations,
   getKeys,
+  getRelationId,
+  parseDiagnostics,
   plainToArrow,
+  readResults,
   toJson,
 } from './relationUtils';
 import { ArrowRelation } from './transaction/types';
+
+const diagnosticRelations: ArrowRelation[] = [
+  {
+    relationId:
+      '/:rel/:catalog/:diagnostic/:range/:start/:line/Int64/Int64/Int64',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(1), BigInt(2)],
+      v2: [BigInt(1), BigInt(2), BigInt(1)],
+      v3: [BigInt(1), BigInt(2), BigInt(1)],
+    }),
+  },
+  {
+    relationId:
+      '/:rel/:catalog/:diagnostic/:range/:start/:character/Int64/Int64/Int64',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(1), BigInt(2)],
+      v2: [BigInt(1), BigInt(2), BigInt(1)],
+      v3: [BigInt(17), BigInt(4), BigInt(14)],
+    }),
+  },
+  {
+    relationId:
+      '/:rel/:catalog/:diagnostic/:range/:end/:line/Int64/Int64/Int64',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(1), BigInt(2)],
+      v2: [BigInt(1), BigInt(2), BigInt(1)],
+      v3: [BigInt(1), BigInt(3), BigInt(1)],
+    }),
+  },
+  {
+    relationId:
+      '/:rel/:catalog/:diagnostic/:range/:end/:character/Int64/Int64/Int64',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(1), BigInt(2)],
+      v2: [BigInt(1), BigInt(2), BigInt(1)],
+      v3: [BigInt(17), BigInt(42), BigInt(17)],
+    }),
+  },
+  {
+    relationId: '/:rel/:catalog/:diagnostic/:message/Int64/String',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(2)],
+      v2: ['message 1', 'message 2'],
+    }),
+  },
+  {
+    relationId: '/:rel/:catalog/:diagnostic/:severity/Int64/String',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(2)],
+      v2: ['error', 'error'],
+    }),
+  },
+
+  {
+    relationId: '/:rel/:catalog/:diagnostic/:code/Int64/String',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(2)],
+      v2: ['PARSE_ERROR', 'UNBOUND_VARIABLE'],
+    }),
+  },
+  {
+    relationId: '/:rel/:catalog/:diagnostic/:report/Int64/String',
+    table: tableFromArrays({
+      v1: [BigInt(1), BigInt(2)],
+      v2: ['report 1', 'report 2'],
+    }),
+  },
+];
+
+const expectedDiagnostics: Diagnostic[] = [
+  {
+    range: [
+      {
+        start: {
+          line: 1,
+          character: 17,
+        },
+        end: {
+          line: 1,
+          character: 17,
+        },
+      },
+      {
+        start: {
+          line: 2,
+          character: 4,
+        },
+        end: {
+          line: 3,
+          character: 42,
+        },
+      },
+    ],
+    message: 'message 1',
+    severity: 'error',
+    code: 'PARSE_ERROR',
+    report: 'report 1',
+  },
+  {
+    range: [
+      {
+        start: {
+          line: 1,
+          character: 14,
+        },
+        end: {
+          line: 1,
+          character: 17,
+        },
+      },
+    ],
+    message: 'message 2',
+    severity: 'error',
+    code: 'UNBOUND_VARIABLE',
+    report: 'report 2',
+  },
+];
 
 describe('relationUtils', () => {
   it('should get keys from relation id', () => {
@@ -35,6 +157,13 @@ describe('relationUtils', () => {
       ':foo',
       'Int64',
     ]);
+  });
+
+  it('should get relation id from keys', () => {
+    expect(getRelationId(['Int64'])).toEqual('/Int64');
+    expect(getRelationId([':output', ':foo', 'Int64'])).toEqual(
+      '/:output/:foo/Int64',
+    );
   });
 
   it('should convert arrow table to json', () => {
@@ -63,6 +192,34 @@ describe('relationUtils', () => {
     ];
 
     expect(arrowTableToArrayRows(table)).toEqual(expectedResult);
+  });
+
+  it('should find relations', () => {
+    const relations = plainToArrow([
+      {
+        relationId: '/:output/:foo/:bar/Int64/String',
+        columns: [
+          [1, 2],
+          ['a', 'b'],
+        ],
+      },
+      {
+        relationId: '/:output/:bar/Int64',
+        columns: [[1, 2]],
+      },
+      {
+        relationId: '/:output/:foo/:baz/Int64',
+        columns: [[1, 2]],
+      },
+    ]);
+
+    const result = filterRelations(relations, [':output', ':foo']);
+
+    expect(result.length).toEqual(2);
+    expect(result[0].relationId).toEqual('/:bar/Int64/String');
+    expect(result[0].table).toBe(relations[0].table);
+    expect(result[1].relationId).toEqual('/:baz/Int64');
+    expect(result[1].table).toBe(relations[2].table);
   });
 
   it('should convert plain relation to arrow', () => {
@@ -148,6 +305,39 @@ describe('relationUtils', () => {
     ];
 
     expect(() => arrowToJson(relations)).toThrowError();
+  });
+
+  it('should parse diagnostics', () => {
+    const result = parseDiagnostics(diagnosticRelations);
+
+    expect(result).toEqual(expectedDiagnostics);
+  });
+
+  it('should read results', () => {
+    const outputRelations = plainToArrow([
+      {
+        relationId: '/:output/:foo/:bar/Int64/String',
+        columns: [
+          [1, 2],
+          ['a', 'b'],
+        ],
+      },
+      {
+        relationId: '/:output/:bar/Int64',
+        columns: [[1, 2]],
+      },
+      {
+        relationId: '/:output/:foo/:baz/Int64',
+        columns: [[1, 2]],
+      },
+    ]);
+
+    const result = readResults([...diagnosticRelations, ...outputRelations]);
+
+    expect(result.output[0].relationId).toEqual('/:foo/:bar/Int64/String');
+    expect(result.output[1].relationId).toEqual('/:bar/Int64');
+    expect(result.output[2].relationId).toEqual('/:foo/:baz/Int64');
+    expect(result.diagnostics).toEqual(expectedDiagnostics);
   });
 
   describe('toJson', () => {

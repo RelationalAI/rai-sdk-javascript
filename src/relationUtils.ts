@@ -31,6 +31,10 @@ export function getKeys(relPath: string) {
   return relPath.split('/').filter(k => k);
 }
 
+export function getRelationId(keys: string[]) {
+  return `/${keys.join('/')}`;
+}
+
 export function arrowTableToJsonRows(table: Table) {
   return table.toArray().map(arr => (arr ? arr.toJSON() : []));
 }
@@ -275,4 +279,119 @@ export function toJson(output: Relation[] | ArrowRelation[]): any {
   });
 
   return result;
+}
+
+export function filterRelations(relations: ArrowRelation[], keys: string[]) {
+  const len = keys.length;
+  const keysStr = keys.join('/');
+  const filteredRelations: ArrowRelation[] = [];
+
+  relations.forEach(r => {
+    const relationKeys = getKeys(r.relationId);
+
+    if (relationKeys.slice(0, len).join('/') === keysStr) {
+      const newKeys = relationKeys.slice(len);
+
+      filteredRelations.push({
+        ...r,
+        relationId: getRelationId(newKeys),
+      });
+    }
+  });
+
+  return filteredRelations;
+}
+
+export type DiagnosticPos = {
+  line: number;
+  character: number;
+};
+
+export type DiagnosticRange = {
+  start: DiagnosticPos;
+  end: DiagnosticPos;
+};
+
+export type Diagnostic = {
+  range: DiagnosticRange[];
+  message: string;
+  severity: string;
+  code: string;
+  report: string;
+};
+
+// TODO test
+export function parseDiagnostics(relations: ArrowRelation[]) {
+  relations = filterRelations(relations, [':rel', ':catalog', ':diagnostic']);
+
+  const diagnostics: Diagnostic[] = [];
+
+  setRangeProp(
+    ['start', 'line'],
+    diagnostics,
+    filterRelations(relations, [':range', ':start', ':line'])[0],
+  );
+  setRangeProp(
+    ['start', 'character'],
+    diagnostics,
+    filterRelations(relations, [':range', ':start', ':character'])[0],
+  );
+  setRangeProp(
+    ['end', 'line'],
+    diagnostics,
+    filterRelations(relations, [':range', ':end', ':line'])[0],
+  );
+  setRangeProp(
+    ['end', 'character'],
+    diagnostics,
+    filterRelations(relations, [':range', ':end', ':character'])[0],
+  );
+  setProp('message', diagnostics, filterRelations(relations, [':message'])[0]);
+  setProp(
+    'severity',
+    diagnostics,
+    filterRelations(relations, [':severity'])[0],
+  );
+  setProp('code', diagnostics, filterRelations(relations, [':code'])[0]);
+  setProp('report', diagnostics, filterRelations(relations, [':report'])[0]);
+
+  return diagnostics;
+}
+
+function setRangeProp(
+  path: string[],
+  result: Diagnostic[],
+  relation: ArrowRelation,
+) {
+  if (relation) {
+    const rows = arrowTableToArrayRows(relation.table);
+
+    rows.forEach(row => {
+      const diagnosticIndex = Number(row[0]) - 1;
+      const rangeIndex = Number(row[1]) - 1;
+      const value = typeof row[2] === 'bigint' ? Number(row[2]) : row[2];
+
+      set(result, [diagnosticIndex, 'range', rangeIndex, ...path], value);
+    });
+  }
+}
+
+function setProp(path: string, result: Diagnostic[], relation: ArrowRelation) {
+  if (relation) {
+    const rows = arrowTableToArrayRows(relation.table);
+
+    rows.forEach(row => {
+      const diagnosticIndex = Number(row[0]) - 1;
+      const value = typeof row[1] === 'bigint' ? Number(row[1]) : row[1];
+
+      set(result, [diagnosticIndex, path], value);
+    });
+  }
+}
+
+export function readResults(relations: ArrowRelation[]) {
+  return {
+    output: filterRelations(relations, [':output']),
+    diagnostics: parseDiagnostics(relations),
+  };
 }
