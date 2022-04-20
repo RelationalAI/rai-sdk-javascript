@@ -320,7 +320,6 @@ export type Diagnostic = {
   report: string;
 };
 
-// TODO test
 export function parseDiagnostics(relations: ArrowRelation[]) {
   relations = filterRelations(relations, [':rel', ':catalog', ':diagnostic']);
 
