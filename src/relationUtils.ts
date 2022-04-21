@@ -302,22 +302,23 @@ export function filterRelations(relations: ArrowRelation[], keys: string[]) {
   return filteredRelations;
 }
 
-export type DiagnosticPos = {
+export type Pos = {
   line: number;
   character: number;
 };
 
-export type DiagnosticRange = {
-  start: DiagnosticPos;
-  end: DiagnosticPos;
+export type Range = {
+  start: Pos;
+  end: Pos;
 };
 
 export type Diagnostic = {
-  range: DiagnosticRange[];
-  message: string;
-  severity: string;
   code: string;
-  report: string;
+  message: string;
+  severity: 'exception' | 'error' | 'warning' | 'info' | 'suggestion';
+  report?: string;
+  range?: Range[];
+  model?: string;
 };
 
 export function parseDiagnostics(relations: ArrowRelation[]) {
