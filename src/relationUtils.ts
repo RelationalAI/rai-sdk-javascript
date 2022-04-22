@@ -15,7 +15,7 @@
  */
 
 import { Table, tableFromArrays } from 'apache-arrow';
-import { set } from 'lodash-es';
+import { isObject, set } from 'lodash-es';
 
 import { ArrowRelation, Relation } from './transaction/types';
 
@@ -64,6 +64,14 @@ export function plainToArrow(plainRelations: PlainRelation[]) {
 const MIN_SAFE = BigInt(Number.MIN_SAFE_INTEGER);
 const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER);
 
+function checkBigInt(num: BigInt, relId: string) {
+  if (num < MIN_SAFE || num > MAX_SAFE) {
+    throw new Error(
+      `${num} doesn't fit in safe numbers range. Relation ${relId}`,
+    );
+  }
+}
+
 export function arrowToJson(arrowRelations: ArrowRelation[]) {
   return arrowRelations.map(r => {
     const plainRelation: PlainRelation<Primitive> = {
@@ -81,14 +89,23 @@ export function arrowToJson(arrowRelations: ArrowRelation[]) {
           const arr: BigInt[] = Array.from(col.toArray());
 
           for (const num of arr) {
-            if (num < MIN_SAFE || num > MAX_SAFE) {
-              throw new Error(
-                `${num} doesn't fit in safe numbers range. Relation ${r.relationId}`,
-              );
-            }
+            checkBigInt(num, r.relationId);
           }
 
           plainRelation.columns.push(arr.map(n => Number(n)));
+        } else if (isObject(val)) {
+          // TODO test when tableFromJSON is released in apache-arrow package
+          // https://github.com/apache/arrow/pull/12908
+          const jsonStr = JSON.stringify(col.toArray(), (_, value) => {
+            if (typeof value === 'bigint') {
+              checkBigInt(value, r.relationId);
+
+              return Number(value);
+            }
+
+            return value;
+          });
+          plainRelation.columns.push(JSON.parse(jsonStr));
         } else {
           plainRelation.columns.push(col.toJSON());
         }

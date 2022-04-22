@@ -189,6 +189,7 @@ export type TransactionAsync = {
   database_name: string;
   read_only: boolean;
   last_requested_interval: string;
+  query: string;
 };
 
 export type TransactionAsyncCompact = {
