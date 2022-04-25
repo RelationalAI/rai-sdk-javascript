@@ -70,7 +70,21 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
       : url;
 
   const fetch = globalThis.fetch || webFetch;
-  const response = await fetch(fullUrl, opts);
+
+  let response: Response;
+
+  try {
+    response = await fetch(fullUrl, opts);
+  } catch (error: any) {
+    if (error.message.toLowerCase().includes('failed to fetch')) {
+      throw new Error(
+        'Request failed due to a connectivity issue. Please check your network connection.',
+      );
+    }
+
+    throw error;
+  }
+
   const contentType = response.headers.get('content-type');
   let responseBody;
 
