@@ -56,7 +56,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     interval = 3 * 1000, // 3 seconds
-    timeout = 120 * 1000, // 2 mins
+    timeout = Number.POSITIVE_INFINITY,
   ) {
     const result = await this.execAsync(
       database,

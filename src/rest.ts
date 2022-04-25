@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import fetch from '@web-std/fetch';
+import webFetch from '@web-std/fetch';
 import { iterateMultipart } from '@web3-storage/multipart-parser';
 import { stringify } from 'query-string';
 
@@ -69,6 +69,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
+  const fetch = globalThis.fetch || webFetch;
   const response = await fetch(fullUrl, opts);
   const contentType = response.headers.get('content-type');
   let responseBody;
