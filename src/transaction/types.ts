@@ -177,7 +177,7 @@ export type TransactionAsyncPayload = {
   readonly: boolean;
   engine_name?: string;
   query: string;
-  inputs: Relation[];
+  v1_inputs: Relation[];
 };
 
 export type TransactionAsync = {
