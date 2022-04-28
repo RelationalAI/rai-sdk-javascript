@@ -64,7 +64,7 @@ describe('TransactionAsyncApi', () => {
       query: query,
       nowait_durable: false,
       readonly: true,
-      inputs: [],
+      v1_inputs: [],
     };
     const scope = nock(baseUrl).post(path, payload).reply(200, response);
     const result = await api.runTransactionAsync(payload);
@@ -82,7 +82,7 @@ describe('TransactionAsyncApi', () => {
       query: query,
       nowait_durable: false,
       readonly: true,
-      inputs: [],
+      v1_inputs: [],
     };
     const scope = nock(baseUrl).post(path, payload).reply(200, multipartMock, {
       'Content-type': multopartContentType,

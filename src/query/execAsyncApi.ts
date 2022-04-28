@@ -39,7 +39,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       query: queryString,
       nowait_durable: false,
       readonly,
-      inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
+      v1_inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
     };
 
     if (engine) {
