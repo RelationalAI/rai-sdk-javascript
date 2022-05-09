@@ -86,7 +86,7 @@ export function arrowToJson(arrowRelations: ArrowRelation[]) {
         const val = col.get(0);
 
         if (typeof val === 'bigint') {
-          const arr: BigInt[] = Array.from(col.toArray());
+          const arr: BigInt[] = Array.from(col);
 
           for (const num of arr) {
             checkBigInt(num, r.relationId);
@@ -96,7 +96,7 @@ export function arrowToJson(arrowRelations: ArrowRelation[]) {
         } else if (isObject(val)) {
           // TODO test when tableFromJSON is released in apache-arrow package
           // https://github.com/apache/arrow/pull/12908
-          const jsonStr = JSON.stringify(col.toArray(), (_, value) => {
+          const jsonStr = JSON.stringify(Array.from(col), (_, value) => {
             if (typeof value === 'bigint') {
               checkBigInt(value, r.relationId);
 
@@ -128,7 +128,7 @@ export function arrowToPlain(arrowRelations: ArrowRelation[]) {
     for (let i = 0; i < r.table.numCols; i++) {
       const col = r.table.getChildAt(i);
 
-      plainRelation.columns.push(col?.toArray() || []);
+      plainRelation.columns.push(col ? Array.from(col) : []);
     }
 
     return plainRelation;
