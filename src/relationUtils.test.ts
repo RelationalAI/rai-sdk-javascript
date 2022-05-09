@@ -260,9 +260,9 @@ describe('relationUtils', () => {
       {
         relationId: id,
         columns: [
-          Float64Array.from([1, 2, 3]),
+          [1, 2, 3],
           ['a', 'b', 'c'],
-          BigInt64Array.from([BigInt(1), BigInt(2), BigInt(3)]),
+          [BigInt(1), BigInt(2), BigInt(3)],
         ],
       },
     ]);
