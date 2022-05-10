@@ -371,6 +371,7 @@ export function parseDiagnostics(relations: ArrowRelation[]) {
   );
   setProp('code', diagnostics, filterRelations(relations, [':code'])[0]);
   setProp('report', diagnostics, filterRelations(relations, [':report'])[0]);
+  setProp('model', diagnostics, filterRelations(relations, [':model'])[0]);
 
   return diagnostics;
 }
