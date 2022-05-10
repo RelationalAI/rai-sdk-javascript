@@ -98,6 +98,13 @@ const diagnosticRelations: ArrowRelation[] = [
       v2: ['report 1', 'report 2'],
     }),
   },
+  {
+    relationId: '/:rel/:catalog/:diagnostic/:model/Int64/String',
+    table: tableFromArrays({
+      v1: [BigInt(2)],
+      v2: ['foo/bar'],
+    }),
+  },
 ];
 
 const expectedDiagnostics: Diagnostic[] = [
@@ -146,6 +153,7 @@ const expectedDiagnostics: Diagnostic[] = [
     severity: 'error',
     code: 'UNBOUND_VARIABLE',
     report: 'report 2',
+    model: 'foo/bar',
   },
 ];
 
