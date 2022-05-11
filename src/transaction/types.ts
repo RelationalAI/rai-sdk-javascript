@@ -185,11 +185,14 @@ export type TransactionAsync = {
   account_name: string;
   state: TransactionAsyncState;
   created_by: string;
-  created_on: string;
+  created_on: number;
+  finished_at: number;
   database_name: string;
   read_only: boolean;
   last_requested_interval: string;
+  response_format_version: string;
   query: string;
+  user_agent: string;
 };
 
 export type TransactionAsyncCompact = {
