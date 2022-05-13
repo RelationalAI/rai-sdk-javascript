@@ -183,16 +183,19 @@ export type TransactionAsyncPayload = {
 export type TransactionAsync = {
   id: string;
   account_name: string;
-  state: TransactionAsyncState;
-  created_by: string;
-  created_on: number;
-  finished_at: number;
+  engine_name: string;
   database_name: string;
+  state: TransactionAsyncState;
+  created_by?: string;
+  created_on?: number;
+  finished_at?: number;
+  duration?: number;
   read_only: boolean;
   last_requested_interval: string;
   response_format_version: string;
   query: string;
   user_agent: string;
+  abort_reason?: string;
 };
 
 export type TransactionAsyncCompact = {
