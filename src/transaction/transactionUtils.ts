@@ -68,7 +68,10 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   const results: ArrowRelation[] = [];
 
   for (const file of files) {
-    if (file.file.type === 'application/vnd.apache.arrow.stream') {
+    if (
+      typeof file.file !== 'string' &&
+      file.file.type === 'application/vnd.apache.arrow.stream'
+    ) {
       const table = await tableFromIPC(file.file.stream());
 
       results.push({
@@ -81,7 +84,7 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   return results;
 }
 
-async function readJson(file: File) {
+async function readJson(file: File | string) {
   let str;
 
   if (typeof file === 'string') {
