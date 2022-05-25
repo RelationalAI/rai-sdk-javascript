@@ -20,7 +20,10 @@ const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 const exports = {
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest/presets/js-with-ts-esm',
+  transformIgnorePatterns: [
+    'node_modules/(?!(fetch-blob|node-fetch|data-uri-to-buffer|formdata-polyfill)/)',
+  ],
   testEnvironment: 'node',
   globals: {
     __RAI_SDK_VERSION__: pkg.version,
@@ -28,7 +31,6 @@ const exports = {
   moduleNameMapper: {
     '^lodash-es$': 'lodash',
   },
-  transform: {},
 };
 
 export default exports;
