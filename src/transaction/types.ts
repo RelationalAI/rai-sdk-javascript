@@ -210,9 +210,8 @@ export type TransactionMetadata = {
 
 export type TransactionAsyncFile = {
   name: string;
-  data: Uint8Array;
-  filename?: string;
-  contentType?: string;
+  // node-fetch parses json to a string
+  file: File;
 };
 
 export type ArrowRelation = {

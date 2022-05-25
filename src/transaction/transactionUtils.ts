@@ -50,15 +50,15 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     throw new Error('metadata part not found');
   }
 
-  const txn = readJson(transaction.data);
+  const txn = await readJson(transaction.file);
   const result: TransactionAsyncResult = {
     transaction: txn,
     results: await readArrowFiles(files),
-    metadata: readJson(metadata.data),
+    metadata: await readJson(metadata.file),
   };
 
   if (problems) {
-    result.problems = readJson(problems.data);
+    result.problems = await readJson(problems.file);
   }
 
   return result;
@@ -68,8 +68,8 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   const results: ArrowRelation[] = [];
 
   for (const file of files) {
-    if (file.contentType === 'application/vnd.apache.arrow.stream') {
-      const table = await tableFromIPC(file.data);
+    if (file.file.type === 'application/vnd.apache.arrow.stream') {
+      const table = await tableFromIPC(file.file.stream());
 
       results.push({
         relationId: file.name,
@@ -81,8 +81,16 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   return results;
 }
 
-function readJson(data: Uint8Array) {
-  const str = new TextDecoder().decode(data);
+async function readJson(file: File) {
+  let str;
+
+  if (typeof file === 'string') {
+    str = file;
+  } else {
+    const data = await file.arrayBuffer();
+
+    str = new TextDecoder().decode(data);
+  }
 
   return JSON.parse(str);
 }

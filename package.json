@@ -60,7 +60,7 @@
   "scripts": {
     "prepack": "$npm_execpath run build",
     "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node && $npm_execpath run build:node:cjs",
-    "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --external none --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --alias node-fetch=./fetch.ts --external none --define __RAI_SDK_VERSION__=$npm_package_version",
     "build:node": "microbundle -i ./index.node.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
     "build:node:cjs": "$npm_execpath run build:node -- --format cjs --alias lodash-es=lodash --generateTypes false",
     "dev:web": "$npm_execpath run build:web -- -w",
@@ -97,13 +97,12 @@
     "typescript": "4.4.4"
   },
   "dependencies": {
-    "@web-std/fetch": "4.0.0",
-    "@web3-storage/multipart-parser": "1.0.0",
-    "apache-arrow": "7.0.0",
+    "apache-arrow": "8.0.0",
     "config-ini-parser": "1.5.9",
     "cross-fetch": "3.1.5",
     "lodash": "4.17.21",
     "lodash-es": "4.17.21",
+    "node-fetch": "^3.2.4",
     "query-string": "7.1.0"
   }
 }

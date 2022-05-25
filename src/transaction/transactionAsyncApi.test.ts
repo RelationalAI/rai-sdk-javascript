@@ -34,10 +34,15 @@ const transactionAsyncMock = {
   },
   problems: [],
   metadata: [
+    {
+      relationId: '/:output/:foo;bar',
+      types: [':output', ':foo;bar', 'Int64'],
+    },
     { relationId: '/:output/:foo', types: [':output', ':foo'] },
     { relationId: '/:output/Int64', types: [':output', 'Int64'] },
   ],
   results: [
+    { relationId: '/:output/:foo;bar', table: expect.anything() },
     { relationId: '/:output/:foo', table: expect.anything() },
     { relationId: '/:output/Int64', table: expect.anything() },
   ],

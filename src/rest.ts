@@ -14,8 +14,7 @@
  * under the License.
  */
 
-import webFetch from '@web-std/fetch';
-import { iterateMultipart } from '@web3-storage/multipart-parser';
+import nodeFetch from 'node-fetch';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
@@ -69,7 +68,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
-  const fetch = globalThis.fetch || webFetch;
+  const fetch = globalThis.fetch || nodeFetch;
 
   let response: Response;
 
@@ -93,7 +92,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   if (contentType && contentType.includes('application/json')) {
     responseBody = await response.json();
   } else if (contentType?.includes('multipart/form-data') && response.body) {
-    responseBody = await parseMultipart(response.body, contentType);
+    responseBody = await parseMultipart(response);
   } else {
     responseBody = await response.text();
   }
@@ -112,20 +111,14 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   throw makeError(responseBody, responseClone.clone());
 }
 
-async function parseMultipart(
-  body: ReadableStream<Uint8Array>,
-  contentType: string,
-) {
-  const [, boundary] = contentType.split(/\s*;\s*boundary=/);
-  const parts = iterateMultipart(body, boundary);
+async function parseMultipart(response: Response) {
+  const formData = await response.formData();
   const files = [];
 
-  for await (const { name, data, filename, contentType } of parts) {
+  for (const entry of formData) {
     files.push({
-      name,
-      data,
-      filename,
-      contentType,
+      name: entry[0],
+      file: entry[1],
     });
   }
 
