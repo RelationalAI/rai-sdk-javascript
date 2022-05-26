@@ -1,7 +1,7 @@
 {
   "name": "@relationalai/rai-sdk-javascript",
   "description": "RelationalAI SDK for JavaScript",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "author": {
     "name": "RelationalAI",
     "url": "https://relational.ai"
@@ -60,7 +60,7 @@
   "scripts": {
     "prepack": "$npm_execpath run build",
     "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node && $npm_execpath run build:node:cjs",
-    "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --external none --define __RAI_SDK_VERSION__=$npm_package_version",
+    "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --alias node-fetch=./fetch.ts --external none --define __RAI_SDK_VERSION__=$npm_package_version",
     "build:node": "microbundle -i ./index.node.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
     "build:node:cjs": "$npm_execpath run build:node -- --format cjs --alias lodash-es=lodash --generateTypes false",
     "dev:web": "$npm_execpath run build:web -- -w",
@@ -83,27 +83,26 @@
     "eslint-config-prettier": "7.2.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jest": "24.1.3",
-    "eslint-plugin-license-header": "^0.4.0",
+    "eslint-plugin-license-header": "0.4.0",
     "eslint-plugin-prettier": "3.3.1",
     "eslint-plugin-simple-import-sort": "7.0.0",
     "eslint-plugin-unicorn": "27.0.0",
     "jest": "27.4.7",
     "microbundle": "0.14.2",
     "nock": "13.2.2",
-    "prettier-plugin-jsdoc": "0.3.8",
     "prettier": "2.2.1",
+    "prettier-plugin-jsdoc": "0.3.8",
     "ts-jest": "27.1.2",
     "ts-node": "10.5.0",
     "typescript": "4.4.4"
   },
   "dependencies": {
-    "@web-std/fetch": "4.0.0",
-    "@web3-storage/multipart-parser": "1.0.0",
-    "apache-arrow": "7.0.0",
+    "apache-arrow": "8.0.0",
     "config-ini-parser": "1.5.9",
     "cross-fetch": "3.1.5",
     "lodash": "4.17.21",
     "lodash-es": "4.17.21",
+    "node-fetch": "3.2.4",
     "query-string": "7.1.0"
   }
 }

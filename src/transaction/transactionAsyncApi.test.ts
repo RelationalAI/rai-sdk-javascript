@@ -24,21 +24,26 @@ import { TransactionAsyncApi } from './transactionAsyncApi';
 const path = '/transactions';
 
 const multipartMock = readFileSync(__dirname + '/multipartMock');
-const multopartContentType =
-  'multipart/form-data; boundary=865f68321ad9001da3f3b61785a72b25';
+const multipartContentType =
+  'multipart/form-data; boundary=fbef11dbaedd10b55d8af920ba13dd4f9e03cbddbe52c3d12e8c2eb56a23';
 const transactionAsyncMock = {
   transaction: {
-    id: '2b23ad8b-f94d-4194-aab0-5ac2aa82d067',
+    id: '59b04616-887d-40aa-b003-f310eb573557',
     state: 'COMPLETED',
-    results_format_version: '2.0.1',
+    response_format_version: '2.0.1',
   },
   problems: [],
   metadata: [
     { relationId: '/:output/:foo', types: [':output', ':foo'] },
+    {
+      relationId: '/:output/:foo;bar/Int64',
+      types: [':output', ':foo;bar', 'Int64'],
+    },
     { relationId: '/:output/Int64', types: [':output', 'Int64'] },
   ],
   results: [
     { relationId: '/:output/:foo', table: expect.anything() },
+    { relationId: '/:output/:foo;bar/Int64', table: expect.anything() },
     { relationId: '/:output/Int64', table: expect.anything() },
   ],
 };
@@ -85,7 +90,7 @@ describe('TransactionAsyncApi', () => {
       v1_inputs: [],
     };
     const scope = nock(baseUrl).post(path, payload).reply(200, multipartMock, {
-      'Content-type': multopartContentType,
+      'Content-type': multipartContentType,
     });
     const result = await api.runTransactionAsync(payload);
 
@@ -122,7 +127,7 @@ describe('TransactionAsyncApi', () => {
     const scope = nock(baseUrl)
       .get(`${path}/id1/results`)
       .reply(200, multipartMock, {
-        'Content-type': multopartContentType,
+        'Content-type': multipartContentType,
       });
     const result = await api.getTransactionResults('id1');
 
