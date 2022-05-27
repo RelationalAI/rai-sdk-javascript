@@ -63,6 +63,12 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     body: JSON.stringify(options.body),
     headers: addDefaultHeaders(options.headers, url),
   };
+
+  if (typeof window === 'undefined') {
+    // See: https://github.com/node-fetch/node-fetch#custom-highwatermark
+    (opts as any).highWaterMark = 1024 * 1024;
+  }
+
   const fullUrl =
     options.query && Object.keys(options.query).length > 0
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`

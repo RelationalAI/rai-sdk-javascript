@@ -1,7 +1,7 @@
 {
   "name": "@relationalai/rai-sdk-javascript",
   "description": "RelationalAI SDK for JavaScript",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "author": {
     "name": "RelationalAI",
     "url": "https://relational.ai"
@@ -62,7 +62,7 @@
     "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node && $npm_execpath run build:node:cjs",
     "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --alias node-fetch=./fetch.ts --external none --define __RAI_SDK_VERSION__=$npm_package_version",
     "build:node": "microbundle -i ./index.node.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
-    "build:node:cjs": "$npm_execpath run build:node -- --format cjs --alias lodash-es=lodash --generateTypes false",
+    "build:node:cjs": "$npm_execpath run build:node -- --format cjs --alias lodash-es=lodash,node-fetch=node-fetch-commonjs --generateTypes false",
     "dev:web": "$npm_execpath run build:web -- -w",
     "dev:node": "$npm_execpath run build:node -- -w",
     "format": "prettier --write ./src --loglevel warn",
@@ -71,6 +71,7 @@
     "fix": "eslint --cache --fix . --ext js --ext ts --ext tsx",
     "test": "jest",
     "test:debug": "npx --node-arg=--inspect jest --runInBand --testTimeout=60000 --verbose --watch",
+    "test:bundle": "node ./dist-test/esm-test.mjs && node ./dist-test/cjs-test.cjs",
     "example": "node --es-module-specifier-resolution=node --loader ts-node/esm"
   },
   "devDependencies": {
@@ -99,10 +100,10 @@
   "dependencies": {
     "apache-arrow": "8.0.0",
     "config-ini-parser": "1.5.9",
-    "cross-fetch": "3.1.5",
     "lodash": "4.17.21",
     "lodash-es": "4.17.21",
-    "node-fetch": "3.2.4",
+    "node-fetch": "3.1.1",
+    "node-fetch-commonjs": "3.1.1",
     "query-string": "7.1.0"
   }
 }
