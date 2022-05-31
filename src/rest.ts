@@ -81,7 +81,12 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   try {
     response = await fetch(fullUrl, opts);
   } catch (error: any) {
-    if (error.message.toLowerCase().includes('failed to fetch')) {
+    const errorMsg = error.message.toLowerCase();
+
+    if (
+      errorMsg.includes('failed to fetch') || // Chrome
+      errorMsg.includes('networkerror when attempting to fetch resource') // Firefox
+    ) {
       throw new Error(
         'Request failed due to a connectivity issue. Please check your network connection.',
       );
@@ -95,12 +100,19 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   const responseClone = response.clone();
 
-  if (contentType && contentType.includes('application/json')) {
-    responseBody = await response.json();
-  } else if (contentType?.includes('multipart/form-data') && response.body) {
-    responseBody = await parseMultipart(response);
-  } else {
-    responseBody = await response.text();
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      responseBody = await response.json();
+    } else if (contentType?.includes('multipart/form-data') && response.body) {
+      responseBody = await parseMultipart(response);
+    } else {
+      responseBody = await response.text();
+    }
+  } catch (error: any) {
+    const err = new Error('Failed to read server response.');
+    (err as any).cause = error;
+
+    throw err;
   }
 
   if (options.onResponse) {
