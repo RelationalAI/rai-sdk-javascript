@@ -110,7 +110,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     }
   } catch (error: any) {
     const err = new Error('Failed to read server response.');
-    err.cause = error;
+    (err as any).cause = error;
 
     throw err;
   }
