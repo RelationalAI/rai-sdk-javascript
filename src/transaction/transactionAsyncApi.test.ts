@@ -170,10 +170,10 @@ describe('TransactionAsyncApi', () => {
     expect(result).toEqual(response);
   });
 
-  it('should delete transaction', async () => {
-    const response = { txn_id: 'id1', message: 'deleted' };
-    const scope = nock(baseUrl).delete(`${path}/id1`).reply(200, response);
-    const result = await api.deleteTransaction('id1');
+  it('should cancel transaction', async () => {
+    const response = {};
+    const scope = nock(baseUrl).post(`${path}/id1/cancel`).reply(200, response);
+    const result = await api.cancelTransaction('id1');
 
     scope.done();
 

@@ -29,9 +29,8 @@ const ENDPOINT = 'transactions';
 
 type ListResponse = { transactions: TransactionAsync[] };
 type SingleResponse = { transaction: TransactionAsync };
-type DeleteResponse = {
-  txn_id: string;
-  message: string;
+type CancelResponse = {
+  message?: string;
 };
 
 export class TransactionAsyncApi extends Base {
@@ -89,12 +88,12 @@ export class TransactionAsyncApi extends Base {
     return result;
   }
 
-  async deleteTransaction(transactionId: string) {
-    const result = await this.delete<DeleteResponse>(
-      `${ENDPOINT}/${transactionId}`,
+  async cancelTransaction(transactionId: string) {
+    const result = await this.post<CancelResponse>(
+      `${ENDPOINT}/${transactionId}/cancel`,
       {},
     );
 
-    return result;
+    return result || {};
   }
 }
