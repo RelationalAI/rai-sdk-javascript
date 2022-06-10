@@ -101,7 +101,6 @@ async function readJson(file: File | string) {
 export function isTransactionDone(state: TransactionAsyncState) {
   return (
     state === TransactionAsyncState.ABORTED ||
-    state === TransactionAsyncState.COMPLETED ||
-    state === TransactionAsyncState.CANCELLED
+    state === TransactionAsyncState.COMPLETED
   );
 }
