@@ -59,11 +59,12 @@ export function makeError(body: any, response: Response) {
     return new TransactionError(body, response);
   }
 
-  if (body?.message) {
-    return new ApiError(body.message, body.status, body.details, response);
-  }
-
-  return new Error(response.statusText);
+  return new ApiError(
+    body?.message || response.statusText || response.status,
+    body?.status || response.status,
+    body?.details,
+    response,
+  );
 }
 
 export type SdkError = ApiError | TransactionError | Error;

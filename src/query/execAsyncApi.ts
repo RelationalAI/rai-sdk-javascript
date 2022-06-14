@@ -66,11 +66,20 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       readonly,
     );
     const txnId = result.transaction.id;
-    const startedAt = Date.now();
 
     if ('results' in result) {
       return result;
     }
+
+    return await this.pollTransaction(txnId, interval, timeout);
+  }
+
+  async pollTransaction(
+    txnId: string,
+    interval = 3 * 1000,
+    timeout = Number.POSITIVE_INFINITY,
+  ) {
+    const startedAt = Date.now();
 
     let transaction: TransactionAsyncCompact;
 
