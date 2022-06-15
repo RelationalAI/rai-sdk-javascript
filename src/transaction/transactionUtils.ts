@@ -15,6 +15,7 @@
  */
 
 import { tableFromIPC } from 'apache-arrow';
+import { MetadataInfo } from '../proto/generated/message';
 
 import {
   ArrowRelation,
@@ -41,6 +42,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
   const problems = files.find(x => x.name === 'problems');
   const metadata = files.find(x => x.name === 'metadata');
+  const metadataInfo = files.find(x => x.name = 'metadata_info')
 
   if (!transaction) {
     throw new Error('transaction part not found');
@@ -50,12 +52,18 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     throw new Error('metadata part not found');
   }
 
+  if (!metadataInfo) {
+    throw new Error('metadata info part not found')
+  }
+
   const txn = await readJson(transaction.file);
   const result: TransactionAsyncResult = {
     transaction: txn,
     results: await readArrowFiles(files),
     metadata: await readJson(metadata.file),
   };
+
+  readProtoMetadata(metadataInfo.file)
 
   if (problems) {
     result.problems = await readJson(problems.file);
@@ -82,6 +90,20 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   }
 
   return results;
+}
+
+export async function readProtoMetadata(file: File | string) {
+  if (typeof file === 'string') {
+    console.log(file)
+    const codeUnits = new Uint8Array(file.length)
+    for (let i = 0; i < codeUnits.length; i++) {
+      codeUnits[i] = file.charCodeAt(i)
+    }
+    console.log(codeUnits)
+    var info = MetadataInfo.decode(codeUnits)
+    // console.log(info)
+  }
+
 }
 
 async function readJson(file: File | string) {
