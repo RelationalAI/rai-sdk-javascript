@@ -42,7 +42,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
   const problems = files.find(x => x.name === 'problems');
   const metadata = files.find(x => x.name === 'metadata');
-  const metadataInfo = files.find(x => x.name = 'metadata_info')
+  const metadataInfo = files.find(x => x.name === 'metadata_info')
 
   if (!transaction) {
     throw new Error('transaction part not found');
@@ -100,8 +100,8 @@ export async function readProtoMetadata(file: File | string) {
       codeUnits[i] = file.charCodeAt(i)
     }
     console.log(codeUnits)
-    var info = MetadataInfo.decode(codeUnits)
-    // console.log(info)
+    var info = MetadataInfo.fromBinary(codeUnits)
+    console.log(info)
   }
 
 }
