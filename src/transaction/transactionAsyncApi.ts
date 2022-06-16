@@ -99,7 +99,7 @@ export class TransactionAsyncApi extends Base {
   }
 
   // TODO make sure to implement this function once
-    // feature is added server side
+  // feature is added server side
   async getTransactionMetadataInfo(transactionId: string) {
     return MetadataInfo.fromJsonString('{}');
   }

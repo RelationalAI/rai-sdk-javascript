@@ -112,7 +112,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       this.getTransactionMetadata(txnId),
       this.getTransactionProblems(txnId),
       this.getTransactionResults(txnId),
-      this.getTransactionMetadataInfo(txnId)
+      this.getTransactionMetadataInfo(txnId),
     ]);
 
     const res: TransactionAsyncResult = {

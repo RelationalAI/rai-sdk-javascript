@@ -15,8 +15,8 @@
  */
 
 import { tableFromIPC } from 'apache-arrow';
-import { MetadataInfo } from '../proto/generated/message';
 
+import { MetadataInfo } from '../proto/generated/message';
 import {
   ArrowRelation,
   LabeledAction,
@@ -42,7 +42,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
   const problems = files.find(x => x.name === 'problems');
   const metadata = files.find(x => x.name === 'metadata');
-  const metadataInfo = files.find(x => x.name === 'metadata_info')
+  const metadataInfo = files.find(x => x.name === 'metadata_info');
 
   if (!transaction) {
     throw new Error('transaction part not found');
@@ -53,7 +53,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   }
 
   if (!metadataInfo) {
-    throw new Error('metadata info part not found')
+    throw new Error('metadata info part not found');
   }
 
   const txn = await readJson(transaction.file);
@@ -64,7 +64,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     metadataInfo: await readProtoMetadata(metadataInfo.file),
   };
 
-  readProtoMetadata(metadataInfo.file)
+  readProtoMetadata(metadataInfo.file);
 
   if (problems) {
     result.problems = await readJson(problems.file);
@@ -95,14 +95,14 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
 
 export async function readProtoMetadata(file: File | string) {
   if (typeof file === 'string') {
-    const data = new Uint8Array(file.length)
+    const data = new Uint8Array(file.length);
     for (let i = 0; i < data.length; i++) {
-      data[i] = file.charCodeAt(i)
+      data[i] = file.charCodeAt(i);
     }
 
-    return MetadataInfo.fromBinary(data)
+    return MetadataInfo.fromBinary(data);
   } else {
-    throw new Error('unsupported metadata type File')
+    throw new TypeError('unsupported metadata type File');
   }
 }
 

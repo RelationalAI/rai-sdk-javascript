@@ -15,6 +15,7 @@
  */
 
 import { Table } from 'apache-arrow';
+
 import { MetadataInfo } from '../proto/generated/message';
 
 export type RelValue = string | number | boolean | null | number[];
