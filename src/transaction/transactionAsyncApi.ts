@@ -15,6 +15,7 @@
  */
 
 import { Base } from '../base';
+import { MetadataInfo } from '../proto/generated/message';
 import { readArrowFiles, readTransactionResult } from './transactionUtils';
 import {
   Problem,
@@ -95,5 +96,11 @@ export class TransactionAsyncApi extends Base {
     );
 
     return result || {};
+  }
+
+  // TODO make sure to implement this function once
+    // feature is added server side
+  async getTransactionMetadataInfo(transactionId: string) {
+    return MetadataInfo.fromJsonString('{}');
   }
 }

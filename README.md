@@ -75,12 +75,6 @@ const client = new Client(config);
 const result = await client.listEngines();
 ```
 
-## Generate protobuf sources
-
-```console
-$ protoc --plugin="./node_modules/.bin/protoc-gen-ts_proto" -I="./src/proto" --ts_proto_opt=esModuleInterop=true --ts_proto_out="./src/proto/generated" src/proto/*.proto
-```
-
 ## Examples
 
 Each of the example files in the ./examples folder is standalone and can be run

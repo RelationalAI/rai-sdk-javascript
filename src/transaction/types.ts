@@ -15,6 +15,7 @@
  */
 
 import { Table } from 'apache-arrow';
+import { MetadataInfo } from '../proto/generated/message';
 
 export type RelValue = string | number | boolean | null | number[];
 
@@ -225,4 +226,5 @@ export type TransactionAsyncResult = {
   metadata: TransactionMetadata[];
   problems?: Problem[];
   results: ArrowRelation[];
+  metadataInfo: MetadataInfo;
 };
