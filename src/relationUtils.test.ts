@@ -1075,6 +1075,39 @@ describe('relationUtils', () => {
       },
     ]);
 
+    const nestedEmptyObject: ArrowRelation[] = plainToArrow([
+      {
+        relationId: '/:object/:name/String',
+        columns: [['obj1']],
+      },
+      {
+        relationId: '/:object/:arr/:[]/Int64/:id/Int64',
+        columns: [
+          [1, 2],
+          [1, 2],
+        ],
+      },
+      {
+        relationId: '/:object/:arr/:[]/Int64/:attrs',
+        columns: [[1]],
+      },
+      {
+        relationId: '/:object/:arr/:[]/Int64/:attrs/:attr1/String',
+        columns: [[2], ['value1']],
+      },
+      {
+        relationId: '/:idt/String',
+        columns: [['432412341234']],
+      },
+    ]);
+
+    const rootEmptyObject: ArrowRelation[] = plainToArrow([
+      {
+        relationId: '/:foo',
+        columns: [],
+      },
+    ]);
+
     it('should handle empty inputs', () => {
       const json = toJson([]);
 
@@ -1490,6 +1523,37 @@ describe('relationUtils', () => {
           bar: 123,
           '[]': [{ a: 1 }, { a: 2 }],
         },
+      });
+    });
+
+    it('should handle nested empty objects', () => {
+      const json = toJson(nestedEmptyObject);
+
+      expect(json).toEqual({
+        idt: '432412341234',
+        object: {
+          name: 'obj1',
+          arr: [
+            {
+              id: 1,
+              attrs: {},
+            },
+            {
+              id: 2,
+              attrs: {
+                attr1: 'value1',
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    it('should handle root empty objects', () => {
+      const json = toJson(rootEmptyObject);
+
+      expect(json).toEqual({
+        foo: {},
       });
     });
 
