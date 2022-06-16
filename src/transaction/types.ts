@@ -167,6 +167,7 @@ export type TransactionResult = {
 export enum TransactionAsyncState {
   CREATED = 'CREATED',
   RUNNING = 'RUNNING',
+  CANCELLING = 'CANCELLING',
   ABORTED = 'ABORTED',
   COMPLETED = 'COMPLETED',
 }
@@ -210,9 +211,8 @@ export type TransactionMetadata = {
 
 export type TransactionAsyncFile = {
   name: string;
-  data: Uint8Array;
-  filename?: string;
-  contentType?: string;
+  // node-fetch parses json to a string
+  file: File | string;
 };
 
 export type ArrowRelation = {

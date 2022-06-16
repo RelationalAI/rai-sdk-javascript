@@ -14,23 +14,5 @@
  * under the License.
  */
 
-import { readFileSync } from 'fs';
-
-const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
-
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-const exports = {
-  preset: 'ts-jest/presets/js-with-ts-esm',
-  transformIgnorePatterns: [
-    'node_modules/(?!(fetch-blob|node-fetch|data-uri-to-buffer|formdata-polyfill)/)',
-  ],
-  testEnvironment: 'node',
-  globals: {
-    __RAI_SDK_VERSION__: pkg.version,
-  },
-  moduleNameMapper: {
-    '^lodash-es$': 'lodash',
-  },
-};
-
-export default exports;
+// This's just a mock to be included in the web version
+export default () => {};

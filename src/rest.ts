@@ -14,8 +14,7 @@
  * under the License.
  */
 
-import webFetch from '@web-std/fetch';
-import { iterateMultipart } from '@web3-storage/multipart-parser';
+import nodeFetch from 'node-fetch';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
@@ -64,19 +63,30 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     body: JSON.stringify(options.body),
     headers: addDefaultHeaders(options.headers, url),
   };
+
+  if (typeof window === 'undefined') {
+    // See: https://github.com/node-fetch/node-fetch#custom-highwatermark
+    (opts as any).highWaterMark = 1024 * 1024;
+  }
+
   const fullUrl =
     options.query && Object.keys(options.query).length > 0
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
-  const fetch = globalThis.fetch || webFetch;
+  const fetch = globalThis.fetch || nodeFetch;
 
   let response: Response;
 
   try {
     response = await fetch(fullUrl, opts);
   } catch (error: any) {
-    if (error.message.toLowerCase().includes('failed to fetch')) {
+    const errorMsg = error.message.toLowerCase();
+
+    if (
+      errorMsg.includes('failed to fetch') || // Chrome
+      errorMsg.includes('networkerror when attempting to fetch resource') // Firefox
+    ) {
       throw new Error(
         'Request failed due to a connectivity issue. Please check your network connection.',
       );
@@ -90,12 +100,19 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   const responseClone = response.clone();
 
-  if (contentType && contentType.includes('application/json')) {
-    responseBody = await response.json();
-  } else if (contentType?.includes('multipart/form-data') && response.body) {
-    responseBody = await parseMultipart(response.body, contentType);
-  } else {
-    responseBody = await response.text();
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      responseBody = await response.json();
+    } else if (contentType?.includes('multipart/form-data') && response.body) {
+      responseBody = await parseMultipart(response);
+    } else {
+      responseBody = await response.text();
+    }
+  } catch (error: any) {
+    const err = new Error('Failed to read server response.');
+    (err as any).cause = error;
+
+    throw err;
   }
 
   if (options.onResponse) {
@@ -112,20 +129,14 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   throw makeError(responseBody, responseClone.clone());
 }
 
-async function parseMultipart(
-  body: ReadableStream<Uint8Array>,
-  contentType: string,
-) {
-  const [, boundary] = contentType.split(/\s*;\s*boundary=/);
-  const parts = iterateMultipart(body, boundary);
+async function parseMultipart(response: Response) {
+  const formData = await response.formData();
   const files = [];
 
-  for await (const { name, data, filename, contentType } of parts) {
+  for (const entry of formData) {
     files.push({
-      name,
-      data,
-      filename,
-      contentType,
+      name: entry[0],
+      file: entry[1],
     });
   }
 
