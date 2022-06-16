@@ -76,6 +76,7 @@
     "example": "node --es-module-specifier-resolution=node --loader ts-node/esm"
   },
   "devDependencies": {
+    "@protobuf-ts/plugin": "2.7.0",
     "@types/jest": "27.4.0",
     "@types/lodash-es": "4.17.4",
     "@typescript-eslint/eslint-plugin": "5.2.0",
@@ -99,7 +100,6 @@
     "typescript": "4.4.4"
   },
   "dependencies": {
-    "@protobuf-ts/plugin": "2.7.0",
     "apache-arrow": "8.0.0",
     "config-ini-parser": "1.5.9",
     "lodash": "4.17.21",
