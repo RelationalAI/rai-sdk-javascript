@@ -255,43 +255,53 @@ export function toJson(output: Relation[] | ArrowRelation[]): any {
       }
     }
 
-    for (let i = 0; i < relation.columns[0].length; i++) {
-      let pathToSet = propPath.slice();
-      let value: any;
+    // if the last key is a symbol, then we need to add it to the prop path
+    // so we can set the value to an empty object
+    if (keys[keys.length - 1][0] === SYMBOL_PREFIX) {
+      propPath.push(keys[keys.length - 1].slice(1));
+    }
 
-      for (let j = 0; j < relation.columns.length; j++) {
-        const colValue = relation.columns[j][i];
-        const pathIndex = columnLookup[j];
+    if (relation.columns.length === 0) {
+      set(result, propPath, {});
+    } else {
+      for (let i = 0; i < relation.columns[0].length; i++) {
+        let pathToSet = propPath.slice();
+        let value: any;
 
-        if (pathIndex !== undefined) {
-          const isArray = pathToSet[pathIndex] === ARRAY_MARKER;
+        for (let j = 0; j < relation.columns.length; j++) {
+          const colValue = relation.columns[j][i];
+          const pathIndex = columnLookup[j];
 
-          if (isArray) {
-            const arrayIndex =
-              typeof colValue === 'number'
-                ? colValue - 1 // rel indices start from 1, not 0
-                : i; // wow, non-number array index?
-            pathToSet[columnLookup[j]] = arrayIndex;
-          } else {
-            pathToSet[columnLookup[j]] = colValue as string | number;
+          if (pathIndex !== undefined) {
+            const isArray = pathToSet[pathIndex] === ARRAY_MARKER;
+
+            if (isArray) {
+              const arrayIndex =
+                typeof colValue === 'number'
+                  ? colValue - 1 // rel indices start from 1, not 0
+                  : i; // wow, non-number array index?
+              pathToSet[columnLookup[j]] = arrayIndex;
+            } else {
+              pathToSet[columnLookup[j]] = colValue as string | number;
+            }
+          } else if (j === relation.columns.length - 1) {
+            value = colValue;
           }
-        } else if (j === relation.columns.length - 1) {
-          value = colValue;
         }
-      }
 
-      if (
-        pathToSet[pathToSet.length - 1] === ARRAY_MARKER &&
-        keys[keys.length - 1] === EMPTY_ARRAY_MARKER
-      ) {
-        pathToSet = pathToSet.slice(0, -1);
-        value = [];
-      } else if (value === undefined) {
-        // present value
-        value = {};
-      }
+        if (
+          pathToSet[pathToSet.length - 1] === ARRAY_MARKER &&
+          keys[keys.length - 1] === EMPTY_ARRAY_MARKER
+        ) {
+          pathToSet = pathToSet.slice(0, -1);
+          value = [];
+        } else if (value === undefined) {
+          // present value
+          value = {};
+        }
 
-      set(result, pathToSet, value);
+        set(result, pathToSet, value);
+      }
     }
   });
 
