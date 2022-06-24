@@ -111,6 +111,22 @@ describe('TransactionAsyncApi', () => {
     expect(result).toEqual(mockTransactions);
   });
 
+  it('should list transactions with params', async () => {
+    const response = {
+      transactions: mockTransactions,
+    };
+    const query = {
+      engine_name: 'test_engine',
+      tags: ['tag1', 'tag2'],
+    };
+    const scope = nock(baseUrl).get(path).query(query).reply(200, response);
+    const result = await api.listTransactions(query);
+
+    scope.done();
+
+    expect(result).toEqual(mockTransactions);
+  });
+
   it('should get transaction', async () => {
     const response = {
       transaction: mockTransactions[0],
