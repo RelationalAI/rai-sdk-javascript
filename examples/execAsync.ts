@@ -25,13 +25,15 @@ async function run(
   queryString: string,
   readonly: boolean,
   poll: boolean,
+  tag: string,
   profile?: string,
 ) {
   const config = await readConfig(profile);
   const client = new Client(config);
+  const tags = tag ? [tag] : undefined;
   const result = poll
-    ? await client.exec(database, engine, queryString, [], readonly)
-    : await client.execAsync(database, engine, queryString, [], readonly);
+    ? await client.exec(database, engine, queryString, [], readonly, tags)
+    : await client.execAsync(database, engine, queryString, [], readonly, tags);
 
   showTransactionResult(result);
 }
@@ -43,6 +45,7 @@ async function run(
     .requiredOption('-d, --database <type>', 'database name')
     .requiredOption('-e, --engine <type>', 'engine name')
     .requiredOption('-c, --command <type>', 'rel source string')
+    .option('-t, --tag <type>', 'tag', '')
     .option('-r, --readonly', 'readonly', false)
     .option('--poll', 'poll results', false)
     .option('-p, --profile <type>', 'profile', 'default')
@@ -56,6 +59,7 @@ async function run(
       options.command,
       options.readonly,
       options.poll,
+      options.tag,
       options.profile,
     );
   } catch (error: any) {

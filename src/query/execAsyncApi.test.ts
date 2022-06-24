@@ -44,6 +44,7 @@ describe('QueryAsyncApi', () => {
         nowait_durable: false,
         readonly: true,
         v1_inputs: [],
+        tags: [],
       })
       .reply(200, response);
     const result = await api.execAsync(database, engine, query, [], true);

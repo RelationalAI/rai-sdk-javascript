@@ -179,6 +179,7 @@ export type TransactionAsyncPayload = {
   engine_name?: string;
   query: string;
   v1_inputs: Relation[];
+  tags?: string[];
 };
 
 export type TransactionAsync = {
@@ -197,6 +198,7 @@ export type TransactionAsync = {
   query: string;
   user_agent: string;
   abort_reason?: string;
+  tags?: string[];
 };
 
 export type TransactionAsyncCompact = {
@@ -225,4 +227,11 @@ export type TransactionAsyncResult = {
   metadata: TransactionMetadata[];
   problems?: Problem[];
   results: ArrowRelation[];
+};
+
+export type TransactionListOptions = {
+  database_name?: string | string[];
+  engine_name?: string | string[];
+  state?: TransactionAsyncState | TransactionAsyncState[];
+  tags?: string | string[];
 };
