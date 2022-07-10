@@ -15,8 +15,11 @@
  */
 
 import { Base } from '../base';
-import { MetadataInfo } from '../proto/generated/message';
-import { readArrowFiles, readProtoMetadata, readTransactionResult } from './transactionUtils';
+import {
+  readArrowFiles,
+  readProtoMetadata,
+  readTransactionResult,
+} from './transactionUtils';
 import {
   Problem,
   TransactionAsync,
@@ -85,8 +88,9 @@ export class TransactionAsyncApi extends Base {
     const result = await this.get<string>(
       `${ENDPOINT}/${transactionId}/metadata`,
       {},
-      {'Accept': 'application/x-protobuf'},
-    )
+      { Accept: 'application/x-protobuf' },
+    );
+
     return readProtoMetadata(result);
   }
 

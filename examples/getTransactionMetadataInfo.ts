@@ -20,25 +20,25 @@ import { Client, readConfig } from '../index.node';
 import { show } from './show';
 
 async function run(id: string, profile?: string) {
-    const config = await readConfig(profile);
-    const client = new Client(config);
-    const result = await client.getTransactionMetadataInfo(id);
+  const config = await readConfig(profile);
+  const client = new Client(config);
+  const result = await client.getTransactionMetadataInfo(id);
 
-    show(result);
+  show(result);
 }
 
 (async () => {
-    const program = new Command();
+  const program = new Command();
 
-    const options = program
+  const options = program
     .requiredOption('--id <type>', 'transaction id')
     .option('-p, --profile <type>', 'profile', 'default')
     .parse(process.argv)
     .opts();
 
-    try {
-      await run(options.id, options.profile);
-    } catch (error: any) {
-      console.error(error.toString());
-    }
+  try {
+    await run(options.id, options.profile);
+  } catch (error: any) {
+    console.error(error.toString());
+  }
 })();

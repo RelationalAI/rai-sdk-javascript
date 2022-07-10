@@ -16,7 +16,6 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { MetadataInfo } from '../proto/generated/message';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import { isTransactionDone } from '../transaction/transactionUtils';
 import {

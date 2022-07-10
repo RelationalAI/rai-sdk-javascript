@@ -46,14 +46,19 @@ export abstract class Base {
 
     if (token) {
       opts.headers = {
-        ...{ authorization: `Bearer ${token}` }, ...opts.headers
+        ...{ authorization: `Bearer ${token}` },
+        ...opts.headers,
       };
     }
 
     return await request<T>(url, opts);
   }
 
-  protected async get<T>(path: string, query: RequestOptions['query'] = {}, headers: Record<string, string> = {}) {
+  protected async get<T>(
+    path: string,
+    query: RequestOptions['query'] = {},
+    headers: Record<string, string> = {},
+  ) {
     return this.request<T>(path, { query, method: 'GET', headers: headers });
   }
 
