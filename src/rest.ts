@@ -48,6 +48,7 @@ function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
     defaultHeaders['User-agent'] = sdkUserAgent;
   }
 
+  // defaultHeaders are overridden by headers
   return { ...defaultHeaders, ...headers };
 }
 

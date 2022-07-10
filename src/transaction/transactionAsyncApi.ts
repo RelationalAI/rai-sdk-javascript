@@ -16,7 +16,7 @@
 
 import { Base } from '../base';
 import { MetadataInfo } from '../proto/generated/message';
-import { readArrowFiles, readTransactionResult } from './transactionUtils';
+import { readArrowFiles, readProtoMetadata, readTransactionResult } from './transactionUtils';
 import {
   Problem,
   TransactionAsync,
@@ -81,6 +81,15 @@ export class TransactionAsyncApi extends Base {
     return result;
   }
 
+  async getTransactionMetadataInfo(transactionId: string) {
+    const result = await this.get<string>(
+      `${ENDPOINT}/${transactionId}/metadata`,
+      {},
+      {'Accept': 'application/x-protobuf'},
+    )
+    return readProtoMetadata(result);
+  }
+
   async getTransactionProblems(transactionId: string) {
     const result = await this.get<Problem[]>(
       `${ENDPOINT}/${transactionId}/problems`,
@@ -96,11 +105,5 @@ export class TransactionAsyncApi extends Base {
     );
 
     return result || {};
-  }
-
-  // TODO make sure to implement this function once
-  // feature is added server side
-  async getTransactionMetadataInfo(transactionId: string) {
-    return MetadataInfo.fromJsonString('{}');
   }
 }
