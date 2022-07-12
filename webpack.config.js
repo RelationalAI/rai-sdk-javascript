@@ -14,7 +14,6 @@
  * under the License.
  */
 
-// import DeclarationBundlerPlugin from 'declaration-bundler-webpack-plugin';
 import { readFileSync } from 'fs';
 import lodash from 'lodash';
 import path from 'path';
@@ -32,8 +31,17 @@ const baseConfig = {
     rules: [
       {
         test: /\.ts$/,
-        use: 'ts-loader',
         exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader',
+          options: {
+            compilerOptions: {
+              declaration: true,
+              outDir: path.resolve(outDir, 'typings'),
+            },
+            onlyCompileBundledFiles: true,
+          },
+        },
       },
     ],
   },
@@ -125,12 +133,5 @@ configs.forEach(config => {
     }),
   ];
 });
-
-// webEsm.plugins = [
-//   new DeclarationBundlerPlugin({
-//     moduleName: 'some.path.moduleName',
-//     out: './dist/typings/index.web.d.ts',
-//   }),
-// ];
 
 export default configs;
