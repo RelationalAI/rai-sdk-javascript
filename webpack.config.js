@@ -14,10 +14,14 @@
  * under the License.
  */
 
-import DeclarationBundlerPlugin from 'declaration-bundler-webpack-plugin';
+// import DeclarationBundlerPlugin from 'declaration-bundler-webpack-plugin';
+import { readFileSync } from 'fs';
 import lodash from 'lodash';
 import path from 'path';
+import webpack from 'webpack';
+import nodeExternals from 'webpack-node-externals';
 
+const packageJson = JSON.parse(readFileSync('./package.json'));
 const outDir = 'dist';
 const libName = `rai-sdk-javascript`;
 
@@ -27,7 +31,7 @@ const baseConfig = {
   module: {
     rules: [
       {
-        test: /\.ts?$/,
+        test: /\.ts$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -75,11 +79,58 @@ const webCjs = lodash.merge({}, baseConfig, {
   },
 });
 
-webEsm.plugins = [
-  new DeclarationBundlerPlugin({
-    moduleName: 'some.path.moduleName',
-    out: './dist/typings/index.web.d.ts',
-  }),
-];
+const nodeEsm = lodash.merge({}, baseConfig, {
+  entry: './index.node.ts',
+  experiments: {
+    outputModule: true,
+  },
+  output: {
+    filename: `${libName}.module.js`,
+    path: path.resolve(outDir, 'node'),
+    library: {
+      type: 'module',
+    },
+    chunkFormat: 'module',
+  },
+  target: 'node',
+  externalsPresets: { node: true },
+  externals: [nodeExternals({ importType: 'module' })],
+});
 
-export default [webEsm, webCjs];
+const nodeCjs = lodash.merge({}, baseConfig, {
+  entry: './index.node.ts',
+  output: {
+    filename: `${libName}.cjs`,
+    path: path.resolve(outDir, 'node'),
+    library: {
+      type: 'commonjs',
+    },
+  },
+  target: 'node',
+  externals: [
+    nodeExternals({ allowlist: ['lodash-es', 'node-fetch'] }),
+    {
+      'lodash-es': 'commonjs lodash',
+      'node-fetch': 'commonjs node-fetch-commonjs',
+    },
+  ],
+});
+
+const configs = [webEsm, webCjs, nodeEsm, nodeCjs];
+
+configs.forEach(config => {
+  config.plugins = [
+    new webpack.DefinePlugin({
+      __RAI_SDK_VERSION__: `"${packageJson.version}"`,
+    }),
+  ];
+});
+
+// webEsm.plugins = [
+//   new DeclarationBundlerPlugin({
+//     moduleName: 'some.path.moduleName',
+//     out: './dist/typings/index.web.d.ts',
+//   }),
+// ];
+
+export default configs;
