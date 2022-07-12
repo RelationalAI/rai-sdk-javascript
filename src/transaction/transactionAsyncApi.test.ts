@@ -23,7 +23,8 @@ import { TransactionAsyncApi } from './transactionAsyncApi';
 
 const path = '/transactions';
 
-const multipartMock = readFileSync(__dirname + '/multipartMock');
+const multipartMock = readFileSync(__dirname + '/mocks/multipart');
+const protobufMock = readFileSync(__dirname + '/mocks/protobuf');
 const multipartContentType =
   'multipart/form-data; boundary=fbef11dbaedd10b55d8af920ba13dd4f9e03cbddbe52c3d12e8c2eb56a23';
 const transactionAsyncMock = {
@@ -167,6 +168,83 @@ describe('TransactionAsyncApi', () => {
     scope.done();
 
     expect(result).toEqual(response);
+  });
+
+  it('should get transaction metadata info', async () => {
+    const metadata = {
+      relations: [
+        {
+          fileName: '0.arrow',
+          relationId: {
+            arguments: [
+              {
+                tag: 3,
+                primitiveType: 0,
+                constantType: {
+                  relType: {
+                    tag: 1,
+                    primitiveType: 17,
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 17,
+                        value: {
+                          oneofKind: 'stringVal',
+                          stringVal: new Uint8Array([
+                            111,
+                            117,
+                            116,
+                            112,
+                            117,
+                            116,
+                          ]),
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 3,
+                primitiveType: 0,
+                constantType: {
+                  relType: {
+                    tag: 1,
+                    primitiveType: 17,
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 17,
+                        value: {
+                          oneofKind: 'stringVal',
+                          stringVal: new Uint8Array([102, 111, 111]),
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 1,
+                primitiveType: 16,
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const scope = nock(baseUrl)
+      .get(`${path}/id1/metadata`)
+      .reply(200, protobufMock, {
+        'Content-type': 'application/x-protobuf',
+      });
+    const result = await api.getTransactionMetadataInfo('id1');
+
+    scope.done();
+
+    expect(result).toEqual(metadata);
   });
 
   it('should get transaction problems', async () => {

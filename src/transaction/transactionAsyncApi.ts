@@ -86,10 +86,12 @@ export class TransactionAsyncApi extends Base {
   }
 
   async getTransactionMetadataInfo(transactionId: string) {
-    const result = await this.get<string>(
+    const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
-      {},
-      { Accept: 'application/x-protobuf' },
+      {
+        method: 'GET',
+        headers: { Accept: 'application/x-protobuf' },
+      },
     );
 
     return readProtoMetadata(result);

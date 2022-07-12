@@ -61,10 +61,10 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     transaction: txn,
     results: await readArrowFiles(files),
     metadata: await readJson(metadata.file),
-    metadataInfo: await readProtoMetadata(metadataInfo.file),
+    metadataInfo: await readProtoMetadata(metadataInfo.file as File),
   };
 
-  readProtoMetadata(metadataInfo.file);
+  readProtoMetadata(metadataInfo.file as File);
 
   if (problems) {
     result.problems = await readJson(problems.file);
@@ -93,17 +93,15 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   return results;
 }
 
-export async function readProtoMetadata(file: File | string) {
-  if (typeof file === 'string') {
-    const data = new Uint8Array(file.length);
-    for (let i = 0; i < data.length; i++) {
-      data[i] = file.charCodeAt(i);
-    }
-
-    return MetadataInfo.fromBinary(data);
-  } else {
-    throw new TypeError('unsupported metadata type File');
+export async function readProtoMetadata(file: File | Blob) {
+  if (!file?.arrayBuffer) {
+    throw new Error(`Unsupported metadata type: ${typeof file}`);
   }
+
+  const buffer = await file.arrayBuffer();
+  const data = new Uint8Array(buffer);
+
+  return MetadataInfo.fromBinary(data);
 }
 
 async function readJson(file: File | string) {

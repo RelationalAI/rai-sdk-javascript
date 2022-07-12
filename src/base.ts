@@ -54,12 +54,8 @@ export abstract class Base {
     return await request<T>(url, opts);
   }
 
-  protected async get<T>(
-    path: string,
-    query: RequestOptions['query'] = {},
-    headers: Record<string, string> = {},
-  ) {
-    return this.request<T>(path, { query, method: 'GET', headers: headers });
+  protected async get<T>(path: string, query: RequestOptions['query'] = {}) {
+    return this.request<T>(path, { query, method: 'GET' });
   }
 
   protected async post<T>(
