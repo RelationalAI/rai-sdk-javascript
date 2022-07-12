@@ -1,7 +1,7 @@
 {
   "name": "@relationalai/rai-sdk-javascript",
   "description": "RelationalAI SDK for JavaScript",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "author": {
     "name": "RelationalAI",
     "url": "https://relational.ai"
@@ -25,15 +25,15 @@
   "exports": {
     ".": {
       "require": "./dist/node/rai-sdk-javascript.cjs",
-      "import": "./dist/node/rai-sdk-javascript.modern.js"
+      "import": "./dist/node/rai-sdk-javascript.module.js"
     },
     "./node": {
       "require": "./dist/node/rai-sdk-javascript.cjs",
-      "import": "./dist/node/rai-sdk-javascript.modern.js"
+      "import": "./dist/node/rai-sdk-javascript.module.js"
     },
     "./web": {
       "require": "./dist/web/rai-sdk-javascript.cjs",
-      "import": "./dist/web/rai-sdk-javascript.modern.js"
+      "import": "./dist/web/rai-sdk-javascript.module.js"
     }
   },
   "types": "./dist/typings/index.node.d.ts",
@@ -53,16 +53,12 @@
   "main": "./dist/node/rai-sdk-javascript.cjs",
   "browser": "./dist/web/rai-sdk-javascript.cjs",
   "module": "./dist/node/rai-sdk-javascript.module.js",
-  "unpkg": "./dist/web/rai-sdk-javascript.umd.js",
   "files": [
     "*"
   ],
   "scripts": {
     "prepack": "$npm_execpath run build",
-    "build": "rm -rf ./dist && $npm_execpath run build:web && $npm_execpath run build:node && $npm_execpath run build:node:cjs",
-    "build:web": "microbundle -i ./index.web.ts -o ./dist/web --target web --alias node-fetch=./fetch.ts --external none --define __RAI_SDK_VERSION__=$npm_package_version",
-    "build:node": "microbundle -i ./index.node.ts -o ./dist/node --target node --define __RAI_SDK_VERSION__=$npm_package_version",
-    "build:node:cjs": "$npm_execpath run build:node -- --format cjs --alias lodash-es=lodash,node-fetch=node-fetch-commonjs --generateTypes false",
+    "build": "rm -rf ./dist && webpack",
     "dev:web": "$npm_execpath run build:web -- -w",
     "dev:node": "$npm_execpath run build:node -- -w",
     "format": "prettier --write ./src --loglevel warn",
@@ -89,13 +85,16 @@
     "eslint-plugin-simple-import-sort": "7.0.0",
     "eslint-plugin-unicorn": "27.0.0",
     "jest": "27.4.7",
-    "microbundle": "0.14.2",
     "nock": "13.2.2",
     "prettier": "2.2.1",
     "prettier-plugin-jsdoc": "0.3.8",
     "ts-jest": "27.1.2",
+    "ts-loader": "9.3.1",
     "ts-node": "10.5.0",
-    "typescript": "4.4.4"
+    "typescript": "4.4.4",
+    "webpack": "5.73.0",
+    "webpack-cli": "4.10.0",
+    "webpack-node-externals": "3.0.0"
   },
   "dependencies": {
     "apache-arrow": "8.0.0",
