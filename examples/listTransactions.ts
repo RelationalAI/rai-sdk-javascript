@@ -19,10 +19,11 @@ import { Command } from 'commander';
 import { Client, readConfig } from '../index.node';
 import { show } from './show';
 
-async function run(profile?: string) {
+async function run(tag: string, profile?: string) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.listTransactions();
+  const options = tag ? { tags: [tag] } : undefined;
+  const result = await client.listTransactions(options);
 
   show(result);
 }
@@ -31,12 +32,13 @@ async function run(profile?: string) {
   const program = new Command();
 
   const options = program
+    .option('-t, --tag <type>', 'tag', '')
     .option('-p, --profile <type>', 'profile', 'default')
     .parse(process.argv)
     .opts();
 
   try {
-    await run(options.profile);
+    await run(options.tag, options.profile);
   } catch (error: any) {
     console.error(error.toString());
   }

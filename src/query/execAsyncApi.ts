@@ -33,6 +33,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     queryString: string,
     inputs: QueryInput[] = [],
     readonly = true,
+    tags: string[] = [],
   ) {
     const transaction: TransactionAsyncPayload = {
       dbname: database,
@@ -40,6 +41,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       nowait_durable: false,
       readonly,
       v1_inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
+      tags,
     };
 
     if (engine) {
@@ -55,6 +57,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     queryString: string,
     inputs: QueryInput[] = [],
     readonly = true,
+    tags: string[] = [],
     interval = 3 * 1000, // 3 seconds
     timeout = Number.POSITIVE_INFINITY,
   ) {
@@ -64,6 +67,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       queryString,
       inputs,
       readonly,
+      tags,
     );
     const txnId = result.transaction.id;
 

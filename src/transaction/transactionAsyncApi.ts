@@ -26,6 +26,7 @@ import {
   TransactionAsyncCompact,
   TransactionAsyncFile,
   TransactionAsyncPayload,
+  TransactionListOptions,
   TransactionMetadata,
 } from './types';
 
@@ -54,8 +55,8 @@ export class TransactionAsyncApi extends Base {
     };
   }
 
-  async listTransactions() {
-    const result = await this.get<ListResponse>(ENDPOINT);
+  async listTransactions(options?: TransactionListOptions) {
+    const result = await this.get<ListResponse>(ENDPOINT, options);
 
     return result.transactions;
   }
