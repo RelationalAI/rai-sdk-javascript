@@ -16,6 +16,7 @@
 
 import { tableFromArrays } from 'apache-arrow';
 
+import { ArrowRelation } from './api/transaction/types';
 import {
   arrowTableToArrayRows,
   arrowTableToJsonRows,
@@ -30,7 +31,6 @@ import {
   readResults,
   toJson,
 } from './relationUtils';
-import { ArrowRelation } from './transaction/types';
 
 const diagnosticRelations: ArrowRelation[] = [
   {

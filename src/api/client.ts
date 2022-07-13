@@ -14,6 +14,7 @@
  * under the License.
  */
 
+import { applyMixins } from '../utils';
 import { Base } from './base';
 import { DatabaseApi } from './database/databaseApi';
 import { EdbApi } from './edb/edbApi';
@@ -25,7 +26,6 @@ import { QueryApi } from './query/queryApi';
 import { TransactionApi } from './transaction/transactionApi';
 import { TransactionAsyncApi } from './transaction/transactionAsyncApi';
 import { UserApi } from './user/userApi';
-import { applyMixins } from './utils';
 
 class Client extends Base {}
 

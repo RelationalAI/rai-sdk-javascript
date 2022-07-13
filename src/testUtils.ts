@@ -16,15 +16,15 @@
 
 import nock from 'nock';
 
-import { GetTokenCredentials } from './credentials';
-import { makeUrl } from './rest';
 import {
   LabeledAction,
   LabeledActionResult,
   Transaction,
   TransactionMode,
   TransactionResult,
-} from './transaction/types';
+} from './api/transaction/types';
+import { GetTokenCredentials } from './credentials';
+import { makeUrl } from './rest';
 import { Config } from './types';
 
 export const host = 'example.com';

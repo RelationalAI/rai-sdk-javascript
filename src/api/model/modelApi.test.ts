@@ -20,7 +20,7 @@ import {
   getMockConfig,
   makeTransactionResult,
   nockTransaction,
-} from '../testUtils';
+} from '../../testUtils';
 import { ModelApi } from './modelApi';
 
 describe('ModelApi', () => {

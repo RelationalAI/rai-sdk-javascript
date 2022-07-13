@@ -16,7 +16,7 @@
 
 import nock from 'nock';
 
-import { baseUrl, getMockConfig } from '../testUtils';
+import { baseUrl, getMockConfig } from '../../testUtils';
 import { DatabaseApi } from './databaseApi';
 import { DatabaseState } from './types';
 
