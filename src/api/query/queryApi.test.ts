@@ -21,7 +21,7 @@ import {
   getMockConfig,
   makeTransactionRequest,
   makeTransactionResult,
-} from '../testUtils';
+} from '../../testUtils';
 import { Relation } from '../transaction/types';
 import { QueryApi } from './queryApi';
 

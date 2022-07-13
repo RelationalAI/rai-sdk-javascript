@@ -16,7 +16,7 @@
 
 import { tableFromIPC } from 'apache-arrow';
 
-import { MetadataInfo } from '../proto/generated/message';
+import { MetadataInfo } from '../../proto/generated/message';
 import {
   ArrowRelation,
   LabeledAction,

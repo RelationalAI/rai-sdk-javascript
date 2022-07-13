@@ -17,7 +17,7 @@
 import { Table, tableFromArrays } from 'apache-arrow';
 import { isObject, set } from 'lodash-es';
 
-import { ArrowRelation, Relation } from './transaction/types';
+import { ArrowRelation, Relation } from './api/transaction/types';
 
 type Value = string | boolean | number | BigInt | null;
 type Primitive = string | boolean | number | null;
