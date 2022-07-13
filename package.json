@@ -58,10 +58,9 @@
   ],
   "scripts": {
     "prepack": "$npm_execpath run build",
-    "build": "rm -rf ./dist && webpack",
+    "build": "rm -rf ./dist && webpack build",
     "proto-gen": "npx protoc --ts_out src/proto/generated/ --proto_path src/proto src/proto/*.proto",
-    "dev:web": "$npm_execpath run build:web -- -w",
-    "dev:node": "$npm_execpath run build:node -- -w",
+    "dev": "rm -rf ./dist && webpack watch",
     "format": "prettier --write ./src --loglevel warn",
     "tscheck": "tsc --noEmit --pretty true",
     "lint": "eslint --cache . --ext js --ext ts --ext tsx",

@@ -21,6 +21,8 @@ export * from './src/engine/types';
 export type { SdkError } from './src/errors';
 export { ApiError, TransactionError } from './src/errors';
 export * from './src/oauthClient/types';
+export * from './src/proto/generated/message';
+export * from './src/proto/generated/schema';
 export * from './src/query/types';
 export * from './src/relationUtils';
 export * from './src/transaction/types';
