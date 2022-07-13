@@ -14,8 +14,8 @@
  * under the License.
  */
 
-import { makeUrl, request, RequestOptions } from './rest';
-import { Config } from './types';
+import { makeUrl, request, RequestOptions } from '../rest';
+import { Config } from '../types';
 
 type OnResponse = RequestOptions['onResponse'];
 

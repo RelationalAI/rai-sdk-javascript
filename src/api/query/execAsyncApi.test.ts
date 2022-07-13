@@ -16,7 +16,7 @@
 
 import nock from 'nock';
 
-import { baseUrl, getMockConfig } from '../testUtils';
+import { baseUrl, getMockConfig } from '../../testUtils';
 import { TransactionAsyncState } from '../transaction/types';
 import { ExecAsyncApi } from './execAsyncApi';
 

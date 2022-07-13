@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { TransactionResult } from './transaction/types';
+import { TransactionResult } from './api/transaction/types';
 
 export class ApiError extends Error {
   constructor(

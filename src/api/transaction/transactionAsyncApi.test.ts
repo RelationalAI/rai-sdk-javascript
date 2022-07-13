@@ -17,9 +17,9 @@
 import { readFileSync } from 'fs';
 import nock from 'nock';
 
-import { baseUrl, getMockConfig } from '../testUtils';
-import { TransactionAsyncState } from '../transaction/types';
+import { baseUrl, getMockConfig } from '../../testUtils';
 import { TransactionAsyncApi } from './transactionAsyncApi';
+import { TransactionAsyncState } from './types';
 
 const path = '/transactions';
 

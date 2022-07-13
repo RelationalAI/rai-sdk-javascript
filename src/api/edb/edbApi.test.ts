@@ -16,7 +16,7 @@
 
 import nock from 'nock';
 
-import { getMockConfig, nockTransaction } from '../testUtils';
+import { getMockConfig, nockTransaction } from '../../testUtils';
 import { RelKey } from '../transaction/types';
 import { EdbApi } from './edbApi';
 
