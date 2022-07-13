@@ -16,11 +16,17 @@
 
 import {
   ArrowRelation,
+  MetadataInfo,
   TransactionAsyncCompact,
   TransactionAsyncResult,
 } from '../index.node';
 
 export function show(data: any) {
+  try {
+    data = MetadataInfo.toJson(data);
+    // eslint-disable-next-line no-empty
+  } catch {}
+
   console.log(JSON.stringify(data, undefined, 2));
 }
 
@@ -41,8 +47,13 @@ export function showTransactionResult(
   } as any;
 
   delete copy.results;
+  delete copy.metadataInfo;
 
   show(copy);
+
+  if ('metadataInfo' in result) {
+    show(result.metadataInfo);
+  }
 
   if ('results' in result) {
     showArrow(result.results);
