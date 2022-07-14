@@ -27,7 +27,6 @@ import {
   TransactionAsyncFile,
   TransactionAsyncPayload,
   TransactionListOptions,
-  TransactionMetadata,
 } from './types';
 
 const ENDPOINT = 'transactions';
@@ -78,14 +77,6 @@ export class TransactionAsyncApi extends Base {
   }
 
   async getTransactionMetadata(transactionId: string) {
-    const result = await this.get<TransactionMetadata[]>(
-      `${ENDPOINT}/${transactionId}/metadata`,
-    );
-
-    return result;
-  }
-
-  async getTransactionMetadataInfo(transactionId: string) {
     const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
       {
