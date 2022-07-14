@@ -42,7 +42,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
   const problems = files.find(x => x.name === 'problems');
   const metadata = files.find(x => x.name === 'metadata');
-  const metadataInfo = files.find(x => x.name === 'metadata_info');
+  const metadataProto = files.find(x => x.name === 'metadata.proto');
 
   if (!transaction) {
     throw new Error('transaction part not found');
@@ -52,8 +52,8 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     throw new Error('metadata part not found');
   }
 
-  if (!metadataInfo) {
-    throw new Error('metadata info part not found');
+  if (!metadataProto) {
+    throw new Error('metadata proto part not found');
   }
 
   const txn = await readJson(transaction.file);
@@ -61,10 +61,10 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
     transaction: txn,
     results: await readArrowFiles(files),
     metadata: await readJson(metadata.file),
-    metadataInfo: await readProtoMetadata(metadataInfo.file as File),
+    metadataInfo: await readProtoMetadata(metadataProto.file as File),
   };
 
-  readProtoMetadata(metadataInfo.file as File);
+  readProtoMetadata(metadataProto.file as File);
 
   if (problems) {
     result.problems = await readJson(problems.file);
