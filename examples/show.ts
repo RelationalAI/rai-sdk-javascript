@@ -17,6 +17,7 @@
 import {
   ArrowRelation,
   MetadataInfo,
+  ResultTable,
   TransactionAsyncCompact,
   TransactionAsyncResult,
 } from '../index.node';
@@ -56,8 +57,24 @@ export function showTransactionResult(
   }
 
   if ('results' in result) {
-    showArrow(result.results);
+    showResults(result);
   }
+}
+
+function showResults(result: TransactionAsyncResult) {
+  result.results.forEach(relation => {
+    const metadata = result.metadata.find(
+      m => m.relationId === relation.relationId,
+    );
+
+    if (metadata) {
+      const resultTable = new ResultTable(relation.table, metadata);
+
+      console.log(relation.relationId);
+      console.table(resultTable.toJS('displayValue'));
+      console.log();
+    }
+  });
 }
 
 function showArrow(results: ArrowRelation[]) {
