@@ -28,6 +28,11 @@ async function run(
   tag: string,
   profile?: string,
 ) {
+  queryString = `
+  value type Foo = String, Int
+
+  def output = ^Foo["a", 1], 2
+  `;
   const config = await readConfig(profile);
   const client = new Client(config);
   const tags = tag ? [tag] : undefined;

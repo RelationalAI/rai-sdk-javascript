@@ -254,7 +254,14 @@ function toDisplayValue(value: any, type: string): string {
   }
 
   // TODO unknown type? figure this out
-  return JSON.stringify(value);
+  if (typeof value === 'object') {
+    return Object.keys(value)
+      .map(key => `${key}: ${value[key]}`)
+      .join(', ');
+  }
+
+  // fall through
+  return value.toString();
 }
 
 function int128ToBigInt(tuple: bigint[]) {
