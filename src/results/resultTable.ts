@@ -15,6 +15,7 @@
  */
 
 import { StructRowProxy, Table } from 'apache-arrow';
+import Decimal from 'decimal.js';
 
 import { TransactionMetadata } from '../api/transaction/types';
 
@@ -161,18 +162,13 @@ function toJsValue(value: any, type: string) {
     const bits = Number.parseInt(decimalMatch[1]);
     const places = Number.parseInt(decimalMatch[2]);
 
-    // TODO use decimal.js or something like that
-
-    if (bits < 64) {
-      return value / Math.pow(10, places);
-    }
-
     if (bits === 128) {
       value = int128ToBigInt(value.toArray());
     }
 
-    // TODO this won't work, really use decimal.js!
-    return value / BigInt(Math.pow(10, places));
+    // Decimal.js doesn't support BigInt
+    // See: https://github.com/MikeMcl/decimal.js/issues/181
+    return new Decimal(value.toString()).dividedBy(Math.pow(10, places));
   }
 
   // rationals
@@ -236,17 +232,15 @@ function toDisplayValue(value: any, type: string): string {
   }
 
   if (floatRegEx.test(type)) {
-    return value.toString();
+    return value % 1 === 0 ? value + '.0' : value.toString();
   }
 
   const decimalMatch = type.match(decimalRegEx);
 
   if (decimalMatch && decimalMatch.length === 3) {
-    // const bits = Number.parseInt(decimalMatch[1]);
-    // const places = Number.parseInt(decimalMatch[2]);
+    const places = Number.parseInt(decimalMatch[2]);
 
-    // TODO check with decimal.js
-    return value.toString();
+    return (value as Decimal).toFixed(places);
   }
 
   if (rationalRegEx.test(type)) {
@@ -260,7 +254,6 @@ function toDisplayValue(value: any, type: string): string {
       .join(', ');
   }
 
-  // fall through
   return value.toString();
 }
 
