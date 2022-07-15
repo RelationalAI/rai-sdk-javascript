@@ -49,7 +49,6 @@ export function showTransactionResult(
   } as any;
 
   delete copy.results;
-  delete copy.metadataInfo;
 
   show(copy);
 
