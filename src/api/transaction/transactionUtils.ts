@@ -41,30 +41,25 @@ export function makeLabeledAction(
 export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
   const problems = files.find(x => x.name === 'problems');
-  const metadata = files.find(x => x.name === 'metadata');
   const metadataProto = files.find(x => x.name === 'metadata.proto');
 
   if (!transaction) {
     throw new Error('transaction part not found');
   }
 
-  if (!metadata) {
-    throw new Error('metadata part not found');
-  }
-
-  if (!metadataProto) {
-    throw new Error('metadata proto part not found');
-  }
+  // TODO uncomment and make TransactionAsyncResult.metadata required
+  // if (!metadataProto) {
+  //   throw new Error('metadata proto part not found');
+  // }
 
   const txn = await readJson(transaction.file);
   const result: TransactionAsyncResult = {
     transaction: txn,
     results: await readArrowFiles(files),
-    metadata: await readJson(metadata.file),
-    metadataInfo: await readProtoMetadata(metadataProto.file as File),
+    metadata: metadataProto
+      ? await readProtoMetadata(metadataProto.file as File)
+      : undefined,
   };
-
-  readProtoMetadata(metadataProto.file as File);
 
   if (problems) {
     result.problems = await readJson(problems.file);

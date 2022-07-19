@@ -38,26 +38,12 @@ const transactionAsyncMock = {
     state: 'COMPLETED',
   },
   problems: [],
-  metadata: [
-    {
-      relationId: '/:output/:foo',
-      types: [':output', ':foo'],
-    },
-    {
-      relationId: '/:output/:foo;bar/Int64',
-      types: [':output', ':foo;bar', 'Int64'],
-    },
-    {
-      relationId: '/:output/Int64',
-      types: [':output', 'Int64'],
-    },
-  ],
   results: [
     { relationId: '/:output/:foo', table: expect.anything() },
     { relationId: '/:output/:foo;bar/Int64', table: expect.anything() },
     { relationId: '/:output/Int64', table: expect.anything() },
   ],
-  metadataInfo: {
+  metadata: {
     relations: [
       {
         fileName: '0.arrow',
@@ -331,23 +317,6 @@ describe('TransactionAsyncApi', () => {
   });
 
   it('should get transaction metadata', async () => {
-    const response = [
-      {
-        relationId: 'foo',
-        types: ['bar'],
-      },
-    ];
-    const scope = nock(baseUrl)
-      .get(`${path}/id1/metadata`)
-      .reply(200, response);
-    const result = await api.getTransactionMetadata('id1');
-
-    scope.done();
-
-    expect(result).toEqual(response);
-  });
-
-  it('should get transaction metadata info', async () => {
     const metadata = {
       relations: [
         {
@@ -417,7 +386,7 @@ describe('TransactionAsyncApi', () => {
       .reply(200, protobufMock, {
         'Content-type': 'application/x-protobuf',
       });
-    const result = await api.getTransactionMetadataInfo('id1');
+    const result = await api.getTransactionMetadata('id1');
 
     scope.done();
 

@@ -23,10 +23,12 @@ import {
 } from '../index.node';
 
 export function show(data: any) {
-  try {
-    data = MetadataInfo.toJson(data);
-    // eslint-disable-next-line no-empty
-  } catch {}
+  if (data?.relations) {
+    try {
+      data = MetadataInfo.toJson(data);
+      // eslint-disable-next-line no-empty
+    } catch {}
+  }
 
   console.log(JSON.stringify(data, undefined, 2));
 }
@@ -48,12 +50,11 @@ export function showTransactionResult(
   } as any;
 
   delete copy.results;
-  delete copy.metadataInfo;
 
   show(copy);
 
-  if ('metadataInfo' in result) {
-    show(result.metadataInfo);
+  if ('metadata' in result) {
+    show(result.metadata);
   }
 
   if ('results' in result) {

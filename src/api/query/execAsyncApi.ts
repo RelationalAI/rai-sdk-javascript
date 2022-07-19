@@ -115,7 +115,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       this.getTransactionMetadata(txnId),
       this.getTransactionProblems(txnId),
       this.getTransactionResults(txnId),
-      this.getTransactionMetadataInfo(txnId),
     ]);
 
     const res: TransactionAsyncResult = {
@@ -123,7 +122,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       metadata: data[0],
       problems: data[1],
       results: data[2],
-      metadataInfo: data[3],
     };
 
     return res;

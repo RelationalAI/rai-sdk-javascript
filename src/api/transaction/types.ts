@@ -208,11 +208,6 @@ export type TransactionAsyncCompact = {
   state: TransactionAsyncState;
 };
 
-export type TransactionMetadata = {
-  relationId: string;
-  types: string[];
-};
-
 export type TransactionAsyncFile = {
   name: string;
   // node-fetch parses json to a string
@@ -226,10 +221,9 @@ export type ArrowRelation = {
 
 export type TransactionAsyncResult = {
   transaction: TransactionAsyncCompact | TransactionAsync;
-  metadata: TransactionMetadata[];
+  metadata?: MetadataInfo;
   problems?: Problem[];
   results: ArrowRelation[];
-  metadataInfo: MetadataInfo;
 };
 
 export type TransactionListOptions = {
