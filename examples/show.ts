@@ -64,17 +64,11 @@ export function showTransactionResult(
 
 function showResults(result: TransactionAsyncResult) {
   result.results.forEach(relation => {
-    const metadata = result.metadata.find(
-      m => m.relationId === relation.relationId,
-    );
+    const resultTable = new ResultTable(relation);
 
-    if (metadata) {
-      const resultTable = new ResultTable(relation.table, metadata);
-
-      console.log(relation.relationId);
-      console.table(resultTable.toJS('displayValue'));
-      console.log();
-    }
+    console.log(relation.relationId);
+    console.table(resultTable.toJS('displayValue'));
+    console.log();
   });
 }
 

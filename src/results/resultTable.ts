@@ -14,249 +14,73 @@
  * under the License.
  */
 
-import { StructRowProxy, Table } from 'apache-arrow';
-import Decimal from 'decimal.js';
+import { Table } from 'apache-arrow';
 
-import { TransactionMetadata } from '../api/transaction/types';
+import { ArrowRelation } from '../api/transaction/types';
+import { CellToJsFormat } from './resultCell';
+import { ResultColumn, ResultColumnDef } from './resultColumn';
+import { ResultRow } from './resultRow';
 
 export class ResultTable {
-  constructor(private table: Table, private metadata: TransactionMetadata) {}
+  private table: Table;
+  public columnDefs: ResultColumnDef[];
 
-  // TODO colNums
-  // TODO rowNums
+  constructor(relation: ArrowRelation) {
+    this.table = relation.table;
 
-  get rows() {
+    const types = relation.relationId.split('/').filter(x => x);
+
     // Getting rid of constant types
     // /:bar/String/(:Foo, Int64) -> ["String", "(:Foo, Int64)"]
     // /Int64(1)/Float64 -> ["Float64"]
-    const columnTypes = this.metadata.types.filter(type => {
+    const columnTypes = types.filter(type => {
       return (
         !type.startsWith(':') && (!type.includes('(') || type.startsWith('('))
       );
     });
 
     if (columnTypes.length !== this.table.numCols) {
-      throw new Error(`Column number mismatch ${this.metadata.relationId}`);
+      throw new Error(`Column number mismatch`);
     }
 
-    return this.table.toArray().map(row => new ResultRow(row, columnTypes));
+    this.columnDefs = columnTypes.map((type, index) => ({
+      id: `column${index}`,
+      name: type,
+      type,
+    }));
+  }
+
+  get rowLength() {
+    return this.table.numRows;
+  }
+
+  get columnLength() {
+    return this.table.numCols;
+  }
+
+  getRows() {
+    const rowArray = Array.from(this.table.toArray());
+
+    return rowArray.map(row => new ResultRow(row, this.columnDefs));
+  }
+
+  getColumns() {
+    const columns: ResultColumn[] = [];
+
+    for (let i = 0; i < this.table.numCols; i++) {
+      const col = this.table.getChild(i);
+
+      if (col) {
+        columns.push(new ResultColumn(this.columnDefs[i], col));
+      }
+    }
+
+    return columns;
   }
 
   toJS(format: CellToJsFormat = 'value') {
-    return this.rows.map(row => {
+    return this.getRows().map(row => {
       return row.toJS(format);
     });
   }
-}
-
-export type CellToJsFormat = 'cell' | 'value' | 'displayValue' | 'rawValue';
-
-class ResultRow {
-  constructor(private row: StructRowProxy, private columnTypes: string[]) {}
-
-  toArray() {
-    return this.row.toArray().map((cell, index) => {
-      return new ResultCell(cell, this.columnTypes[index]);
-    });
-  }
-
-  toJS(format: CellToJsFormat = 'value') {
-    // TODO fix return type
-    return this.toArray().reduce<Record<string, any>>((memo, cell) => {
-      if (format === 'cell') {
-        memo[cell.type] = cell;
-      } else {
-        memo[cell.type] = cell[format];
-      }
-
-      return memo;
-    }, {});
-  }
-}
-
-// :foo, Int64, String
-
-class ResultCell {
-  constructor(private arrowValue: any, public type: string) {}
-
-  get rawValue() {
-    return this.arrowValue;
-  }
-
-  get value() {
-    return toJsValue(this.arrowValue, this.type);
-  }
-
-  get displayValue() {
-    return toDisplayValue(this.value, this.type);
-  }
-}
-
-// Rata Die milliseconds for 1970-01-01T00:00:00.
-// Date and DateTime types are represented as days and milliseconds
-// respectively since 1 AD, following ISO 8601, which is the first
-// year in the proleptic Gregorian calendar. JavaScript represents
-// Date types as milliseconds since the UNIX epoch.
-const UNIXEPOCH = 62135683200000;
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-const intRegEx = /^U?Int(\d+)$/;
-const floatRegEx = /^Float\d+$/;
-const decimalRegEx = /^FixedPointDecimals.FixedDecimal{Int(\d+), (\d+)}$/;
-const rationalRegEx = /^Rational{Int(\d+)}$/;
-
-// TODO should return type like:
-// type Value = {
-//   kind: RelTypesEnumHere;
-//   value: ConditionalValueHere;
-// };
-function toJsValue(value: any, type: string) {
-  if (type === 'String') {
-    return value;
-  }
-
-  if (type === 'Bool') {
-    return value;
-  }
-
-  if (type === 'Char') {
-    return String.fromCodePoint(value);
-  }
-
-  if (type === 'Dates.DateTime') {
-    return new Date(Number(value) - UNIXEPOCH);
-  }
-
-  if (type === 'Dates.Date') {
-    return new Date(Number(value) * MILLISECONDS_PER_DAY - UNIXEPOCH);
-  }
-
-  if (type === 'RelationalAITypes.HashValue') {
-    return int128ToBigInt(value);
-  }
-
-  if (type === 'Missing') {
-    return null;
-  }
-
-  const intMatch = type.match(intRegEx);
-
-  if (intMatch && intMatch.length === 2) {
-    const bits = intMatch[1];
-
-    if (bits === '128') {
-      return int128ToBigInt(value.toArray());
-    } else {
-      return value;
-    }
-  }
-
-  const floatMatch = type.match(floatRegEx);
-
-  if (floatMatch) {
-    return value;
-  }
-
-  const decimalMatch = type.match(decimalRegEx);
-
-  if (decimalMatch && decimalMatch.length === 3) {
-    const bits = Number.parseInt(decimalMatch[1]);
-    const places = Number.parseInt(decimalMatch[2]);
-
-    if (bits === 128) {
-      value = int128ToBigInt(value.toArray());
-    }
-
-    // Decimal.js doesn't support BigInt
-    // See: https://github.com/MikeMcl/decimal.js/issues/181
-    return new Decimal(value.toString()).dividedBy(Math.pow(10, places));
-  }
-
-  // rationals
-  const rationalMatch = type.match(rationalRegEx);
-
-  if (rationalMatch && rationalMatch.length === 2) {
-    value = value.toArray();
-    const bits = rationalMatch[1];
-
-    // TODO add Type for Rational
-    if (bits === '128') {
-      return {
-        numerator: int128ToBigInt(value[0].toArray()),
-        denominator: int128ToBigInt(value[1].toArray()),
-      };
-    } else {
-      return {
-        numerator: value[0],
-        denominator: value[1],
-      };
-    }
-  }
-
-  // TODO unknown type?
-  return value;
-}
-
-function toDisplayValue(value: any, type: string): string {
-  if (type === 'String') {
-    return JSON.stringify(value).slice(1, -1);
-  }
-
-  if (type === 'Bool') {
-    return value ? 'true' : 'false';
-  }
-
-  if (type === 'Char') {
-    return value;
-  }
-
-  if (type === 'Dates.DateTime') {
-    return value.toISOString();
-  }
-
-  if (type === 'Dates.Date') {
-    const isoStr = value.toISOString();
-
-    return isoStr.split('T')[0];
-  }
-
-  if (type === 'RelationalAITypes.HashValue') {
-    return value.toString();
-  }
-
-  if (type === 'Missing') {
-    return 'missing';
-  }
-
-  if (intRegEx.test(type)) {
-    return value.toString();
-  }
-
-  if (floatRegEx.test(type)) {
-    return value % 1 === 0 ? value + '.0' : value.toString();
-  }
-
-  const decimalMatch = type.match(decimalRegEx);
-
-  if (decimalMatch && decimalMatch.length === 3) {
-    const places = Number.parseInt(decimalMatch[2]);
-
-    return (value as Decimal).toFixed(places);
-  }
-
-  if (rationalRegEx.test(type)) {
-    return `${value.numerator}/${value.denominator}`;
-  }
-
-  // TODO unknown type? figure this out
-  if (typeof value === 'object') {
-    return Object.keys(value)
-      .map(key => `${key}: ${value[key]}`)
-      .join(', ');
-  }
-
-  return value.toString();
-}
-
-function int128ToBigInt(tuple: bigint[]) {
-  return (BigInt.asIntN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
