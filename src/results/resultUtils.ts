@@ -72,10 +72,10 @@ export function toJsValue(value: any, type: string): RelBaseValue {
     };
   }
 
-  if (type === 'RelationalAITypes.HashValue') {
+  if (type === 'HashValue') {
     return {
       type: 'Hash',
-      value: int128ToBigInt(value),
+      value: int128ToBigInt(value.toArray()),
     };
   }
 

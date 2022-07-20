@@ -48,7 +48,7 @@ export class EngineApi extends Base {
     return result.computes;
   }
 
-  async getEngine(name: string) {
+  async getEngine(name: string): Promise<Engine | undefined> {
     const engines = await this.listEngines({ name });
 
     return engines[0];

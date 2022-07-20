@@ -32,7 +32,7 @@ export class ResultCell {
   }
 
   get value() {
-    return this._value;
+    return this._value.value;
   }
 
   get type() {

@@ -16,6 +16,9 @@
 
 import nock from 'nock';
 
+import Client from './api/client';
+import { DatabaseState } from './api/database/types';
+import { EngineState } from './api/engine/types';
 import {
   LabeledAction,
   LabeledActionResult,
@@ -111,4 +114,53 @@ export function nockTransaction(
     .reply(200, response);
 
   return scope;
+}
+
+export async function createEngineIfNotExists(
+  client: Client,
+  engineName: string,
+  timeout: number = 1000 * 60 * 10,
+): Promise<void> {
+  const checkEngine = async () => {
+    const engine = await client.getEngine(engineName);
+
+    return !!engine && engine.state === EngineState.PROVISIONED;
+  };
+
+  if (await checkEngine()) {
+    return;
+  }
+
+  await client.createEngine(engineName);
+
+  const startedAt = Date.now();
+
+  return new Promise((resolve, reject) => {
+    const poll = () => {
+      setTimeout(async () => {
+        if (await checkEngine()) {
+          resolve();
+        } else if (Date.now() - startedAt > timeout) {
+          reject(`Timeout provisioning ${engineName} ${timeout}ms`);
+        } else {
+          poll();
+        }
+      }, 3000);
+    };
+
+    poll();
+  });
+}
+
+export async function createDatabaseIfNotExists(
+  client: Client,
+  databaseName: string,
+) {
+  const database = await client.getDatabase(databaseName);
+
+  if (database && database.state === DatabaseState.CREATED) {
+    return;
+  }
+
+  await client.createDatabase(databaseName);
 }
