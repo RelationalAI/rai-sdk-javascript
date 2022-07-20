@@ -16,21 +16,30 @@
 
 import { ResultColumnDef } from './resultColumn';
 import { toDisplayValue, toJsValue } from './resultUtils';
+import { RelBaseValue } from './types';
 
 export type CellToJsFormat = 'cell' | 'value' | 'displayValue' | 'rawValue';
 
 export class ResultCell {
-  constructor(private arrowValue: any, public columnDef: ResultColumnDef) {}
+  private _value: RelBaseValue;
+
+  constructor(private arrowValue: any, public columnDef: ResultColumnDef) {
+    this._value = toJsValue(this.arrowValue, this.columnDef.type);
+  }
 
   get rawValue() {
     return this.arrowValue;
   }
 
   get value() {
-    return toJsValue(this.arrowValue, this.columnDef.type);
+    return this._value;
+  }
+
+  get type() {
+    return this._value.type;
   }
 
   get displayValue() {
-    return toDisplayValue(this.value, this.columnDef.type);
+    return toDisplayValue(this._value);
   }
 }

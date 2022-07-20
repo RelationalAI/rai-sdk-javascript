@@ -16,6 +16,8 @@
 
 import Decimal from 'decimal.js';
 
+import { RelBaseValue } from './types';
+
 // Rata Die milliseconds for 1970-01-01T00:00:00.
 // Date and DateTime types are represented as days and milliseconds
 // respectively since 1 AD, following ISO 8601, which is the first
@@ -23,7 +25,8 @@ import Decimal from 'decimal.js';
 // Date types as milliseconds since the UNIX epoch.
 const UNIXEPOCH = 62135683200000;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-const intRegEx = /^U?Int(\d+)$/;
+const intRegEx = /^Int(\d+)$/;
+const uintRegEx = /^UInt(\d+)$/;
 const floatRegEx = /^Float\d+$/;
 const decimalRegEx = /^FixedPointDecimals.FixedDecimal{Int(\d+), (\d+)}$/;
 const rationalRegEx = /^Rational{Int(\d+)}$/;
@@ -33,51 +36,87 @@ const rationalRegEx = /^Rational{Int(\d+)}$/;
 //   kind: RelTypesEnumHere;
 //   value: ConditionalValueHere;
 // };
-export function toJsValue(value: any, type: string) {
+export function toJsValue(value: any, type: string): RelBaseValue {
   if (type === 'String') {
-    return value;
+    return {
+      type: 'String',
+      value: value,
+    };
   }
 
   if (type === 'Bool') {
-    return value;
+    return {
+      type: 'Bool',
+      value: value,
+    };
   }
 
   if (type === 'Char') {
-    return String.fromCodePoint(value);
+    return {
+      type: 'Char',
+      value: String.fromCodePoint(value),
+    };
   }
 
   if (type === 'Dates.DateTime') {
-    return new Date(Number(value) - UNIXEPOCH);
+    return {
+      type: 'DateTime',
+      value: new Date(Number(value) - UNIXEPOCH),
+    };
   }
 
   if (type === 'Dates.Date') {
-    return new Date(Number(value) * MILLISECONDS_PER_DAY - UNIXEPOCH);
+    return {
+      type: 'Date',
+      value: new Date(Number(value) * MILLISECONDS_PER_DAY - UNIXEPOCH),
+    };
   }
 
   if (type === 'RelationalAITypes.HashValue') {
-    return int128ToBigInt(value);
+    return {
+      type: 'Hash',
+      value: int128ToBigInt(value),
+    };
   }
 
   if (type === 'Missing') {
-    return null;
+    return {
+      type: 'Missing',
+      value: null,
+    };
   }
 
   const intMatch = type.match(intRegEx);
 
   if (intMatch && intMatch.length === 2) {
     const bits = intMatch[1];
+    const type = `Int${bits}`;
 
-    if (bits === '128') {
-      return int128ToBigInt(value.toArray());
-    } else {
-      return value;
-    }
+    return {
+      type: type as any,
+      value: bits === '128' ? int128ToBigInt(value.toArray()) : value,
+    };
+  }
+
+  const uintMatch = type.match(uintRegEx);
+
+  if (uintMatch && uintMatch.length === 2) {
+    const bits = uintMatch[1];
+    return {
+      type: `UInt${bits}` as any,
+      value: bits === '128' ? int128ToBigInt(value.toArray()) : value,
+    };
   }
 
   const floatMatch = type.match(floatRegEx);
 
-  if (floatMatch) {
-    return value;
+  if (floatMatch && floatMatch.length === 2) {
+    const bits = floatMatch[1];
+
+    return {
+      type: `Float${bits}` as any,
+      value: value,
+    };
   }
 
   const decimalMatch = type.match(decimalRegEx);
@@ -92,93 +131,84 @@ export function toJsValue(value: any, type: string) {
 
     // Decimal.js doesn't support BigInt
     // See: https://github.com/MikeMcl/decimal.js/issues/181
-    return new Decimal(value.toString()).dividedBy(Math.pow(10, places));
+    value = new Decimal(value.toString()).dividedBy(Math.pow(10, places));
+
+    return {
+      type: `Decimal${bits}` as any,
+      value: value,
+      places,
+    };
   }
 
-  // rationals
   const rationalMatch = type.match(rationalRegEx);
 
   if (rationalMatch && rationalMatch.length === 2) {
     value = value.toArray();
     const bits = rationalMatch[1];
 
-    // TODO add Type for Rational
-    if (bits === '128') {
-      return {
-        numerator: int128ToBigInt(value[0].toArray()),
-        denominator: int128ToBigInt(value[1].toArray()),
-      };
-    } else {
-      return {
-        numerator: value[0],
-        denominator: value[1],
-      };
-    }
+    return {
+      type: `Rational${bits}` as any,
+      value: {
+        numerator:
+          bits === '128' ? int128ToBigInt(value[0].toArray()) : value[0],
+        denominator:
+          bits === '128' ? int128ToBigInt(value[1].toArray()) : value[1],
+      },
+    };
   }
 
-  // TODO unknown type?
-  return value;
+  return {
+    type: 'Unknown',
+    value: value,
+  };
 }
 
-export function toDisplayValue(value: any, type: string): string {
-  if (type === 'String') {
-    return JSON.stringify(value).slice(1, -1);
+export function toDisplayValue(val: RelBaseValue): string {
+  switch (val.type) {
+    case 'String':
+      return JSON.stringify(val.value).slice(1, -1);
+    case 'Bool':
+      return val.value ? 'true' : 'false';
+    case 'Char':
+      return val.value;
+    case 'DateTime':
+      return val.value.toISOString();
+    case 'Date':
+      return val.value.toISOString().split('T')[0];
+    case 'Missing':
+      return 'missing';
+    case 'Hash':
+    case 'Int8':
+    case 'Int16':
+    case 'Int32':
+    case 'Int64':
+    case 'Int128':
+    case 'UInt8':
+    case 'UInt16':
+    case 'UInt32':
+    case 'UInt64':
+    case 'UInt128':
+      return val.value.toString();
+    case 'Float16':
+    case 'Float32':
+    case 'Float64':
+      return val.value % 1 === 0 ? val.value + '.0' : val.value.toString();
+    case 'Decimal16':
+    case 'Decimal32':
+    case 'Decimal64':
+    case 'Decimal128':
+      return val.value.toFixed(val.places);
+    case 'Rational8':
+    case 'Rational16':
+    case 'Rational32':
+    case 'Rational64':
+    case 'Rational128':
+      return `${val.value.numerator}/${val.value.denominator}`;
+    case 'Unknown':
+      return Object.keys(val.value)
+        .map(key => `${val.value[key]}`)
+        .join(', ');
   }
-
-  if (type === 'Bool') {
-    return value ? 'true' : 'false';
-  }
-
-  if (type === 'Char') {
-    return value;
-  }
-
-  if (type === 'Dates.DateTime') {
-    return value.toISOString();
-  }
-
-  if (type === 'Dates.Date') {
-    const isoStr = value.toISOString();
-
-    return isoStr.split('T')[0];
-  }
-
-  if (type === 'RelationalAITypes.HashValue') {
-    return value.toString();
-  }
-
-  if (type === 'Missing') {
-    return 'missing';
-  }
-
-  if (intRegEx.test(type)) {
-    return value.toString();
-  }
-
-  if (floatRegEx.test(type)) {
-    return value % 1 === 0 ? value + '.0' : value.toString();
-  }
-
-  const decimalMatch = type.match(decimalRegEx);
-
-  if (decimalMatch && decimalMatch.length === 3) {
-    const places = Number.parseInt(decimalMatch[2]);
-
-    return (value as Decimal).toFixed(places);
-  }
-
-  if (rationalRegEx.test(type)) {
-    return `${value.numerator}/${value.denominator}`;
-  }
-
-  // TODO unknown type? figure this out
-  if (typeof value === 'object') {
-    return Object.keys(value)
-      .map(key => `${key}: ${value[key]}`)
-      .join(', ');
-  }
-
-  return value.toString();
 }
 
 function int128ToBigInt(tuple: bigint[]) {
