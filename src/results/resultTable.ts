@@ -68,7 +68,7 @@ export class ResultTable {
     const columns: ResultColumn[] = [];
 
     for (let i = 0; i < this.table.numCols; i++) {
-      const col = this.table.getChild(i);
+      const col = this.table.getChildAt(i);
 
       if (col) {
         columns.push(new ResultColumn(this.columnDefs[i], col));
