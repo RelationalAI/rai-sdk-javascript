@@ -14,6 +14,8 @@
  * under the License.
  */
 
+import Decimal from 'decimal.js';
+
 import Client from '../api/client';
 import { readConfig } from '../config';
 import {
@@ -67,6 +69,7 @@ describe('ResultTable', () => {
         expectedDisplayValues: [{ column0: 'a', column1: '👍' }],
         only: false,
       },
+      // TODO add other Time types
       {
         name: 'should handle Dates.DateTime type',
         query: `def output = 2021-10-12T01:22:31+10:00`,
@@ -106,6 +109,336 @@ describe('ResultTable', () => {
         ],
         only: false,
       },
+      {
+        name: 'should handle Int8 type',
+        query: `def output = int[8, 12], int[8, -12]`,
+        expectedValues: [{ column0: 12, column1: -12 }],
+        expectedDisplayValues: [
+          {
+            column0: '12',
+            column1: '-12',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Int16 type',
+        query: `def output = int[16, 123], int[16, -123]`,
+        expectedValues: [{ column0: 123, column1: -123 }],
+        expectedDisplayValues: [
+          {
+            column0: '123',
+            column1: '-123',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Int32 type',
+        query: `def output = int[32, 1234], int[32, -1234]`,
+        expectedValues: [{ column0: 1234, column1: -1234 }],
+        expectedDisplayValues: [
+          {
+            column0: '1234',
+            column1: '-1234',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Int64 type',
+        query: `def output = 12345, -12345`,
+        expectedValues: [{ column0: 12345n, column1: -12345n }],
+        expectedDisplayValues: [
+          {
+            column0: '12345',
+            column1: '-12345',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Int128 type',
+        query: `def output = 123456789101112131415, int[128, 0], int[128, -10^10]`,
+        expectedValues: [
+          {
+            column0: 123456789101112131415n,
+            column1: 0n,
+            column2: -10000000000n,
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '123456789101112131415',
+            column1: '0',
+            column2: '-10000000000',
+          },
+        ],
+        only: false,
+      },
+
+      {
+        name: 'should handle UInt8 type',
+        query: `def output = uint[8, 12]`,
+        expectedValues: [{ column0: 12 }],
+        expectedDisplayValues: [
+          {
+            column0: '12',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle UInt16 type',
+        query: `def output = uint[16, 123]`,
+        expectedValues: [{ column0: 123 }],
+        expectedDisplayValues: [
+          {
+            column0: '123',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle UInt32 type',
+        query: `def output = uint[32, 1234]`,
+        expectedValues: [{ column0: 1234 }],
+        expectedDisplayValues: [
+          {
+            column0: '1234',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle UInt64 type',
+        query: `def output = uint[64, 12345]`,
+        expectedValues: [{ column0: 12345n }],
+        expectedDisplayValues: [
+          {
+            column0: '12345',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle UInt128 type',
+        query: `def output = uint[128, 123456789101112131415], uint[128, 0]`,
+        expectedValues: [
+          {
+            column0: 123456789101112131415n,
+            column1: 0n,
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '123456789101112131415',
+            column1: '0',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Float16 type',
+        query: `def output = float[16, 12], float[16, 42.5]`,
+        expectedValues: [
+          {
+            column0: 12,
+            column1: 42.5,
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12.0',
+            column1: '42.5',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Float32 type',
+        query: `def output = float[32, 12], float[32, 42.5]`,
+        expectedValues: [
+          {
+            column0: 12,
+            column1: 42.5,
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12.0',
+            column1: '42.5',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Float64 type',
+        query: `def output = float[64, 12], float[64, 42.5]`,
+        expectedValues: [
+          {
+            column0: 12,
+            column1: 42.5,
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12.0',
+            column1: '42.5',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Decimal16 type',
+        query: `def output = parse_decimal[16, 2, "12.34"]`,
+        expectedValues: [
+          {
+            column0: new Decimal('12.34'),
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12.34',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Decimal32 type',
+        query: `def output = parse_decimal[32, 2, "12.34"]`,
+        expectedValues: [
+          {
+            column0: new Decimal('12.34'),
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12.34',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Decimal64 type',
+        query: `def output = parse_decimal[64, 2, "12.34"]`,
+        expectedValues: [
+          {
+            column0: new Decimal('12.34'),
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12.34',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Decimal128 type',
+        query: `def output = parse_decimal[128, 2, "12345678901011121314.34"]`,
+        expectedValues: [
+          {
+            column0: new Decimal('12345678901011121314.34'),
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '12345678901011121314.34',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Rational8 type',
+        query: `def output = rational[8, 1, 2]`,
+        expectedValues: [
+          {
+            column0: {
+              numerator: 1,
+              denominator: 2,
+            },
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '1/2',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Rational16 type',
+        query: `def output = rational[16, 1, 2]`,
+        expectedValues: [
+          {
+            column0: {
+              numerator: 1,
+              denominator: 2,
+            },
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '1/2',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Rational32 type',
+        query: `def output = rational[32, 1, 2]`,
+        expectedValues: [
+          {
+            column0: {
+              numerator: 1,
+              denominator: 2,
+            },
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '1/2',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Rational64 type',
+        query: `def output = rational[64, 1, 2]`,
+        expectedValues: [
+          {
+            column0: {
+              numerator: 1n,
+              denominator: 2n,
+            },
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '1/2',
+          },
+        ],
+        only: false,
+      },
+      {
+        name: 'should handle Rational128 type',
+        query: `def output = rational[128, 123456789101112313, 9123456789101112313]`,
+        expectedValues: [
+          {
+            column0: {
+              numerator: 123456789101112313n,
+              denominator: 9123456789101112313n,
+            },
+          },
+        ],
+        expectedDisplayValues: [
+          {
+            column0: '123456789101112313/9123456789101112313',
+          },
+        ],
+        only: false,
+      },
     ];
 
     tests.forEach(test => {
@@ -123,4 +456,7 @@ describe('ResultTable', () => {
       });
     });
   });
+
+  // TODO add value types tests
+  // TODO add specialization tests
 });

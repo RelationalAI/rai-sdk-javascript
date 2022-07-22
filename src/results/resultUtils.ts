@@ -18,6 +18,8 @@ import Decimal from 'decimal.js';
 
 import { RelBaseValue } from './types';
 
+Decimal.config({ precision: 31 });
+
 // Rata Die milliseconds for 1970-01-01T00:00:00.
 // Date and DateTime types are represented as days and milliseconds
 // respectively since 1 AD, following ISO 8601, which is the first
@@ -27,7 +29,7 @@ const UNIXEPOCH = 62135683200000;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 const intRegEx = /^Int(\d+)$/;
 const uintRegEx = /^UInt(\d+)$/;
-const floatRegEx = /^Float\d+$/;
+const floatRegEx = /^Float(\d+)$/;
 const decimalRegEx = /^FixedPointDecimals.FixedDecimal{Int(\d+), (\d+)}$/;
 const rationalRegEx = /^Rational{Int(\d+)}$/;
 
