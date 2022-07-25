@@ -16,7 +16,7 @@
 
 import Decimal from 'decimal.js';
 
-import { RelBaseValue } from './types';
+import { RelTypeDef, RelTypedValue } from './types';
 
 Decimal.config({ precision: 31 });
 
@@ -33,58 +33,46 @@ const floatRegEx = /^Float(\d+)$/;
 const decimalRegEx = /^FixedPointDecimals.FixedDecimal{Int(\d+), (\d+)}$/;
 const rationalRegEx = /^Rational{Int(\d+)}$/;
 
-// TODO should return type like:
-// type Value = {
-//   kind: RelTypesEnumHere;
-//   value: ConditionalValueHere;
-// };
-export function toJsValue(value: any, type: string): RelBaseValue {
+export function getTypeDef(type: string): RelTypeDef {
   if (type === 'String') {
     return {
       type: 'String',
-      value: value,
     };
   }
 
   if (type === 'Bool') {
     return {
       type: 'Bool',
-      value: value,
     };
   }
 
   if (type === 'Char') {
     return {
       type: 'Char',
-      value: String.fromCodePoint(value),
     };
   }
 
   if (type === 'Dates.DateTime') {
     return {
       type: 'DateTime',
-      value: new Date(Number(value) - UNIXEPOCH),
     };
   }
 
   if (type === 'Dates.Date') {
     return {
       type: 'Date',
-      value: new Date(Number(value) * MILLISECONDS_PER_DAY - UNIXEPOCH),
     };
   }
 
   if (type === 'HashValue') {
     return {
       type: 'Hash',
-      value: int128ToBigInt(value.toArray()),
     };
   }
 
   if (type === 'Missing') {
     return {
       type: 'Missing',
-      value: null,
     };
   }
 
@@ -96,7 +84,6 @@ export function toJsValue(value: any, type: string): RelBaseValue {
 
     return {
       type: type as any,
-      value: bits === '128' ? int128ToBigInt(value.toArray()) : value,
     };
   }
 
@@ -106,7 +93,6 @@ export function toJsValue(value: any, type: string): RelBaseValue {
     const bits = uintMatch[1];
     return {
       type: `UInt${bits}` as any,
-      value: bits === '128' ? int128ToBigInt(value.toArray()) : value,
     };
   }
 
@@ -117,7 +103,6 @@ export function toJsValue(value: any, type: string): RelBaseValue {
 
     return {
       type: `Float${bits}` as any,
-      value: value,
     };
   }
 
@@ -127,17 +112,8 @@ export function toJsValue(value: any, type: string): RelBaseValue {
     const bits = Number.parseInt(decimalMatch[1]);
     const places = Number.parseInt(decimalMatch[2]);
 
-    if (bits === 128) {
-      value = int128ToBigInt(value.toArray());
-    }
-
-    // Decimal.js doesn't support BigInt
-    // See: https://github.com/MikeMcl/decimal.js/issues/181
-    value = new Decimal(value.toString()).dividedBy(Math.pow(10, places));
-
     return {
       type: `Decimal${bits}` as any,
-      value: value,
       places,
     };
   }
@@ -145,27 +121,94 @@ export function toJsValue(value: any, type: string): RelBaseValue {
   const rationalMatch = type.match(rationalRegEx);
 
   if (rationalMatch && rationalMatch.length === 2) {
-    value = value.toArray();
     const bits = rationalMatch[1];
 
     return {
       type: `Rational${bits}` as any,
-      value: {
-        numerator:
-          bits === '128' ? int128ToBigInt(value[0].toArray()) : value[0],
-        denominator:
-          bits === '128' ? int128ToBigInt(value[1].toArray()) : value[1],
-      },
     };
   }
 
   return {
     type: 'Unknown',
-    value: value,
   };
 }
 
-export function toDisplayValue(val: RelBaseValue): string {
+export function convertValue<T extends RelTypedValue>(
+  typeDef: RelTypeDef,
+  value: any,
+): T['value'] {
+  switch (typeDef.type) {
+    case 'String':
+    case 'Bool':
+      return value;
+    case 'Char':
+      return String.fromCodePoint(value);
+    case 'DateTime':
+      return new Date(Number(value) - UNIXEPOCH);
+    case 'Date':
+      return new Date(Number(value) * MILLISECONDS_PER_DAY - UNIXEPOCH);
+    case 'Missing':
+      return null;
+    case 'Hash':
+      return int128ToBigInt(Array.from(value));
+    case 'Int8':
+    case 'Int16':
+    case 'Int32':
+    case 'Int64':
+      return value;
+    case 'Int128':
+      return int128ToBigInt(Array.from(value));
+    case 'UInt8':
+    case 'UInt16':
+    case 'UInt32':
+    case 'UInt64':
+      return value;
+    case 'UInt128':
+      return int128ToBigInt(Array.from(value));
+    case 'Float16':
+    case 'Float32':
+    case 'Float64':
+      return value;
+    case 'Decimal16':
+    case 'Decimal32':
+    case 'Decimal64':
+      return new Decimal(value.toString()).dividedBy(
+        Math.pow(10, typeDef.places),
+      );
+    case 'Decimal128': {
+      const val = int128ToBigInt(Array.from(value));
+
+      return new Decimal(val.toString()).dividedBy(
+        Math.pow(10, typeDef.places),
+      );
+    }
+    case 'Rational8':
+    case 'Rational16':
+    case 'Rational32':
+    case 'Rational64': {
+      value = Array.from(value);
+
+      return {
+        numerator: value[0],
+        denominator: value[1],
+      };
+    }
+
+    case 'Rational128': {
+      value = Array.from(value);
+
+      return {
+        numerator: int128ToBigInt(Array.from(value[0])),
+        denominator: int128ToBigInt(Array.from(value[1])),
+      };
+    }
+
+    case 'Unknown':
+      return value;
+  }
+}
+
+export function getDisplayValue(val: RelTypedValue): string {
   switch (val.type) {
     case 'String':
       return JSON.stringify(val.value).slice(1, -1);
@@ -206,13 +249,26 @@ export function toDisplayValue(val: RelBaseValue): string {
     case 'Rational64':
     case 'Rational128':
       return `${val.value.numerator}/${val.value.denominator}`;
-    case 'Unknown':
-      return Object.keys(val.value)
-        .map(key => `${val.value[key]}`)
+    case 'Unknown': {
+      const _value = val.value as any;
+
+      return Object.keys(_value)
+        .map(key => `${_value[key]}`)
         .join(', ');
+    }
   }
 }
 
 function int128ToBigInt(tuple: bigint[]) {
   return (BigInt.asIntN(64, tuple[1]) << BigInt(64)) | tuple[0];
+}
+
+// TODO do we keep it?
+export function getTypedValue(typeDef: RelTypeDef, value: any) {
+  const typedValue: RelTypedValue = {
+    ...typeDef,
+    value,
+  };
+
+  return typedValue;
 }

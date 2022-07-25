@@ -17,9 +17,27 @@
 import { Table } from 'apache-arrow';
 
 import { ArrowRelation } from '../api/transaction/types';
-import { CellToJsFormat } from './resultCell';
-import { ResultColumn, ResultColumnDef } from './resultColumn';
-import { ResultRow } from './resultRow';
+import { convertValue, getTypeDef } from './resultUtils';
+import { RelTypeDef } from './types';
+
+export type ResultColumnDef = {
+  typeDef: RelTypeDef;
+};
+
+export type ResultColumn = {
+  columnDef: ResultColumnDef;
+  values: ResultColumnValues;
+};
+
+export type ResultRows = IteratorOf<ReturnType<typeof convertValue>[]>;
+export type ResultColumnValues = IteratorOf<ReturnType<typeof convertValue>>;
+export type ResultColumns = IteratorOf<ResultColumn>;
+
+type IteratorOf<T> = {
+  [Symbol.iterator](): IterableIterator<T>;
+  toArray: () => T[];
+  length: number;
+};
 
 export class ResultTable {
   private table: Table;
@@ -43,44 +61,72 @@ export class ResultTable {
       throw new Error(`Column number mismatch`);
     }
 
-    this.columnDefs = columnTypes.map((type, index) => ({
-      id: `column${index}`,
-      name: type,
-      type,
+    this.columnDefs = columnTypes.map(type => ({
+      typeDef: getTypeDef(type),
     }));
   }
 
-  get rowLength() {
-    return this.table.numRows;
+  get rows() {
+    const table = this.table;
+    const columnDefs = this.columnDefs;
+    const rowsInterator: ResultRows = {
+      length: table.numRows,
+      toArray: function () {
+        return Array.from(this);
+      },
+      *[Symbol.iterator]() {
+        for (const arrowRow of table) {
+          const row = arrowRow
+            .toArray()
+            .map((value, index) =>
+              convertValue(columnDefs[index].typeDef, value),
+            );
+
+          yield row;
+        }
+      },
+    };
+
+    return rowsInterator;
   }
 
-  get columnLength() {
-    return this.table.numCols;
-  }
+  get columns() {
+    const table = this.table;
+    const columnDefs = this.columnDefs;
+    const columnsIterator: ResultColumns = {
+      length: table.numCols,
+      toArray: function () {
+        return Array.from(this);
+      },
+      *[Symbol.iterator]() {
+        for (let i = 0; i < table.numCols; i++) {
+          const col = table.getChildAt(i);
+          const colDef = columnDefs[i];
 
-  getRows() {
-    const rowArray = Array.from(this.table.toArray());
+          if (!col) {
+            throw new Error(`Couldn't find result column by index ${i}`);
+          }
 
-    return rowArray.map(row => new ResultRow(row, this.columnDefs));
-  }
+          const column: ResultColumn = {
+            columnDef: colDef,
+            values: {
+              length: table.numRows,
+              toArray: function () {
+                return Array.from(this);
+              },
+              *[Symbol.iterator]() {
+                for (const val of col) {
+                  yield convertValue(val, colDef.typeDef);
+                }
+              },
+            },
+          };
 
-  getColumns() {
-    const columns: ResultColumn[] = [];
+          yield column;
+        }
+      },
+    };
 
-    for (let i = 0; i < this.table.numCols; i++) {
-      const col = this.table.getChildAt(i);
-
-      if (col) {
-        columns.push(new ResultColumn(this.columnDefs[i], col));
-      }
-    }
-
-    return columns;
-  }
-
-  toJS(format: CellToJsFormat = 'value') {
-    return this.getRows().map(row => {
-      return row.toJS(format);
-    });
+    return columnsIterator;
   }
 }

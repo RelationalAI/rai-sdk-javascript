@@ -16,7 +16,7 @@
 
 import Decimal from 'decimal.js';
 
-export type RelBaseValue =
+export type RelTypedValue =
   | StringValue
   | BoolValue
   | CharValue
@@ -47,6 +47,38 @@ export type RelBaseValue =
   | Rational64Value
   | Rational128Value
   | UnknownType;
+
+export type RelTypeDef =
+  | Omit<StringValue, 'value'>
+  | Omit<BoolValue, 'value'>
+  | Omit<CharValue, 'value'>
+  | Omit<DateTimeValue, 'value'>
+  | Omit<DateValue, 'value'>
+  | Omit<HashValue, 'value'>
+  | Omit<MissingValue, 'value'>
+  | Omit<Int8Value, 'value'>
+  | Omit<Int16Value, 'value'>
+  | Omit<Int32Value, 'value'>
+  | Omit<Int64Value, 'value'>
+  | Omit<Int128Value, 'value'>
+  | Omit<UInt8Value, 'value'>
+  | Omit<UInt16Value, 'value'>
+  | Omit<UInt32Value, 'value'>
+  | Omit<UInt64Value, 'value'>
+  | Omit<UInt128Value, 'value'>
+  | Omit<Float16Value, 'value'>
+  | Omit<Float32Value, 'value'>
+  | Omit<Float64Value, 'value'>
+  | Omit<Decimal16Value, 'value'>
+  | Omit<Decimal32Value, 'value'>
+  | Omit<Decimal64Value, 'value'>
+  | Omit<Decimal128Value, 'value'>
+  | Omit<Rational8Value, 'value'>
+  | Omit<Rational16Value, 'value'>
+  | Omit<Rational32Value, 'value'>
+  | Omit<Rational64Value, 'value'>
+  | Omit<Rational128Value, 'value'>
+  | Omit<UnknownType, 'value'>;
 
 export type StringValue = {
   type: 'String';
@@ -215,5 +247,5 @@ export type Rational128Value = {
 // TODO: should add seprated type for Value Types
 export type UnknownType = {
   type: 'Unknown';
-  value: any;
+  value: Record<string, any>;
 };
