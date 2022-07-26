@@ -285,7 +285,15 @@ export function convertValue<T extends RelTypedValue>(
   }
 }
 
-export function getDisplayValue(val: RelTypedValue): string {
+export function getDisplayValue(
+  typeDef: RelTypeDef,
+  value: RelTypedValue['value'],
+): string {
+  const val = {
+    type: typeDef.type,
+    value,
+  } as RelTypedValue;
+
   switch (val.type) {
     case 'String':
       return JSON.stringify(val.value).slice(1, -1);
@@ -351,14 +359,4 @@ export function getDisplayValue(val: RelTypedValue): string {
 
 function int128ToBigInt(tuple: bigint[]) {
   return (BigInt.asIntN(64, tuple[1]) << BigInt(64)) | tuple[0];
-}
-
-// TODO do we keep it?
-export function getTypedValue(typeDef: RelTypeDef, value: any) {
-  const typedValue: RelTypedValue = {
-    ...typeDef,
-    value,
-  };
-
-  return typedValue;
 }

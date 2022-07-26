@@ -56,11 +56,13 @@ describe('resultUtils', () => {
 
       testFn(`should display ${test.type} value`, async () => {
         const displayValues = test.values.map(val =>
-          getDisplayValue({
-            type: test.type as any,
-            places: test.places,
-            value: val as any,
-          }),
+          getDisplayValue(
+            {
+              type: test.type as any,
+              places: test.places,
+            },
+            val,
+          ),
         );
 
         expect(displayValues).toEqual(test.displayValues);

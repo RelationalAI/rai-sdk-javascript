@@ -28,4 +28,5 @@ export * from './src/proto/generated/message';
 export * from './src/proto/generated/schema';
 export * from './src/relationUtils';
 export * from './src/results/resultTable';
+export * from './src/results/resultUtils';
 export { VERSION } from './src/types';
