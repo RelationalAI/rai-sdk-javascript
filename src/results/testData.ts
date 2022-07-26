@@ -29,6 +29,8 @@ type Test = {
   only?: boolean;
 };
 
+// This should cover all types from https://docs.relational.ai/rel/ref/data-types#overview
+
 export const tests: Test[] = [
   {
     relType: 'String',
@@ -54,7 +56,6 @@ export const tests: Test[] = [
     values: ['a', '👍'],
     displayValues: ['a', '👍'],
   },
-  // TODO add other Time types
   {
     relType: 'Dates.DateTime',
     type: 'DateTime',
@@ -72,6 +73,86 @@ export const tests: Test[] = [
     displayValues: ['2021-10-12'],
   },
   {
+    relType: 'Dates.Year',
+    type: 'Year',
+    query: `def output = Year[2022]`,
+    arrowValues: [2022n],
+    values: [2022n],
+    displayValues: ['2022'],
+  },
+  {
+    relType: 'Dates.Month',
+    type: 'Month',
+    query: `def output = Month[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Week',
+    type: 'Week',
+    query: `def output = Week[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Day',
+    type: 'Day',
+    query: `def output = Day[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Hour',
+    type: 'Hour',
+    query: `def output = Hour[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Minute',
+    type: 'Minute',
+    query: `def output = Minute[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Second',
+    type: 'Second',
+    query: `def output = Second[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Millisecond',
+    type: 'Millisecond',
+    query: `def output = Millisecond[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Microsecond',
+    type: 'Microsecond',
+    query: `def output = Microsecond[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    relType: 'Dates.Nanosecond',
+    type: 'Nanosecond',
+    query: `def output = Nanosecond[1]`,
+    arrowValues: [1n],
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
     relType: 'HashValue',
     type: 'Hash',
     query: `def output(x) = hash128["abc"](_, x)`,
@@ -86,6 +167,23 @@ export const tests: Test[] = [
     arrowValues: [{}],
     values: [null],
     displayValues: ['missing'],
+  },
+  {
+    relType: 'FilePos',
+    type: 'FilePos',
+    query: `
+    def config:data="""
+    a,b,c
+    1,2,3
+    4,5,6
+    """
+    
+    def csv = load_csv[config]
+    
+    def output(p) = csv(_, p, _)`,
+    arrowValues: [2n],
+    values: [2n],
+    displayValues: ['2'],
   },
   {
     relType: 'Int8',

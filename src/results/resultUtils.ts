@@ -64,6 +64,66 @@ export function getTypeDef(type: string): RelTypeDef {
     };
   }
 
+  if (type === 'Dates.Year') {
+    return {
+      type: 'Year',
+    };
+  }
+
+  if (type === 'Dates.Month') {
+    return {
+      type: 'Month',
+    };
+  }
+
+  if (type === 'Dates.Week') {
+    return {
+      type: 'Week',
+    };
+  }
+
+  if (type === 'Dates.Day') {
+    return {
+      type: 'Day',
+    };
+  }
+
+  if (type === 'Dates.Hour') {
+    return {
+      type: 'Hour',
+    };
+  }
+
+  if (type === 'Dates.Minute') {
+    return {
+      type: 'Minute',
+    };
+  }
+
+  if (type === 'Dates.Second') {
+    return {
+      type: 'Second',
+    };
+  }
+
+  if (type === 'Dates.Millisecond') {
+    return {
+      type: 'Millisecond',
+    };
+  }
+
+  if (type === 'Dates.Microsecond') {
+    return {
+      type: 'Microsecond',
+    };
+  }
+
+  if (type === 'Dates.Nanosecond') {
+    return {
+      type: 'Nanosecond',
+    };
+  }
+
   if (type === 'HashValue') {
     return {
       type: 'Hash',
@@ -73,6 +133,12 @@ export function getTypeDef(type: string): RelTypeDef {
   if (type === 'Missing') {
     return {
       type: 'Missing',
+    };
+  }
+
+  if (type === 'FilePos') {
+    return {
+      type: 'FilePos',
     };
   }
 
@@ -147,8 +213,21 @@ export function convertValue<T extends RelTypedValue>(
       return new Date(Number(value) - UNIXEPOCH);
     case 'Date':
       return new Date(Number(value) * MILLISECONDS_PER_DAY - UNIXEPOCH);
+    case 'Year':
+    case 'Month':
+    case 'Week':
+    case 'Day':
+    case 'Hour':
+    case 'Minute':
+    case 'Second':
+    case 'Millisecond':
+    case 'Microsecond':
+    case 'Nanosecond':
+      return value;
     case 'Missing':
       return null;
+    case 'FilePos':
+      return value;
     case 'Hash':
       return int128ToBigInt(Array.from(value));
     case 'Int8':
@@ -193,7 +272,6 @@ export function convertValue<T extends RelTypedValue>(
         denominator: value[1],
       };
     }
-
     case 'Rational128': {
       value = Array.from(value);
 
@@ -202,7 +280,6 @@ export function convertValue<T extends RelTypedValue>(
         denominator: int128ToBigInt(Array.from(value[1])),
       };
     }
-
     case 'Unknown':
       return value;
   }
@@ -220,8 +297,21 @@ export function getDisplayValue(val: RelTypedValue): string {
       return val.value.toISOString();
     case 'Date':
       return val.value.toISOString().split('T')[0];
+    case 'Year':
+    case 'Month':
+    case 'Week':
+    case 'Day':
+    case 'Hour':
+    case 'Minute':
+    case 'Second':
+    case 'Millisecond':
+    case 'Microsecond':
+    case 'Nanosecond':
+      return val.value.toString();
     case 'Missing':
       return 'missing';
+    case 'FilePos':
+      return val.value.toString();
     case 'Hash':
     case 'Int8':
     case 'Int16':

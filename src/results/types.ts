@@ -22,8 +22,19 @@ export type RelTypedValue =
   | CharValue
   | DateTimeValue
   | DateValue
+  | YearValue
+  | MonthValue
+  | WeekValue
+  | DayValue
+  | HourValue
+  | MinuteValue
+  | SecondValue
+  | MillisecondValue
+  | MicrosecondValue
+  | NanosecondValue
   | HashValue
   | MissingValue
+  | FilePosValue
   | Int8Value
   | Int16Value
   | Int32Value
@@ -54,8 +65,19 @@ export type RelTypeDef =
   | Omit<CharValue, 'value'>
   | Omit<DateTimeValue, 'value'>
   | Omit<DateValue, 'value'>
+  | Omit<YearValue, 'value'>
+  | Omit<MonthValue, 'value'>
+  | Omit<WeekValue, 'value'>
+  | Omit<DayValue, 'value'>
+  | Omit<HourValue, 'value'>
+  | Omit<MinuteValue, 'value'>
+  | Omit<SecondValue, 'value'>
+  | Omit<MillisecondValue, 'value'>
+  | Omit<MicrosecondValue, 'value'>
+  | Omit<NanosecondValue, 'value'>
   | Omit<HashValue, 'value'>
   | Omit<MissingValue, 'value'>
+  | Omit<FilePosValue, 'value'>
   | Omit<Int8Value, 'value'>
   | Omit<Int16Value, 'value'>
   | Omit<Int32Value, 'value'>
@@ -105,6 +127,56 @@ export type DateValue = {
   value: Date;
 };
 
+export type YearValue = {
+  type: 'Year';
+  value: bigint;
+};
+
+export type MonthValue = {
+  type: 'Month';
+  value: bigint;
+};
+
+export type WeekValue = {
+  type: 'Week';
+  value: bigint;
+};
+
+export type DayValue = {
+  type: 'Day';
+  value: bigint;
+};
+
+export type HourValue = {
+  type: 'Hour';
+  value: bigint;
+};
+
+export type MinuteValue = {
+  type: 'Minute';
+  value: bigint;
+};
+
+export type SecondValue = {
+  type: 'Second';
+  value: bigint;
+};
+
+export type MillisecondValue = {
+  type: 'Millisecond';
+  value: bigint;
+};
+
+export type MicrosecondValue = {
+  type: 'Microsecond';
+  value: bigint;
+};
+
+export type NanosecondValue = {
+  type: 'Nanosecond';
+  value: bigint;
+};
+
 export type HashValue = {
   type: 'Hash';
   value: bigint;
@@ -113,6 +185,11 @@ export type HashValue = {
 export type MissingValue = {
   type: 'Missing';
   value: null;
+};
+
+export type FilePosValue = {
+  type: 'FilePos';
+  value: bigint;
 };
 
 export type Int8Value = {
