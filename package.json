@@ -98,6 +98,7 @@
     "webpack-node-externals": "3.0.0"
   },
   "dependencies": {
+    "@protobuf-ts/runtime": "2.7.0",
     "apache-arrow": "8.0.0",
     "config-ini-parser": "1.5.9",
     "lodash": "4.17.21",
