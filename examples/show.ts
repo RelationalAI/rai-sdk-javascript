@@ -50,6 +50,7 @@ export function showTransactionResult(
   } as any;
 
   delete copy.results;
+  delete copy.metadata;
 
   show(copy);
 
