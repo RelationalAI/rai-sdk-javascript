@@ -116,7 +116,7 @@ export class ResultTable {
               },
               *[Symbol.iterator]() {
                 for (const val of col) {
-                  yield convertValue(val, colDef.typeDef);
+                  yield convertValue(colDef.typeDef, val);
                 }
               },
             },
