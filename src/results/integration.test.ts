@@ -15,35 +15,34 @@
  */
 
 import Client from '../api/client';
-import { readConfig } from '../config';
 import {
   createDatabaseIfNotExists,
   createEngineIfNotExists,
+  getClient,
 } from '../testUtils';
 import { ResultTable } from './resultTable';
 import { tests } from './testData';
 
 describe('Integration', () => {
-  const databaseName = `js-sdk-tests`;
-  const engineName = `js-sdk-tests-local`;
-  // const engineName = `js-sdk-tests-${Date.now()}`;
+  const databaseName = `js-sdk-tests-${Date.now()}`;
+  const engineName = `js-sdk-tests-${Date.now()}`;
+  // const databaseName = `js-sdk-tests-local`;
+  // const engineName = `js-sdk-tests-local`;
   let client: Client;
 
+  jest.setTimeout(1000 * 60 * 10);
+
   beforeAll(async () => {
-    jest.setTimeout(1000 * 60 * 10);
-
-    const config = await readConfig();
-
-    client = new Client(config);
+    client = await getClient();
 
     await createEngineIfNotExists(client, engineName);
     await createDatabaseIfNotExists(client, databaseName);
   });
 
-  // afterEach(async () => {
-  //   await client.deleteEngine(engineName);
-  //   await client.deleteDatabase(databaseName);
-  // });
+  afterAll(async () => {
+    await client.deleteEngine(engineName);
+    await client.deleteDatabase(databaseName);
+  });
 
   describe('Rel to JS types', () => {
     // TODO add value types tests

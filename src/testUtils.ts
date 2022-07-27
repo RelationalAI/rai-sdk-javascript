@@ -26,7 +26,8 @@ import {
   TransactionMode,
   TransactionResult,
 } from './api/transaction/types';
-import { GetTokenCredentials } from './credentials';
+import { readConfig } from './config';
+import { ClientCredentials, GetTokenCredentials } from './credentials';
 import { makeUrl } from './rest';
 import { Config } from './types';
 
@@ -116,15 +117,45 @@ export function nockTransaction(
   return scope;
 }
 
+export async function getClient() {
+  let config: Config;
+
+  if (
+    process.env.CLIENT_ID &&
+    process.env.CLIENT_SECRET &&
+    process.env.CLIENT_CREDENTIALS_URL
+  ) {
+    const credentials = new ClientCredentials(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.CLIENT_CREDENTIALS_URL,
+    );
+    config = {
+      credentials,
+      host: 'azure.relationalai.com',
+      scheme: 'https',
+      port: '443',
+    };
+  } else {
+    config = await readConfig();
+  }
+
+  return new Client(config);
+}
+
 export async function createEngineIfNotExists(
   client: Client,
   engineName: string,
   timeout: number = 1000 * 60 * 10,
 ): Promise<void> {
   const checkEngine = async () => {
-    const engine = await client.getEngine(engineName);
+    const engines = await client.listEngines({
+      name: engineName,
+      state: EngineState.PROVISIONED,
+    });
+    const engine = engines.find(e => e.state === EngineState.PROVISIONED);
 
-    return !!engine && engine.state === EngineState.PROVISIONED;
+    return !!engine;
   };
 
   if (await checkEngine()) {
@@ -156,9 +187,13 @@ export async function createDatabaseIfNotExists(
   client: Client,
   databaseName: string,
 ) {
-  const database = await client.getDatabase(databaseName);
+  const databases = await client.listDatabases({
+    name: databaseName,
+    state: DatabaseState.CREATED,
+  });
+  const database = databases.find(d => d.state === DatabaseState.CREATED);
 
-  if (database && database.state === DatabaseState.CREATED) {
+  if (database) {
     return;
   }
 
