@@ -88,6 +88,31 @@ $ npm run example -- ./examples/listEngines.ts
 $ npm run example -- ./examples/runQuery.ts -d dbName -e engineName -c "def output = 1 + 2"
 ```
 
+## Data Types
+
+`ResultTable` maps
+[Rel data types](https://docs.relational.ai/rel/ref/data-types#overview) to
+their corresponding JavaScript equivalents. Full mapping:
+
+| Rel Data Type                                              | JS Data Type                                         |
+| ---------------------------------------------------------- | ---------------------------------------------------- |
+| Int8, Int16, Int32                                         | number                                               |
+| Int64, Int128                                              | bigint                                               |
+| UInt8, UInt16, UInt32                                      | number                                               |
+| UInt64, UInt128                                            | bigint                                               |
+| Float16, Float32, Float64                                  | number                                               |
+| Rational8, Rational16, Rational32                          | `{ numerator: number, denominator: number }`         |
+| Rational64, Rational128                                    | `{ numerator: bigint, denominator: bigint }`         |
+| FixedDecimal all bit sizes(16, 32, 64, 128)                | [decimal.js](https://github.com/MikeMcl/decimal.js/) |
+| Char                                                       | string                                               |
+| String                                                     | string                                               |
+| DateTime, Date                                             | Date                                                 |
+| Year, Month, Week, Day                                     | bigint                                               |
+| Hour, Minute, Second, Millisecond, Microsecond, Nanosecond | bigint                                               |
+| Bool                                                       | boolean                                              |
+| FilePos                                                    | bigint                                               |
+| Missing                                                    | null                                                 |
+
 ## Support
 
 You can reach the RAI developer support team at `support@relational.ai`
