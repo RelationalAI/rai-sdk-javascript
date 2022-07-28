@@ -15,33 +15,25 @@
  */
 
 import { Table } from 'apache-arrow';
+import { Table as PrintTable } from 'console-table-printer';
 
 import { ArrowRelation } from '../api/transaction/types';
-import { convertValue, getTypeDef } from './resultUtils';
-import { RelTypeDef } from './types';
+import { convertValue, getDisplayValue, getTypeDef } from './resultUtils';
+import { RelTypeDef, RelTypedValue } from './types';
 
-export type ResultColumnDef = {
+export interface ResultColumn extends IteratorOf<RelTypedValue['value']> {
   typeDef: RelTypeDef;
-};
+}
 
-export type ResultColumn = {
-  columnDef: ResultColumnDef;
-  values: ResultColumnValues;
-};
-
-export type ResultRows = IteratorOf<ReturnType<typeof convertValue>[]>;
-export type ResultColumnValues = IteratorOf<ReturnType<typeof convertValue>>;
-export type ResultColumns = IteratorOf<ResultColumn>;
-
-type IteratorOf<T> = {
+interface IteratorOf<T> {
   [Symbol.iterator](): IterableIterator<T>;
-  toArray: () => T[];
+  values: () => T[];
   length: number;
-};
+}
 
-export class ResultTable {
+export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   private table: Table;
-  public columnDefs: ResultColumnDef[];
+  private typeDefs: RelTypeDef[];
 
   constructor(relation: ArrowRelation) {
     this.table = relation.table;
@@ -61,72 +53,110 @@ export class ResultTable {
       throw new Error(`Column number mismatch`);
     }
 
-    this.columnDefs = columnTypes.map(type => ({
-      typeDef: getTypeDef(type),
-    }));
+    this.typeDefs = columnTypes.map(getTypeDef);
   }
 
-  get rows() {
-    const table = this.table;
-    const columnDefs = this.columnDefs;
-    const rowsInterator: ResultRows = {
-      length: table.numRows,
-      toArray: function () {
-        return Array.from(this);
+  get columnLength() {
+    return this.table.numCols;
+  }
+
+  columns() {
+    const columns = [];
+
+    for (let i = 0; i < this.columnLength; i++) {
+      columns.push(this.columnAt(i));
+    }
+
+    return columns;
+  }
+
+  columnAt(index: number) {
+    const arrowColumn = this.table.getChildAt(index);
+    const typeDef = this.typeDefs[index];
+
+    if (!arrowColumn) {
+      throw new Error(`Couldn't find column by index`);
+    }
+
+    const column: ResultColumn = {
+      get length() {
+        return arrowColumn.length;
+      },
+      get typeDef() {
+        return typeDef;
       },
       *[Symbol.iterator]() {
-        for (const arrowRow of table) {
-          const row = arrowRow
-            .toArray()
-            .map((value, index) =>
-              convertValue(columnDefs[index].typeDef, value),
-            );
-
-          yield row;
+        for (const val of arrowColumn) {
+          yield convertValue(typeDef, val);
         }
+      },
+      values() {
+        return Array.from(this);
       },
     };
 
-    return rowsInterator;
+    return column;
   }
 
-  get columns() {
-    const table = this.table;
-    const columnDefs = this.columnDefs;
-    const columnsIterator: ResultColumns = {
-      length: table.numCols,
-      toArray: function () {
-        return Array.from(this);
-      },
-      *[Symbol.iterator]() {
-        for (let i = 0; i < table.numCols; i++) {
-          const col = table.getChildAt(i);
-          const colDef = columnDefs[i];
+  get length() {
+    return this.table.numRows;
+  }
 
-          if (!col) {
-            throw new Error(`Couldn't find result column by index ${i}`);
-          }
+  *[Symbol.iterator]() {
+    for (const arrowRow of this.table) {
+      const row = arrowRow
+        .toArray()
+        .map((value, index) => convertValue(this.typeDefs[index], value));
 
-          const column: ResultColumn = {
-            columnDef: colDef,
-            values: {
-              length: table.numRows,
-              toArray: function () {
-                return Array.from(this);
-              },
-              *[Symbol.iterator]() {
-                for (const val of col) {
-                  yield convertValue(colDef.typeDef, val);
-                }
-              },
-            },
-          };
+      yield row;
+    }
+  }
 
-          yield column;
-        }
-      },
-    };
+  values() {
+    return Array.from(this);
+  }
 
-    return columnsIterator;
+  get(index: number) {
+    const arrowRow = this.table.get(index);
+
+    this.table.slice();
+
+    if (arrowRow) {
+      return arrowRow
+        .toArray()
+        .map((value, index) => convertValue(this.typeDefs[index], value));
+    }
+  }
+
+  slice(begin?: number | undefined, end?: number | undefined) {
+    const slicedTable = this.table.slice(begin, end);
+
+    return slicedTable.toArray().map(arrowRow => {
+      return arrowRow
+        .toArray()
+        .map((value, index) => convertValue(this.typeDefs[index], value));
+    });
+  }
+
+  print() {
+    const pTable = new PrintTable({
+      columns: this.typeDefs.map((typeDef, i) => ({
+        name: i.toString(),
+        title: typeDef.type,
+      })),
+    });
+
+    this.values().forEach(row => {
+      const printRow: Record<number, string> = {};
+
+      row.forEach((val, index) => {
+        const typeDef = this.typeDefs[index];
+        printRow[index] = getDisplayValue(typeDef, val);
+      });
+
+      pTable.addRow(printRow);
+    });
+
+    pTable.printTable();
   }
 }

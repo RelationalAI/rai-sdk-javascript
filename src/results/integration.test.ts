@@ -54,8 +54,8 @@ describe('Integration', () => {
       testFn(`should handle ${test.type} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const resultTable = new ResultTable(result.results[0]);
-        const type = resultTable.columnDefs[0].typeDef.type;
-        const values = resultTable.rows.toArray()[0];
+        const type = resultTable.columnAt(0).typeDef.type;
+        const values = resultTable.get(0);
 
         expect(type).toEqual(test.type);
         expect(values).toEqual(test.values);

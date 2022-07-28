@@ -27,6 +27,9 @@ const exports = {
   testEnvironment: 'node',
   globals: {
     __RAI_SDK_VERSION__: pkg.version,
+    'ts-jest': {
+      diagnostics: false,
+    },
   },
   moduleNameMapper: {
     '^lodash-es$': 'lodash',

@@ -14,11 +14,8 @@
  * under the License.
  */
 
-import { Table } from 'console-table-printer';
-
 import {
   ArrowRelation,
-  getDisplayValue,
   MetadataInfo,
   ResultTable,
   TransactionAsyncCompact,
@@ -69,26 +66,9 @@ export function showTransactionResult(
 function showResults(result: TransactionAsyncResult) {
   result.results.forEach(relation => {
     const resultTable = new ResultTable(relation);
-    const p = new Table({
-      columns: resultTable.columnDefs.map((c, i) => ({
-        name: i.toString(),
-        title: c.typeDef.type,
-      })),
-    });
-
-    resultTable.rows.toArray().forEach(row => {
-      const printRow: Record<number, string> = {};
-
-      row.forEach((val, index) => {
-        const typeDef = resultTable.columnDefs[index].typeDef;
-        printRow[index] = getDisplayValue(typeDef, val);
-      });
-
-      p.addRow(printRow);
-    });
 
     console.log(relation.relationId);
-    p.printTable();
+    resultTable.print();
     console.log();
   });
 }
