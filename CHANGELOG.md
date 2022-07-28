@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.7.0](https://github.com/relationalai/rai-sdk-javascript/tree/v0.7.0) (2022-07-15)
+## [v0.7.0](https://github.com/relationalai/rai-sdk-javascript/tree/v0.7.0) (2022-XX-XX)
 
 [Full Changelog](https://github.com/relationalai/rai-sdk-javascript/compare/v0.6.3...v0.7.0)
 
