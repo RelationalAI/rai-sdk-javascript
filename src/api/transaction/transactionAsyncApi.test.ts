@@ -24,7 +24,7 @@ import { TransactionAsyncState } from './types';
 const path = '/transactions';
 
 const multipartMock = readFileSync(__dirname + '/mocks/multipart');
-const protobufMock = readFileSync(__dirname + '/mocks/protobuf');
+const protobufMock = readFileSync(__dirname + '/mocks/protobuf.pb');
 const multipartContentType =
   'multipart/form-data; boundary=28deee55b43d20e109a8fe119e47c5393620ea568b7059405c4cf23bad7b';
 
