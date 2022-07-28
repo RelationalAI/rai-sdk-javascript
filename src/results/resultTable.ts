@@ -77,10 +77,11 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     if (!arrowColumn) {
       throw new Error(`Couldn't find column by index`);
     }
+    const length = arrowColumn.length;
 
     const column: ResultColumn = {
       get length() {
-        return arrowColumn.length;
+        return length;
       },
       get typeDef() {
         return typeDef;
