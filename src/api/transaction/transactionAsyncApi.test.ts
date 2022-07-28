@@ -23,29 +23,193 @@ import { TransactionAsyncState } from './types';
 
 const path = '/transactions';
 
-const multipartMock = readFileSync(__dirname + '/multipartMock');
+const multipartMock = readFileSync(__dirname + '/mocks/multipart');
+const protobufMock = readFileSync(__dirname + '/mocks/metadata.pb');
 const multipartContentType =
-  'multipart/form-data; boundary=fbef11dbaedd10b55d8af920ba13dd4f9e03cbddbe52c3d12e8c2eb56a23';
+  'multipart/form-data; boundary=28deee55b43d20e109a8fe119e47c5393620ea568b7059405c4cf23bad7b';
+
+// def output = :foo
+// def output = :"foo;bar", 1
+// def output = 1
 const transactionAsyncMock = {
   transaction: {
-    id: '59b04616-887d-40aa-b003-f310eb573557',
+    id: '57216bf7-1728-4f1e-d382-26ac15db96a5',
+    response_format_version: '2.0.3',
     state: 'COMPLETED',
-    response_format_version: '2.0.1',
   },
   problems: [],
-  metadata: [
-    { relationId: '/:output/:foo', types: [':output', ':foo'] },
-    {
-      relationId: '/:output/:foo;bar/Int64',
-      types: [':output', ':foo;bar', 'Int64'],
-    },
-    { relationId: '/:output/Int64', types: [':output', 'Int64'] },
-  ],
   results: [
     { relationId: '/:output/:foo', table: expect.anything() },
     { relationId: '/:output/:foo;bar/Int64', table: expect.anything() },
     { relationId: '/:output/Int64', table: expect.anything() },
   ],
+  metadata: {
+    relations: [
+      {
+        fileName: '0.arrow',
+        relationId: {
+          arguments: [
+            {
+              tag: 3,
+              primitiveType: 0,
+              constantType: {
+                relType: {
+                  tag: 1,
+                  primitiveType: 17,
+                },
+                value: {
+                  arguments: [
+                    {
+                      tag: 17,
+                      value: {
+                        oneofKind: 'stringVal',
+                        stringVal: new Uint8Array([
+                          111,
+                          117,
+                          116,
+                          112,
+                          117,
+                          116,
+                        ]),
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              tag: 3,
+              primitiveType: 0,
+              constantType: {
+                relType: {
+                  tag: 1,
+                  primitiveType: 17,
+                },
+                value: {
+                  arguments: [
+                    {
+                      tag: 17,
+                      value: {
+                        oneofKind: 'stringVal',
+                        stringVal: new Uint8Array([102, 111, 111]),
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        fileName: '1.arrow',
+        relationId: {
+          arguments: [
+            {
+              tag: 3,
+              primitiveType: 0,
+              constantType: {
+                relType: {
+                  tag: 1,
+                  primitiveType: 17,
+                },
+                value: {
+                  arguments: [
+                    {
+                      tag: 17,
+                      value: {
+                        oneofKind: 'stringVal',
+                        stringVal: new Uint8Array([
+                          111,
+                          117,
+                          116,
+                          112,
+                          117,
+                          116,
+                        ]),
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              tag: 3,
+              primitiveType: 0,
+              constantType: {
+                relType: {
+                  tag: 1,
+                  primitiveType: 17,
+                },
+                value: {
+                  arguments: [
+                    {
+                      tag: 17,
+                      value: {
+                        oneofKind: 'stringVal',
+                        stringVal: new Uint8Array([
+                          102,
+                          111,
+                          111,
+                          59,
+                          98,
+                          97,
+                          114,
+                        ]),
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              tag: 1,
+              primitiveType: 2,
+            },
+          ],
+        },
+      },
+      {
+        fileName: '2.arrow',
+        relationId: {
+          arguments: [
+            {
+              tag: 3,
+              primitiveType: 0,
+              constantType: {
+                relType: {
+                  tag: 1,
+                  primitiveType: 17,
+                },
+                value: {
+                  arguments: [
+                    {
+                      tag: 17,
+                      value: {
+                        oneofKind: 'stringVal',
+                        stringVal: new Uint8Array([
+                          111,
+                          117,
+                          116,
+                          112,
+                          117,
+                          116,
+                        ]),
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              tag: 1,
+              primitiveType: 2,
+            },
+          ],
+        },
+      },
+    ],
+  },
 };
 
 describe('TransactionAsyncApi', () => {
@@ -153,20 +317,80 @@ describe('TransactionAsyncApi', () => {
   });
 
   it('should get transaction metadata', async () => {
-    const response = [
-      {
-        relationId: 'foo',
-        types: ['bar'],
-      },
-    ];
+    const metadata = {
+      relations: [
+        {
+          fileName: '0.arrow',
+          relationId: {
+            arguments: [
+              {
+                tag: 3,
+                primitiveType: 0,
+                constantType: {
+                  relType: {
+                    tag: 1,
+                    primitiveType: 17,
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 17,
+                        value: {
+                          oneofKind: 'stringVal',
+                          stringVal: new Uint8Array([
+                            111,
+                            117,
+                            116,
+                            112,
+                            117,
+                            116,
+                          ]),
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 3,
+                primitiveType: 0,
+                constantType: {
+                  relType: {
+                    tag: 1,
+                    primitiveType: 17,
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 17,
+                        value: {
+                          oneofKind: 'stringVal',
+                          stringVal: new Uint8Array([102, 111, 111]),
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 1,
+                primitiveType: 16,
+              },
+            ],
+          },
+        },
+      ],
+    };
     const scope = nock(baseUrl)
       .get(`${path}/id1/metadata`)
-      .reply(200, response);
+      .reply(200, protobufMock, {
+        'Content-type': 'application/x-protobuf',
+      });
     const result = await api.getTransactionMetadata('id1');
 
     scope.done();
 
-    expect(result).toEqual(response);
+    expect(result).toEqual(metadata);
   });
 
   it('should get transaction problems', async () => {

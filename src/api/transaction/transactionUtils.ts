@@ -16,6 +16,7 @@
 
 import { tableFromIPC } from 'apache-arrow';
 
+import { MetadataInfo } from '../../proto/generated/message';
 import {
   ArrowRelation,
   LabeledAction,
@@ -40,21 +41,24 @@ export function makeLabeledAction(
 export async function readTransactionResult(files: TransactionAsyncFile[]) {
   const transaction = files.find(x => x.name === 'transaction');
   const problems = files.find(x => x.name === 'problems');
-  const metadata = files.find(x => x.name === 'metadata');
+  const metadataProto = files.find(x => x.name === 'metadata.proto');
 
   if (!transaction) {
     throw new Error('transaction part not found');
   }
 
-  if (!metadata) {
-    throw new Error('metadata part not found');
-  }
+  // TODO uncomment and make TransactionAsyncResult.metadata required
+  // if (!metadataProto) {
+  //   throw new Error('metadata proto part not found');
+  // }
 
   const txn = await readJson(transaction.file);
   const result: TransactionAsyncResult = {
     transaction: txn,
     results: await readArrowFiles(files),
-    metadata: await readJson(metadata.file),
+    metadata: metadataProto
+      ? await readProtoMetadata(metadataProto.file as File)
+      : undefined,
   };
 
   if (problems) {
@@ -82,6 +86,17 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   }
 
   return results;
+}
+
+export async function readProtoMetadata(file: File | Blob) {
+  if (!file?.arrayBuffer) {
+    throw new Error(`Unsupported metadata type: ${typeof file}`);
+  }
+
+  const buffer = await file.arrayBuffer();
+  const data = new Uint8Array(buffer);
+
+  return MetadataInfo.fromBinary(data);
 }
 
 async function readJson(file: File | string) {

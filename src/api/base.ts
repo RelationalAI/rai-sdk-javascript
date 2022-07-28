@@ -46,7 +46,8 @@ export abstract class Base {
 
     if (token) {
       opts.headers = {
-        authorization: `Bearer ${token}`,
+        ...{ authorization: `Bearer ${token}` },
+        ...opts.headers,
       };
     }
 

@@ -16,6 +16,8 @@
 
 import { Table } from 'apache-arrow';
 
+import { MetadataInfo } from '../../proto/generated/message';
+
 export type RelValue = string | number | boolean | null | number[];
 
 export type RelKey = {
@@ -206,11 +208,6 @@ export type TransactionAsyncCompact = {
   state: TransactionAsyncState;
 };
 
-export type TransactionMetadata = {
-  relationId: string;
-  types: string[];
-};
-
 export type TransactionAsyncFile = {
   name: string;
   // node-fetch parses json to a string
@@ -224,7 +221,7 @@ export type ArrowRelation = {
 
 export type TransactionAsyncResult = {
   transaction: TransactionAsyncCompact | TransactionAsync;
-  metadata: TransactionMetadata[];
+  metadata?: MetadataInfo;
   problems?: Problem[];
   results: ArrowRelation[];
 };

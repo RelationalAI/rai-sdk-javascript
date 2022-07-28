@@ -103,6 +103,8 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   try {
     if (contentType && contentType.includes('application/json')) {
       responseBody = await response.json();
+    } else if (contentType && contentType.includes('application/x-protobuf')) {
+      responseBody = await response.blob();
     } else if (contentType?.includes('multipart/form-data') && response.body) {
       responseBody = await parseMultipart(response);
     } else {

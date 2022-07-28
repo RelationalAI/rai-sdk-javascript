@@ -15,7 +15,11 @@
  */
 
 import { Base } from '../base';
-import { readArrowFiles, readTransactionResult } from './transactionUtils';
+import {
+  readArrowFiles,
+  readProtoMetadata,
+  readTransactionResult,
+} from './transactionUtils';
 import {
   Problem,
   TransactionAsync,
@@ -23,7 +27,6 @@ import {
   TransactionAsyncFile,
   TransactionAsyncPayload,
   TransactionListOptions,
-  TransactionMetadata,
 } from './types';
 
 const ENDPOINT = 'transactions';
@@ -74,11 +77,15 @@ export class TransactionAsyncApi extends Base {
   }
 
   async getTransactionMetadata(transactionId: string) {
-    const result = await this.get<TransactionMetadata[]>(
+    const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/x-protobuf' },
+      },
     );
 
-    return result;
+    return readProtoMetadata(result);
   }
 
   async getTransactionProblems(transactionId: string) {
