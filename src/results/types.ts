@@ -101,6 +101,8 @@ export type RelTypeDef = (
   | Omit<Rational64Value, 'value'>
   | Omit<Rational128Value, 'value'>
   | Omit<UnknownType, 'value'>
+  // TODO value shouldn't be restricted to strings, just JSON metadata restriction
+  | { type: 'Constant'; name: string; value: string }
 ) & { name?: string };
 
 export type StringValue = {

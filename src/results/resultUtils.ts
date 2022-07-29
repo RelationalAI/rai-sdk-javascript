@@ -34,6 +34,22 @@ const decimalRegEx = /^FixedPointDecimals.FixedDecimal{Int(\d+), (\d+)}$/;
 const rationalRegEx = /^Rational{Int(\d+)}$/;
 
 export function getTypeDef(type: string): RelTypeDef {
+  if (type.startsWith(':')) {
+    return {
+      type: 'Constant',
+      name: 'Symbol',
+      value: type,
+    };
+  }
+
+  if (type.includes('(') && !type.startsWith('(')) {
+    return {
+      type: 'Constant',
+      name: type,
+      value: type,
+    };
+  }
+
   if (type === 'String') {
     return {
       type: 'String',
@@ -281,6 +297,8 @@ export function convertValue<T extends RelTypedValue>(
         denominator: int128ToBigInt(Array.from(value[1])),
       };
     }
+    case 'Constant':
+      return typeDef.value;
     case 'Unknown':
       return value;
   }
@@ -294,6 +312,10 @@ export function getDisplayValue(
     type: typeDef.type,
     value,
   } as RelTypedValue;
+
+  if (typeDef.type === 'Constant') {
+    return typeDef.value;
+  }
 
   switch (val.type) {
     case 'String':

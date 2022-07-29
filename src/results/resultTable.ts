@@ -57,13 +57,18 @@ interface IteratorOf<T> {
   readonly length: number;
 }
 
+type ColumnDef = {
+  typeDef: RelTypeDef;
+  arrowIndex?: number;
+};
+
 /**
  * ResultTable provides an interface over {@link ArrowRelation} that maps Rel
  * types to their corresponding JavaScript equivalents.
  */
 export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   private table: Table;
-  private typeDefs: RelTypeDef[];
+  private colDefs: ColumnDef[];
 
   /**
    * Instantiate a new ResultTable instance.
@@ -81,20 +86,20 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
 
     const types = relation.relationId.split('/').filter(x => x);
 
-    // Getting rid of constant types
-    // /:bar/String/(:Foo, Int64) -> ["String", "(:Foo, Int64)"]
-    // /Int64(1)/Float64 -> ["Float64"]
-    const columnTypes = types.filter(type => {
-      return (
-        !type.startsWith(':') && (!type.includes('(') || type.startsWith('('))
-      );
+    let arrowIndex = 0;
+
+    this.colDefs = types.map(t => {
+      const typeDef = getTypeDef(t);
+
+      const colDef: ColumnDef = { typeDef };
+
+      if (typeDef.type !== 'Constant') {
+        colDef.arrowIndex = arrowIndex;
+        arrowIndex++;
+      }
+
+      return colDef;
     });
-
-    if (columnTypes.length !== this.table.numCols) {
-      throw new Error(`Column number mismatch`);
-    }
-
-    this.typeDefs = columnTypes.map(getTypeDef);
   }
 
   /**
@@ -103,7 +108,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns The number of columns.
    */
   get columnLength() {
-    return this.table.numCols;
+    return this.colDefs.length;
   }
 
   /**
@@ -128,24 +133,37 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns The column, or undefined if the index is out of range.
    */
   columnAt(index: number) {
-    const arrowColumn = this.table.getChildAt(index);
-    const typeDef = this.typeDefs[index];
+    const colDef = this.colDefs[index];
 
-    if (!arrowColumn) {
+    if (!colDef) {
       throw new Error(`Couldn't find column by index`);
     }
-    const length = arrowColumn.length;
+    const table = this.table;
+    const length = this.table.numRows;
 
     const column: ResultColumn = {
       get length() {
         return length;
       },
       get typeDef() {
-        return typeDef;
+        return colDef.typeDef;
       },
       *[Symbol.iterator]() {
-        for (const val of arrowColumn) {
-          yield convertValue(typeDef, val);
+        if (colDef.typeDef.type === 'Constant') {
+          for (let i = 0; i < length; i++) {
+            yield colDef.typeDef.value;
+          }
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const arrowColumn = table.getChildAt(colDef.arrowIndex!);
+
+          if (!arrowColumn) {
+            throw new Error(`Couldn't find column by index`);
+          }
+
+          for (const val of arrowColumn) {
+            yield convertValue(colDef.typeDef, val);
+          }
         }
       },
       values() {
@@ -165,12 +183,21 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns A new ResultTable.
    */
   sliceColumns(begin: number | undefined, end?: number | undefined) {
-    const relationId = this.typeDefs
+    const newColDefs = this.colDefs.slice(begin, end);
+    const arrowColNames: any[] = [];
+
+    newColDefs.forEach(colDef => {
+      if (colDef.arrowIndex !== undefined) {
+        arrowColNames.push(this.table.schema.names[colDef.arrowIndex]);
+      }
+    });
+
+    const relationId = this.relation.relationId
+      .split('/')
+      .filter(t => t)
       .slice(begin, end)
-      .map(td => td.type)
       .join('/');
-    const names = this.table.schema.names.slice(begin, end);
-    const slicedTable = this.table.select(names);
+    const slicedTable = this.table.select(arrowColNames);
 
     return new ResultTable({
       relationId: `/${relationId}`,
@@ -194,9 +221,15 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    */
   *[Symbol.iterator]() {
     for (const arrowRow of this.table) {
-      const row = arrowRow
-        .toArray()
-        .map((value, index) => convertValue(this.typeDefs[index], value));
+      const arr = arrowRow.toArray();
+      const row = this.colDefs.map(colDef => {
+        if (colDef.typeDef.type === 'Constant') {
+          return colDef.typeDef.value;
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);
+        }
+      });
 
       yield row;
     }
@@ -220,12 +253,18 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   get(index: number) {
     const arrowRow = this.table.get(index);
 
-    this.table.slice();
-
     if (arrowRow) {
-      return arrowRow
-        .toArray()
-        .map((value, index) => convertValue(this.typeDefs[index], value));
+      const arr = arrowRow.toArray();
+      const row = this.colDefs.map(colDef => {
+        if (colDef.typeDef.type === 'Constant') {
+          return colDef.typeDef.value;
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);
+        }
+      });
+
+      return row;
     }
   }
 
@@ -253,9 +292,9 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    */
   print() {
     const pTable = new PrintTable({
-      columns: this.typeDefs.map((typeDef, i) => ({
+      columns: this.colDefs.map((colDef, i) => ({
         name: i.toString(),
-        title: typeDef.name || typeDef.type,
+        title: colDef.typeDef.name || colDef.typeDef.type,
       })),
     });
 
@@ -263,7 +302,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       const printRow: Record<number, string> = {};
 
       row.forEach((val, index) => {
-        const typeDef = this.typeDefs[index];
+        const { typeDef } = this.colDefs[index];
         printRow[index] = getDisplayValue(typeDef, val);
       });
 
@@ -271,5 +310,33 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     });
 
     pTable.printTable();
+  }
+
+  /**
+   * Return a new table containing only physical columns. Specialized columns
+   * are not included.
+   *
+   * @returns A new ResultTable.
+   */
+  physical() {
+    const relationId = this.relation.relationId
+      .split('/')
+      .filter(t => t)
+      .filter(t => getTypeDef(t).type !== 'Constant')
+      .join('/');
+
+    return new ResultTable({
+      relationId: `/${relationId}`,
+      table: this.table,
+    });
+  }
+
+  /**
+   * Return Arrow Table that's being used internally
+   *
+   * @returns Arrow Table
+   */
+  arrow() {
+    return this.table;
   }
 }
