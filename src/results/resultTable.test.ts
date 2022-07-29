@@ -19,7 +19,7 @@ import { tableFromArrays } from 'apache-arrow';
 import { ArrowRelation } from '../api/transaction/types';
 import { ResultTable } from './resultTable';
 
-describe.only('ResultTable', () => {
+describe('ResultTable', () => {
   const relation: ArrowRelation = {
     relationId: '/Int64(1)/:foo/String/Char/Int64',
     table: tableFromArrays({
