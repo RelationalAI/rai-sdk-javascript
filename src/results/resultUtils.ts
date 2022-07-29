@@ -196,6 +196,7 @@ export function getTypeDef(type: string): RelTypeDef {
 
   return {
     type: 'Unknown',
+    name: type,
   };
 }
 

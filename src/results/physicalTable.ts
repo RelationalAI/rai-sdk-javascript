@@ -255,7 +255,7 @@ export class PhysicalTable implements IteratorOf<RelTypedValue['value'][]> {
     const pTable = new PrintTable({
       columns: this.typeDefs.map((typeDef, i) => ({
         name: i.toString(),
-        title: typeDef.type,
+        title: typeDef.name || typeDef.type,
       })),
     });
 

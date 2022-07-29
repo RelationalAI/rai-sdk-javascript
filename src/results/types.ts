@@ -59,7 +59,7 @@ export type RelTypedValue =
   | Rational128Value
   | UnknownType;
 
-export type RelTypeDef =
+export type RelTypeDef = (
   | Omit<StringValue, 'value'>
   | Omit<BoolValue, 'value'>
   | Omit<CharValue, 'value'>
@@ -100,7 +100,8 @@ export type RelTypeDef =
   | Omit<Rational32Value, 'value'>
   | Omit<Rational64Value, 'value'>
   | Omit<Rational128Value, 'value'>
-  | Omit<UnknownType, 'value'>;
+  | Omit<UnknownType, 'value'>
+) & { name?: string };
 
 export type StringValue = {
   type: 'String';
