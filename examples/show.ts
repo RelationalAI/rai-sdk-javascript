@@ -17,7 +17,7 @@
 import {
   ArrowRelation,
   MetadataInfo,
-  ResultTable,
+  PhysicalTable,
   TransactionAsyncCompact,
   TransactionAsyncResult,
 } from '../index.node';
@@ -65,10 +65,10 @@ export function showTransactionResult(
 
 function showResults(result: TransactionAsyncResult) {
   result.results.forEach(relation => {
-    const resultTable = new ResultTable(relation);
+    const table = new PhysicalTable(relation);
 
     console.log(relation.relationId);
-    resultTable.print();
+    table.print();
     console.log();
   });
 }

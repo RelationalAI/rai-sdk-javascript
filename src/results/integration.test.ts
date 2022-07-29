@@ -20,7 +20,7 @@ import {
   createEngineIfNotExists,
   getClient,
 } from '../testUtils';
-import { ResultTable } from './resultTable';
+import { PhysicalTable } from './physicalTable';
 import { tests } from './testData';
 
 describe('Integration', () => {
@@ -53,9 +53,9 @@ describe('Integration', () => {
 
       testFn(`should handle ${test.type} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
-        const resultTable = new ResultTable(result.results[0]);
-        const type = resultTable.columnAt(0).typeDef.type;
-        const values = resultTable.get(0);
+        const table = new PhysicalTable(result.results[0]);
+        const type = table.columnAt(0).typeDef.type;
+        const values = table.get(0);
 
         expect(type).toEqual(test.type);
         expect(values).toEqual(test.values);
