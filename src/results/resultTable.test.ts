@@ -79,6 +79,29 @@ describe('ResultTable', () => {
     expect(column.values()).toEqual(['a', 'b', 'c', 'd']);
   });
 
+  it('should slice columns', () => {
+    const resultTable = new ResultTable(relation);
+
+    expect(resultTable.sliceColumns(undefined, 2).values()).toEqual([
+      ['w', 'a'],
+      ['x', 'b'],
+      ['y', 'c'],
+      ['z', 'd'],
+    ]);
+    expect(resultTable.sliceColumns(1).values()).toEqual([
+      ['a', 1n],
+      ['b', 2n],
+      ['c', 3n],
+      ['d', 4n],
+    ]);
+    expect(resultTable.sliceColumns(1, 2).values()).toEqual([
+      ['a'],
+      ['b'],
+      ['c'],
+      ['d'],
+    ]);
+  });
+
   it('should get length', () => {
     const resultTable = new ResultTable(relation);
 
@@ -123,15 +146,15 @@ describe('ResultTable', () => {
   it('should slice table', () => {
     const resultTable = new ResultTable(relation);
 
-    expect(resultTable.slice(undefined, 2)).toEqual([
+    expect(resultTable.slice(undefined, 2).values()).toEqual([
       ['w', 'a', 1n],
       ['x', 'b', 2n],
     ]);
-    expect(resultTable.slice(2)).toEqual([
+    expect(resultTable.slice(2).values()).toEqual([
       ['y', 'c', 3n],
       ['z', 'd', 4n],
     ]);
-    expect(resultTable.slice(1, 3)).toEqual([
+    expect(resultTable.slice(1, 3).values()).toEqual([
       ['x', 'b', 2n],
       ['y', 'c', 3n],
     ]);

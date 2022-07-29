@@ -76,7 +76,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    *
    * @param relation Arrow relation
    */
-  constructor(relation: ArrowRelation) {
+  constructor(private relation: ArrowRelation) {
     this.table = relation.table;
 
     const types = relation.relationId.split('/').filter(x => x);
@@ -157,6 +157,28 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   }
 
   /**
+   * Return a new table containing only specified columns.
+   *
+   * @param begin The beginning of the specified portion of the Table.
+   * @param end The end of the specified portion of the Table. This is
+   *   exclusive of the element at the index 'end'.
+   * @returns A new ResultTable.
+   */
+  sliceColumns(begin: number | undefined, end?: number | undefined) {
+    const relationId = this.typeDefs
+      .slice(begin, end)
+      .map(td => td.type)
+      .join('/');
+    const names = this.table.schema.names.slice(begin, end);
+    const slicedTable = this.table.select(names);
+
+    return new ResultTable({
+      relationId: `/${relationId}`,
+      table: slicedTable,
+    });
+  }
+
+  /**
    * The number of rows in this table.
    *
    * @returns The number of rows.
@@ -208,20 +230,19 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   }
 
   /**
-   * Return a sub-section of this Table.
+   * Return a new table that's a sub-section of this table.
    *
    * @param begin The beginning of the specified portion of the Table.
    * @param end The end of the specified portion of the Table. This is
    *   exclusive of the element at the index 'end'.
-   * @returns An array of rows.
+   * @returns A new ResultTable.
    */
   slice(begin: number | undefined, end?: number | undefined) {
     const slicedTable = this.table.slice(begin, end);
 
-    return slicedTable.toArray().map(arrowRow => {
-      return arrowRow
-        .toArray()
-        .map((value, index) => convertValue(this.typeDefs[index], value));
+    return new ResultTable({
+      relationId: this.relation.relationId,
+      table: slicedTable,
     });
   }
 
