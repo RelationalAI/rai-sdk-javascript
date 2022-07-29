@@ -101,8 +101,8 @@ their corresponding JavaScript equivalents. Full mapping:
 | UInt8, UInt16, UInt32                                      | number                                               |
 | UInt64, UInt128                                            | bigint                                               |
 | Float16, Float32, Float64                                  | number                                               |
-| Rational8, Rational16, Rational32                          | `{ numerator: number, denominator: number }`         |
-| Rational64, Rational128                                    | `{ numerator: bigint, denominator: bigint }`         |
+| Rational8, Rational16, Rational32                          | `{ numerator: number; denominator: number; }`        |
+| Rational64, Rational128                                    | `{ numerator: bigint; denominator: bigint; }`        |
 | FixedDecimal all bit sizes(16, 32, 64, 128)                | [decimal.js](https://github.com/MikeMcl/decimal.js/) |
 | Char                                                       | string                                               |
 | String                                                     | string                                               |
