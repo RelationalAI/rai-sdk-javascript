@@ -17,9 +17,9 @@
 import { tableFromArrays } from 'apache-arrow';
 
 import { ArrowRelation } from '../api/transaction/types';
-import { PhysicalTable } from './physicalTable';
+import { ResultTable } from './resultTable';
 
-describe('PhysicalTable', () => {
+describe('ResultTable', () => {
   const relation: ArrowRelation = {
     relationId: '/Int64(1)/:foo/String/Char/Int64',
     table: tableFromArrays({
@@ -30,13 +30,13 @@ describe('PhysicalTable', () => {
   };
 
   it('should get column length', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     expect(table.columnLength).toEqual(3);
   });
 
   it('should get columns', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
     const columns = table.columns();
 
     expect(columns.length).toEqual(3);
@@ -49,7 +49,7 @@ describe('PhysicalTable', () => {
   });
 
   it('should get column by index', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     expect(table.columnAt(0).typeDef).toEqual({ type: 'String' });
     expect(table.columnAt(0).length).toEqual(4);
@@ -60,7 +60,7 @@ describe('PhysicalTable', () => {
   });
 
   it('should be able to iterate column values', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
     const column = table.columnAt(1);
     const expectedValues = ['a', 'b', 'c', 'd'];
 
@@ -73,14 +73,14 @@ describe('PhysicalTable', () => {
   });
 
   it('should get column values', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
     const column = table.columnAt(1);
 
     expect(column.values()).toEqual(['a', 'b', 'c', 'd']);
   });
 
   it('should slice columns', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     expect(table.sliceColumns(undefined, 2).values()).toEqual([
       ['w', 'a'],
@@ -103,13 +103,13 @@ describe('PhysicalTable', () => {
   });
 
   it('should get length', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     expect(table.length).toEqual(4);
   });
 
   it('should be able to iterate table values', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
     const expectedValues = [
       ['w', 'a', 1n],
       ['x', 'b', 2n],
@@ -126,7 +126,7 @@ describe('PhysicalTable', () => {
   });
 
   it('should get table values', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
     const expectedValues = [
       ['w', 'a', 1n],
       ['x', 'b', 2n],
@@ -138,13 +138,13 @@ describe('PhysicalTable', () => {
   });
 
   it('should get values by index', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     expect(table.get(2)).toEqual(['y', 'c', 3n]);
   });
 
   it('should slice table', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     expect(table.slice(undefined, 2).values()).toEqual([
       ['w', 'a', 1n],
@@ -161,7 +161,7 @@ describe('PhysicalTable', () => {
   });
 
   it('should print table', () => {
-    const table = new PhysicalTable(relation);
+    const table = new ResultTable(relation);
 
     jest.spyOn(console, 'log').mockImplementation(() => {});
 

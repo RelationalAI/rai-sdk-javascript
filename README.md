@@ -90,7 +90,7 @@ $ npm run example -- ./examples/runQuery.ts -d dbName -e engineName -c "def outp
 
 ## Data Types
 
-`PhysicalTable` maps
+`ResultTable` maps
 [Rel data types](https://docs.relational.ai/rel/ref/data-types#overview) to
 their corresponding JavaScript equivalents. Full mapping:
 

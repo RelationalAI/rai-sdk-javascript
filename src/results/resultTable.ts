@@ -58,19 +58,19 @@ interface IteratorOf<T> {
 }
 
 /**
- * PhysicalTable provides an interface over {@link ArrowRelation} that maps Rel
+ * ResultTable provides an interface over {@link ArrowRelation} that maps Rel
  * types to their corresponding JavaScript equivalents.
  */
-export class PhysicalTable implements IteratorOf<RelTypedValue['value'][]> {
+export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   private table: Table;
   private typeDefs: RelTypeDef[];
 
   /**
-   * Instantiate a new PhysicalTable instance.
+   * Instantiate a new ResultTable instance.
    *
    * @example
    *   cosnt result = await client.exec('database', 'engine', 'def output = 123, "test"')
-   *   cosnt table = new PhysicalTable(result.results[0]);
+   *   cosnt table = new ResultTable(result.results[0]);
    *
    *   console.log(table.values()); // Prints [[123n, "test"]];
    *
@@ -162,7 +162,7 @@ export class PhysicalTable implements IteratorOf<RelTypedValue['value'][]> {
    * @param begin The beginning of the specified portion of the Table.
    * @param end The end of the specified portion of the Table. This is
    *   exclusive of the element at the index 'end'.
-   * @returns A new PhysicalTable.
+   * @returns A new ResultTable.
    */
   sliceColumns(begin: number | undefined, end?: number | undefined) {
     const relationId = this.typeDefs
@@ -172,7 +172,7 @@ export class PhysicalTable implements IteratorOf<RelTypedValue['value'][]> {
     const names = this.table.schema.names.slice(begin, end);
     const slicedTable = this.table.select(names);
 
-    return new PhysicalTable({
+    return new ResultTable({
       relationId: `/${relationId}`,
       table: slicedTable,
     });
@@ -235,12 +235,12 @@ export class PhysicalTable implements IteratorOf<RelTypedValue['value'][]> {
    * @param begin The beginning of the specified portion of the Table.
    * @param end The end of the specified portion of the Table. This is
    *   exclusive of the element at the index 'end'.
-   * @returns A new PhysicalTable.
+   * @returns A new ResultTable.
    */
   slice(begin: number | undefined, end?: number | undefined) {
     const slicedTable = this.table.slice(begin, end);
 
-    return new PhysicalTable({
+    return new ResultTable({
       relationId: this.relation.relationId,
       table: slicedTable,
     });
