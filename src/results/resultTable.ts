@@ -351,5 +351,5 @@ function arrowRowToValues(arrowRow: StructRowProxy, colDefs: ColumnDef[]) {
 }
 
 function isFullySpecialized(colDefs: ColumnDef[]) {
-  return colDefs.every(c => c.typeDef.type === 'Constant');
+  return colDefs.length && colDefs.every(c => c.typeDef.type === 'Constant');
 }
