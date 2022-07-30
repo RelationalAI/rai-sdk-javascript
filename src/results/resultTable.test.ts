@@ -34,6 +34,10 @@ describe('ResultTable', () => {
       v3: [1n, 2n, 3n, 4n],
     }),
   };
+  const specialRelation: ArrowRelation = {
+    relationId: '/Int64(1)/:foo',
+    table: tableFromArrays({}),
+  };
 
   describe('Default', () => {
     it('should get column length', () => {
@@ -140,11 +144,24 @@ describe('ResultTable', () => {
       });
     });
 
+    it('should handle column operations for fully specialized relation', () => {
+      const table = new ResultTable(specialRelation);
+
+      expect(table.columnLength).toEqual(2);
+
+      expect(table.columnAt(0).length).toEqual(1);
+      expect(table.columnAt(1).length).toEqual(1);
+
+      expect(table.columnAt(0).values()).toEqual(['Int64(1)']);
+      expect(table.columnAt(1).values()).toEqual([':foo']);
+    });
+
     it('should slice columns', () => {
       const table = new ResultTable(relation);
 
-      // no values are included
-      expect(table.sliceColumns(undefined, 2).values()).toEqual([]);
+      expect(table.sliceColumns(undefined, 2).values()).toEqual([
+        ['Int64(1)', ':foo'],
+      ]);
       expect(table.sliceColumns(undefined, 3).values()).toEqual([
         ['Int64(1)', ':foo', 'w'],
         ['Int64(1)', ':foo', 'x'],
@@ -221,6 +238,15 @@ describe('ResultTable', () => {
         ['Int64(1)', ':foo', 'x', ':bar', 'b', 2n],
         ['Int64(1)', ':foo', 'y', ':bar', 'c', 3n],
       ]);
+    });
+
+    it('should handle value operations for fully specialized relation', () => {
+      const table = new ResultTable(specialRelation);
+
+      expect(table.length).toEqual(1);
+
+      expect(table.values()).toEqual([['Int64(1)', ':foo']]);
+      expect(table.get(0)).toEqual(['Int64(1)', ':foo']);
     });
 
     it('should print table', () => {

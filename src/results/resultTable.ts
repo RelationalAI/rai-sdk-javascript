@@ -14,12 +14,12 @@
  * under the License.
  */
 
-import { Table } from 'apache-arrow';
+import { StructRowProxy, Table } from 'apache-arrow';
 import { Table as PrintTable } from 'console-table-printer';
 
 import { ArrowRelation } from '../api/transaction/types';
 import { convertValue, getDisplayValue, getTypeDef } from './resultUtils';
-import { RelTypeDef, RelTypedValue } from './types';
+import { ConstantValue, RelTypeDef, RelTypedValue } from './types';
 
 export interface ResultColumn {
   /**
@@ -139,7 +139,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       throw new Error(`Couldn't find column by index`);
     }
     const table = this.table;
-    const length = this.table.numRows;
+    const length = isFullySpecialized(this.colDefs) ? 1 : this.table.numRows;
 
     const column: ResultColumn = {
       get length() {
@@ -211,6 +211,10 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns The number of rows.
    */
   get length() {
+    if (isFullySpecialized(this.colDefs)) {
+      return 1;
+    }
+
     return this.table.numRows;
   }
 
@@ -220,18 +224,13 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns An iterator over rows
    */
   *[Symbol.iterator]() {
-    for (const arrowRow of this.table) {
-      const arr = arrowRow.toArray();
-      const row = this.colDefs.map(colDef => {
-        if (colDef.typeDef.type === 'Constant') {
-          return colDef.typeDef.value;
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);
-        }
-      });
+    if (isFullySpecialized(this.colDefs)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      yield this.get(0)!;
+    }
 
-      yield row;
+    for (const arrowRow of this.table) {
+      yield arrowRowToValues(arrowRow, this.colDefs);
     }
   }
 
@@ -251,20 +250,16 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns The row, or undefined if the index is out of range.
    */
   get(index: number) {
+    if (isFullySpecialized(this.colDefs) && index === 0) {
+      return this.colDefs.map(c => {
+        return (c.typeDef as ConstantValue).value;
+      });
+    }
+
     const arrowRow = this.table.get(index);
 
     if (arrowRow) {
-      const arr = arrowRow.toArray();
-      const row = this.colDefs.map(colDef => {
-        if (colDef.typeDef.type === 'Constant') {
-          return colDef.typeDef.value;
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);
-        }
-      });
-
-      return row;
+      return arrowRowToValues(arrowRow, this.colDefs);
     }
   }
 
@@ -339,4 +334,22 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   arrow() {
     return this.table;
   }
+}
+
+function arrowRowToValues(arrowRow: StructRowProxy, colDefs: ColumnDef[]) {
+  const arr = arrowRow.toArray();
+  const row = colDefs.map(colDef => {
+    if (colDef.typeDef.type === 'Constant') {
+      return colDef.typeDef.value;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);
+    }
+  });
+
+  return row;
+}
+
+function isFullySpecialized(colDefs: ColumnDef[]) {
+  return colDefs.every(c => c.typeDef.type === 'Constant');
 }
