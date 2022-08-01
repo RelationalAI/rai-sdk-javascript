@@ -347,8 +347,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   physical() {
     const relationId = this.relation.relationId
       .split('/')
-      .filter(t => t)
-      .filter(t => getTypeDef(t).type !== 'Constant')
+      .filter(t => t.length && getTypeDef(t).type !== 'Constant')
       .join('/');
 
     return new ResultTable({
