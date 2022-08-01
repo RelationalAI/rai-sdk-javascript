@@ -53,7 +53,7 @@ describe('Integration', () => {
 
       testFn(`should handle ${test.type} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
-        const table = new ResultTable(result.results[0]);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
         const type = table.columnAt(0).typeDef.type;
         const values = table.get(0);
 

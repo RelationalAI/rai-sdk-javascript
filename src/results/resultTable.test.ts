@@ -40,6 +40,31 @@ describe('ResultTable', () => {
   };
 
   describe('Default', () => {
+    it('should type definitions', () => {
+      const table = new ResultTable(relation);
+
+      expect(table.typeDefs).toEqual([
+        {
+          type: 'Constant',
+          name: 'Int64(1)',
+          value: 'Int64(1)',
+        },
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: ':foo',
+        },
+        { type: 'String' },
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: ':bar',
+        },
+        { type: 'Char' },
+        { type: 'Int64' },
+      ]);
+    });
+
     it('should get column length', () => {
       const table = new ResultTable(relation);
 
@@ -144,6 +169,26 @@ describe('ResultTable', () => {
       });
     });
 
+    it('should get column value by index', () => {
+      const table = new ResultTable(relation);
+      const expectedValues = [
+        ['Int64(1)', 'Int64(1)', 'Int64(1)', 'Int64(1)'],
+        [':foo', ':foo', ':foo', ':foo'],
+        ['w', 'x', 'y', 'z'],
+        [':bar', ':bar', ':bar', ':bar'],
+        ['a', 'b', 'c', 'd'],
+        [1n, 2n, 3n, 4n],
+      ];
+      expectedValues.forEach((expectedVals, index) => {
+        expectedVals.forEach((val, valueIndex) => {
+          expect(table.columnAt(index).get(valueIndex)).toEqual(val);
+        });
+      });
+
+      expect(table.columnAt(0).get(-1)).toBeUndefined();
+      expect(table.columnAt(0).get(4)).toBeUndefined();
+    });
+
     it('should handle column operations for fully specialized relation', () => {
       const table = new ResultTable(specialRelation);
 
@@ -154,6 +199,9 @@ describe('ResultTable', () => {
 
       expect(table.columnAt(0).values()).toEqual(['Int64(1)']);
       expect(table.columnAt(1).values()).toEqual([':foo']);
+      expect(table.columnAt(1).get(0)).toEqual(':foo');
+      expect(table.columnAt(1).get(-1)).toBeUndefined();
+      expect(table.columnAt(1).get(1)).toBeUndefined();
     });
 
     it('should slice columns', () => {

@@ -44,6 +44,14 @@ export interface ResultColumn {
   values: () => RelTypedValue['value'][];
 
   /**
+   * Return a value at the given index.
+   *
+   * @param {string} index Row index.
+   * @returns Value or undefined if the index is out of range.
+   */
+  get: (index: number) => RelTypedValue['value'] | undefined;
+
+  /**
    * Number of values in the column.
    *
    * @returns Number of values.
@@ -100,6 +108,15 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
 
       return colDef;
     });
+  }
+
+  /**
+   * Array for type definitions per column. Shortcut for column.typeDef.
+   *
+   * @returns An array of type definitions.
+   */
+  get typeDefs() {
+    return this.colDefs.map(c => c.typeDef);
   }
 
   /**
@@ -168,6 +185,20 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       },
       values() {
         return Array.from(this);
+      },
+      get(index: number) {
+        if (index < 0 || index >= length) {
+          return;
+        }
+
+        if (colDef.typeDef.type === 'Constant') {
+          return colDef.typeDef.value;
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const arrowColumn = table.getChildAt(colDef.arrowIndex!)!;
+
+          return convertValue(colDef.typeDef, arrowColumn.get(index));
+        }
       },
     };
 
@@ -247,7 +278,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * Return row at the given index.
    *
    * @param {string} index Row index.
-   * @returns The row, or undefined if the index is out of range.
+   * @returns The row or undefined if the index is out of range.
    */
   get(index: number) {
     if (isFullySpecialized(this.colDefs) && index === 0) {
