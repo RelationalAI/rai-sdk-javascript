@@ -26,8 +26,6 @@ import { tests } from './testData';
 describe('Integration', () => {
   const databaseName = `js-sdk-tests-${Date.now()}`;
   const engineName = `js-sdk-tests-${Date.now()}`;
-  // const databaseName = `js-sdk-tests-local`;
-  // const engineName = `js-sdk-tests-local`;
   let client: Client;
 
   jest.setTimeout(1000 * 60 * 10);
@@ -45,9 +43,6 @@ describe('Integration', () => {
   });
 
   describe('Rel to JS types', () => {
-    // TODO add value types tests
-    // TODO add specialization tests
-
     tests.forEach(test => {
       const testFn = test.only ? it.only : it;
 
