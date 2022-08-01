@@ -44,7 +44,7 @@ export class DatabaseApi extends Base {
     return result.databases;
   }
 
-  async getDatabase(name: string): Promise<Database | undefined> {
+  async getDatabase(name: string) {
     const databases = await this.listDatabases({ name });
 
     return databases[0];
