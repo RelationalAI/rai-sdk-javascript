@@ -27,4 +27,7 @@ export { ApiError, TransactionError } from './src/errors';
 export * from './src/proto/generated/message';
 export * from './src/proto/generated/schema';
 export * from './src/relationUtils';
+export * from './src/results/resultTable';
+export * from './src/results/resultUtils';
+export * from './src/results/types';
 export { VERSION } from './src/types';

@@ -16,6 +16,9 @@
 
 import nock from 'nock';
 
+import Client from './api/client';
+import { DatabaseState } from './api/database/types';
+import { EngineState } from './api/engine/types';
 import {
   LabeledAction,
   LabeledActionResult,
@@ -23,7 +26,8 @@ import {
   TransactionMode,
   TransactionResult,
 } from './api/transaction/types';
-import { GetTokenCredentials } from './credentials';
+import { readConfig } from './config';
+import { ClientCredentials, GetTokenCredentials } from './credentials';
 import { makeUrl } from './rest';
 import { Config } from './types';
 
@@ -111,4 +115,87 @@ export function nockTransaction(
     .reply(200, response);
 
   return scope;
+}
+
+export async function getClient() {
+  let config: Config;
+
+  if (
+    process.env.CLIENT_ID &&
+    process.env.CLIENT_SECRET &&
+    process.env.CLIENT_CREDENTIALS_URL
+  ) {
+    const credentials = new ClientCredentials(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.CLIENT_CREDENTIALS_URL,
+    );
+    config = {
+      credentials,
+      host: 'azure.relationalai.com',
+      scheme: 'https',
+      port: '443',
+    };
+  } else {
+    config = await readConfig();
+  }
+
+  return new Client(config);
+}
+
+export async function createEngineIfNotExists(
+  client: Client,
+  engineName: string,
+  timeout: number = 1000 * 60 * 10,
+): Promise<void> {
+  const checkEngine = async () => {
+    const engines = await client.listEngines({
+      name: engineName,
+      state: EngineState.PROVISIONED,
+    });
+    const engine = engines.find(e => e.state === EngineState.PROVISIONED);
+
+    return !!engine;
+  };
+
+  if (await checkEngine()) {
+    return;
+  }
+
+  await client.createEngine(engineName);
+
+  const startedAt = Date.now();
+
+  return new Promise((resolve, reject) => {
+    const poll = () => {
+      setTimeout(async () => {
+        if (await checkEngine()) {
+          resolve();
+        } else if (Date.now() - startedAt > timeout) {
+          reject(`Timeout provisioning ${engineName} ${timeout}ms`);
+        } else {
+          poll();
+        }
+      }, 3000);
+    };
+
+    poll();
+  });
+}
+
+export async function createDatabaseIfNotExists(
+  client: Client,
+  databaseName: string,
+) {
+  const databases = await client.listDatabases({
+    name: databaseName,
+    state: DatabaseState.CREATED,
+  });
+  const database = databases.find(d => d.state === DatabaseState.CREATED);
+
+  if (database) {
+    return;
+  }
+
+  await client.createDatabase(databaseName);
 }

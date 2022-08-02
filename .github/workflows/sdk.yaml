@@ -25,6 +25,10 @@ jobs:
         run: npm run tscheck
 
       - name: Tests
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          CLIENT_CREDENTIALS_URL: ${{ secrets.CLIENT_CREDENTIALS_URL }}
         run: npm run test
 
       - name: Build
