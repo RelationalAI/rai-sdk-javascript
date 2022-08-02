@@ -43,7 +43,7 @@ describe('ResultTable', () => {
     it('should type definitions', () => {
       const table = new ResultTable(relation);
 
-      expect(table.typeDefs).toEqual([
+      expect(table.typeDefs()).toEqual([
         {
           type: 'Constant',
           name: 'Int64(1)',

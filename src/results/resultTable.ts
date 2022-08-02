@@ -111,11 +111,11 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   }
 
   /**
-   * Array for type definitions per column. Shortcut for column.typeDef.
+   * Return an array of type definitions per column. Shortcut for column.typeDef.
    *
    * @returns An array of type definitions.
    */
-  get typeDefs() {
+  typeDefs() {
     return this.colDefs.map(c => c.typeDef);
   }
 

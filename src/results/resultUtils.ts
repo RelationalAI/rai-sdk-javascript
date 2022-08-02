@@ -300,7 +300,7 @@ export function convertValue<T extends RelTypedValue>(
     case 'Constant':
       return typeDef.value;
     case 'Unknown':
-      return value;
+      return value && value.toJSON ? value.toJSON() : value;
   }
 }
 
@@ -373,9 +373,14 @@ export function getDisplayValue(
     case 'Unknown': {
       const _value = val.value as any;
 
-      return Object.keys(_value)
-        .map(key => `${_value[key]}`)
-        .join(', ');
+      if (typeof _value === 'object') {
+        return Object.keys(_value)
+          .map(key => `${_value[key]}`)
+          .join(', ');
+      }
+
+      // probably inlined value type
+      return _value;
     }
   }
 }
