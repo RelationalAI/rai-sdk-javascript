@@ -155,10 +155,13 @@ export const tests: Test[] = [
   {
     relType: 'HashValue',
     type: 'Hash',
-    query: `def output(x) = hash128["abc"](_, x)`,
-    arrowValues: [[3877405323480549948n, 3198683864092244389n]],
-    values: [59005302613613978016770438099762432572n],
-    displayValues: ['59005302613613978016770438099762432572'],
+    query: `
+      entity type Foo = Int
+      def output = ^Foo[12]
+    `,
+    arrowValues: [[10589367010498591262n, 15771123988529185405n]],
+    values: [290925887971139297379988470542779955742n],
+    displayValues: ['290925887971139297379988470542779955742'],
   },
   {
     relType: 'Missing',
@@ -264,13 +267,22 @@ export const tests: Test[] = [
   {
     relType: 'UInt128',
     type: 'UInt128',
-    query: `def output = uint[128, 123456789101112131415], uint[128, 0]`,
+    query: `def output = uint[128, 123456789101112131415], uint[128, 0], 0xdade49b564ec827d92f4fd30f1023a1e`,
     arrowValues: [
       [12776324658854821719n, 6n],
       [0n, 0n],
+      [10589367010498591262n, 15771123988529185405n],
     ],
-    values: [123456789101112131415n, 0n],
-    displayValues: ['123456789101112131415', '0'],
+    values: [
+      123456789101112131415n,
+      0n,
+      290925887971139297379988470542779955742n,
+    ],
+    displayValues: [
+      '123456789101112131415',
+      '0',
+      '290925887971139297379988470542779955742',
+    ],
   },
   {
     relType: 'Float16',

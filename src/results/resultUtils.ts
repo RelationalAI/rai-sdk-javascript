@@ -246,7 +246,7 @@ export function convertValue<T extends RelTypedValue>(
     case 'FilePos':
       return value;
     case 'Hash':
-      return int128ToBigInt(Array.from(value));
+      return uint128ToBigInt(Array.from(value));
     case 'Int8':
     case 'Int16':
     case 'Int32':
@@ -260,7 +260,7 @@ export function convertValue<T extends RelTypedValue>(
     case 'UInt64':
       return value;
     case 'UInt128':
-      return int128ToBigInt(Array.from(value));
+      return uint128ToBigInt(Array.from(value));
     case 'Float16':
     case 'Float32':
     case 'Float64':
@@ -387,4 +387,8 @@ export function getDisplayValue(
 
 function int128ToBigInt(tuple: bigint[]) {
   return (BigInt.asIntN(64, tuple[1]) << BigInt(64)) | tuple[0];
+}
+
+function uint128ToBigInt(tuple: bigint[]) {
+  return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
