@@ -58,7 +58,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    interval = 3 * 1000, // 3 seconds
+    interval = 1000, // 1 second
     timeout = Number.POSITIVE_INFINITY,
   ) {
     const result = await this.execAsync(
@@ -80,7 +80,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
 
   async pollTransaction(
     txnId: string,
-    interval = 3 * 1000,
+    interval = 1000,
     timeout = Number.POSITIVE_INFINITY,
   ) {
     const startedAt = Date.now();
