@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Table, tableFromArrays } from 'apache-arrow';
+import { tableFromArrays } from 'apache-arrow';
 import { isObject, set } from 'lodash-es';
 
 import { ArrowRelation, Relation } from './api/transaction/types';
@@ -22,25 +22,13 @@ import { ArrowRelation, Relation } from './api/transaction/types';
 type Value = string | boolean | number | BigInt | null;
 type Primitive = string | boolean | number | null;
 
-export type PlainRelation<T = Value> = {
+type PlainRelation<T = Value> = {
   relationId: string;
   columns: T[][];
 };
 
-export function getKeys(relPath: string) {
+function getKeys(relPath: string) {
   return relPath.split('/').filter(k => k);
-}
-
-export function getRelationId(keys: string[]) {
-  return `/${keys.join('/')}`;
-}
-
-export function arrowTableToJsonRows(table: Table) {
-  return table.toArray().map(arr => (arr ? arr.toJSON() : []));
-}
-
-export function arrowTableToArrayRows(table: Table) {
-  return table.toArray().map(arr => (arr ? arr.toArray() : []));
 }
 
 export function plainToArrow(plainRelations: PlainRelation[]) {
@@ -72,7 +60,7 @@ function checkBigInt(num: BigInt, relId: string) {
   }
 }
 
-export function arrowToJson(arrowRelations: ArrowRelation[]) {
+function arrowToJson(arrowRelations: ArrowRelation[]) {
   return arrowRelations.map(r => {
     const plainRelation: PlainRelation<Primitive> = {
       relationId: r.relationId,
@@ -117,24 +105,6 @@ export function arrowToJson(arrowRelations: ArrowRelation[]) {
     return plainRelation;
   });
 }
-
-export function arrowToPlain(arrowRelations: ArrowRelation[]) {
-  return arrowRelations.map(r => {
-    const plainRelation: PlainRelation<Primitive> = {
-      relationId: r.relationId,
-      columns: [],
-    };
-
-    for (let i = 0; i < r.table.numCols; i++) {
-      const col = r.table.getChildAt(i);
-
-      plainRelation.columns.push(col ? Array.from(col) : []);
-    }
-
-    return plainRelation;
-  });
-}
-
 function v1ToPlain(v1Relations: Relation[]) {
   return v1Relations.map(r => {
     const keys = [...r.rel_key.keys, ...r.rel_key.values];
@@ -306,120 +276,4 @@ export function toJson(output: Relation[] | ArrowRelation[]): any {
   });
 
   return result;
-}
-
-export function filterRelations(relations: ArrowRelation[], keys: string[]) {
-  const len = keys.length;
-  const keysStr = keys.join('/');
-  const filteredRelations: ArrowRelation[] = [];
-
-  relations.forEach(r => {
-    const relationKeys = getKeys(r.relationId);
-
-    if (relationKeys.slice(0, len).join('/') === keysStr) {
-      const newKeys = relationKeys.slice(len);
-
-      filteredRelations.push({
-        ...r,
-        relationId: getRelationId(newKeys),
-      });
-    }
-  });
-
-  return filteredRelations;
-}
-
-export type Pos = {
-  line: number;
-  character: number;
-};
-
-export type Range = {
-  start: Pos;
-  end: Pos;
-};
-
-export type Diagnostic = {
-  code: string;
-  message: string;
-  severity: 'exception' | 'error' | 'warning' | 'info' | 'suggestion';
-  report?: string;
-  range?: Range[];
-  model?: string;
-};
-
-export function parseDiagnostics(relations: ArrowRelation[]) {
-  relations = filterRelations(relations, [':rel', ':catalog', ':diagnostic']);
-
-  const diagnostics: Diagnostic[] = [];
-
-  setRangeProp(
-    ['start', 'line'],
-    diagnostics,
-    filterRelations(relations, [':range', ':start', ':line'])[0],
-  );
-  setRangeProp(
-    ['start', 'character'],
-    diagnostics,
-    filterRelations(relations, [':range', ':start', ':character'])[0],
-  );
-  setRangeProp(
-    ['end', 'line'],
-    diagnostics,
-    filterRelations(relations, [':range', ':end', ':line'])[0],
-  );
-  setRangeProp(
-    ['end', 'character'],
-    diagnostics,
-    filterRelations(relations, [':range', ':end', ':character'])[0],
-  );
-  setProp('message', diagnostics, filterRelations(relations, [':message'])[0]);
-  setProp(
-    'severity',
-    diagnostics,
-    filterRelations(relations, [':severity'])[0],
-  );
-  setProp('code', diagnostics, filterRelations(relations, [':code'])[0]);
-  setProp('report', diagnostics, filterRelations(relations, [':report'])[0]);
-  setProp('model', diagnostics, filterRelations(relations, [':model'])[0]);
-
-  return diagnostics;
-}
-
-function setRangeProp(
-  path: string[],
-  result: Diagnostic[],
-  relation: ArrowRelation,
-) {
-  if (relation) {
-    const rows = arrowTableToArrayRows(relation.table);
-
-    rows.forEach(row => {
-      const diagnosticIndex = Number(row[0]) - 1;
-      const rangeIndex = Number(row[1]) - 1;
-      const value = typeof row[2] === 'bigint' ? Number(row[2]) : row[2];
-
-      set(result, [diagnosticIndex, 'range', rangeIndex, ...path], value);
-    });
-  }
-}
-
-function setProp(path: string, result: Diagnostic[], relation: ArrowRelation) {
-  if (relation) {
-    const rows = arrowTableToArrayRows(relation.table);
-
-    rows.forEach(row => {
-      const diagnosticIndex = Number(row[0]) - 1;
-      const value = typeof row[1] === 'bigint' ? Number(row[1]) : row[1];
-
-      set(result, [diagnosticIndex, path], value);
-    });
-  }
-}
-
-export function readResults(relations: ArrowRelation[]) {
-  return {
-    output: filterRelations(relations, [':output']),
-    diagnostics: parseDiagnostics(relations),
-  };
 }
