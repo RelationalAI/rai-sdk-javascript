@@ -16,7 +16,7 @@
 
 import { Table } from 'apache-arrow';
 
-import { MetadataInfo } from '../../proto/generated/message';
+import { RelationId } from '../../proto/generated/schema';
 
 export type RelValue = string | number | boolean | null | number[];
 
@@ -214,14 +214,20 @@ export type TransactionAsyncFile = {
   file: File | string;
 };
 
+export type ArrowResult = {
+  relationId: string;
+  filename: string;
+  table: Table;
+};
+
 export type ArrowRelation = {
   relationId: string;
   table: Table;
+  metadata: RelationId;
 };
 
 export type TransactionAsyncResult = {
   transaction: TransactionAsyncCompact | TransactionAsync;
-  metadata?: MetadataInfo;
   problems?: Problem[];
   results: ArrowRelation[];
 };

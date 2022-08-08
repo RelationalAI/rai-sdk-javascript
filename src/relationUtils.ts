@@ -55,6 +55,7 @@ export function plainToArrow(plainRelations: PlainRelation[]) {
     const relation: ArrowRelation = {
       relationId,
       table: tableFromArrays(plainTable),
+      metadata: { arguments: [] },
     };
 
     return relation;

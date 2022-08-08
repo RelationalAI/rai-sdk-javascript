@@ -54,10 +54,6 @@ export function showTransactionResult(
 
   show(copy);
 
-  if ('metadata' in result) {
-    show(result.metadata);
-  }
-
   if ('results' in result) {
     showResults(result);
   }
@@ -68,6 +64,7 @@ function showResults(result: TransactionAsyncResult) {
     const table = new ResultTable(relation);
 
     console.log(relation.relationId);
+    show(relation.metadata);
     table.print();
     console.log();
   });

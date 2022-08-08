@@ -17,7 +17,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
-import { isTransactionDone } from '../transaction/transactionUtils';
+import {
+  isTransactionDone,
+  makeArrowRelations,
+} from '../transaction/transactionUtils';
 import {
   TransactionAsyncCompact,
   TransactionAsyncPayload,
@@ -116,12 +119,12 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       this.getTransactionProblems(txnId),
       this.getTransactionResults(txnId),
     ]);
+    const results = await makeArrowRelations(data[2], data[0]);
 
     const res: TransactionAsyncResult = {
       transaction: transaction!,
-      metadata: data[0],
       problems: data[1],
-      results: data[2],
+      results,
     };
 
     return res;

@@ -233,6 +233,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: `/${relationId}`,
       table: slicedTable,
+      metadata: this.relation.metadata,
     });
   }
 
@@ -308,6 +309,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: this.relation.relationId,
       table: slicedTable,
+      metadata: this.relation.metadata,
     });
   }
 
@@ -353,6 +355,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: `/${relationId}`,
       table: this.table,
+      metadata: this.relation.metadata,
     });
   }
 

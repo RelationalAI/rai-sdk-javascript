@@ -33,10 +33,12 @@ describe('ResultTable', () => {
       v2: [97, 98, 99, 100],
       v3: [1n, 2n, 3n, 4n],
     }),
+    metadata: { arguments: [] },
   };
   const specialRelation: ArrowRelation = {
     relationId: '/Int64(1)/:foo',
     table: tableFromArrays({}),
+    metadata: { arguments: [] },
   };
 
   describe('Default', () => {

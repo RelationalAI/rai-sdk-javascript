@@ -41,6 +41,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v2: [BigInt(1), BigInt(2), BigInt(1)],
       v3: [BigInt(1), BigInt(2), BigInt(1)],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId:
@@ -50,6 +51,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v2: [BigInt(1), BigInt(2), BigInt(1)],
       v3: [BigInt(17), BigInt(4), BigInt(14)],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId:
@@ -59,6 +61,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v2: [BigInt(1), BigInt(2), BigInt(1)],
       v3: [BigInt(1), BigInt(3), BigInt(1)],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId:
@@ -68,6 +71,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v2: [BigInt(1), BigInt(2), BigInt(1)],
       v3: [BigInt(17), BigInt(42), BigInt(17)],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId: '/:rel/:catalog/:diagnostic/:message/Int64/String',
@@ -75,6 +79,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v1: [BigInt(1), BigInt(2)],
       v2: ['message 1', 'message 2'],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId: '/:rel/:catalog/:diagnostic/:severity/Int64/String',
@@ -82,6 +87,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v1: [BigInt(1), BigInt(2)],
       v2: ['error', 'error'],
     }),
+    metadata: { arguments: [] },
   },
 
   {
@@ -90,6 +96,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v1: [BigInt(1), BigInt(2)],
       v2: ['PARSE_ERROR', 'UNBOUND_VARIABLE'],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId: '/:rel/:catalog/:diagnostic/:report/Int64/String',
@@ -97,6 +104,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v1: [BigInt(1), BigInt(2)],
       v2: ['report 1', 'report 2'],
     }),
+    metadata: { arguments: [] },
   },
   {
     relationId: '/:rel/:catalog/:diagnostic/:model/Int64/String',
@@ -104,6 +112,7 @@ const diagnosticRelations: ArrowRelation[] = [
       v1: [BigInt(2)],
       v2: ['foo/bar'],
     }),
+    metadata: { arguments: [] },
   },
 ];
 
@@ -260,6 +269,7 @@ describe('relationUtils', () => {
           bar: ['a', 'b', 'c'],
           baz: [BigInt(1), BigInt(2), BigInt(3)],
         }),
+        metadata: { arguments: [] },
       },
     ];
     const plainRelations = arrowToPlain(relations);
@@ -285,6 +295,7 @@ describe('relationUtils', () => {
           foo: [BigInt(1), BigInt(2), BigInt(3)],
           bar: ['a', 'b', 'c'],
         }),
+        metadata: { arguments: [] },
       },
     ];
     const plainRelations = arrowToJson(relations);
@@ -309,6 +320,7 @@ describe('relationUtils', () => {
           foo: [BigInt(1), BigInt(2), BigInt(Number.MAX_SAFE_INTEGER + 1)],
           bar: ['a', 'b', 'c'],
         }),
+        metadata: { arguments: [] },
       },
     ];
 
