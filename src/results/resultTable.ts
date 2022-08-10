@@ -18,7 +18,12 @@ import { StructRowProxy, Table } from 'apache-arrow';
 import { Table as PrintTable } from 'console-table-printer';
 
 import { ArrowRelation } from '../api/transaction/types';
-import { convertValue, getDisplayValue, getTypeDef } from './resultUtils';
+import {
+  convertValue,
+  getDisplayValue,
+  getTypeDef,
+  getTypeDefFromProtobuf,
+} from './resultUtils';
 import { ConstantValue, RelTypeDef, RelTypedValue } from './types';
 
 export interface ResultColumn {
@@ -92,12 +97,16 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   constructor(private relation: ArrowRelation) {
     this.table = relation.table;
 
-    const types = relation.relationId.split('/').filter(x => x);
+    const isProtoMetadataAvailable = !!relation.metadata.arguments.length;
+    const types = !isProtoMetadataAvailable
+      ? relation.relationId.split('/').filter(x => x)
+      : relation.metadata.arguments;
 
     let arrowIndex = 0;
 
     this.colDefs = types.map(t => {
-      const typeDef = getTypeDef(t);
+      const typeDef =
+        typeof t === 'string' ? getTypeDef(t) : getTypeDefFromProtobuf(t);
 
       const colDef: ColumnDef = { typeDef };
 

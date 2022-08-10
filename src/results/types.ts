@@ -16,10 +16,26 @@
 
 import Decimal from 'decimal.js';
 
-export type RelTypedValue =
+export type RelPrimitiveTypedValue =
   | StringValue
   | BoolValue
   | CharValue
+  | Int8Value
+  | Int16Value
+  | Int32Value
+  | Int64Value
+  | Int128Value
+  | UInt8Value
+  | UInt16Value
+  | UInt32Value
+  | UInt64Value
+  | UInt128Value
+  | Float16Value
+  | Float32Value
+  | Float64Value;
+
+export type RelTypedValue =
+  | RelPrimitiveTypedValue
   | DateTimeValue
   | DateValue
   | YearValue
@@ -35,19 +51,6 @@ export type RelTypedValue =
   | HashValue
   | MissingValue
   | FilePosValue
-  | Int8Value
-  | Int16Value
-  | Int32Value
-  | Int64Value
-  | Int128Value
-  | UInt8Value
-  | UInt16Value
-  | UInt32Value
-  | UInt64Value
-  | UInt128Value
-  | Float16Value
-  | Float32Value
-  | Float64Value
   | Decimal16Value
   | Decimal32Value
   | Decimal64Value
@@ -106,9 +109,9 @@ export type RelTypeDef = (
 
 export type ConstantValue = {
   type: 'Constant';
+  // TODO should we remove it?
   name: string;
-  // TODO value shouldn't be restricted to strings, just JSON metadata restriction
-  value: string;
+  value: RelPrimitiveTypedValue[];
 };
 
 export type StringValue = {

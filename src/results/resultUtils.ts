@@ -16,7 +16,13 @@
 
 import Decimal from 'decimal.js';
 
-import { RelTypeDef, RelTypedValue } from './types';
+import {
+  Kind,
+  PrimitiveType,
+  PrimitiveValue,
+  RelType,
+} from '../proto/generated/schema';
+import { RelPrimitiveTypedValue, RelTypeDef, RelTypedValue } from './types';
 
 Decimal.config({ precision: 31 });
 
@@ -38,7 +44,7 @@ export function getTypeDef(type: string): RelTypeDef {
     return {
       type: 'Constant',
       name: 'Symbol',
-      value: type,
+      value: [{ type: 'String', value: type }],
     };
   }
 
@@ -46,7 +52,7 @@ export function getTypeDef(type: string): RelTypeDef {
     return {
       type: 'Constant',
       name: type,
-      value: type,
+      value: [{ type: 'String', value: type }],
     };
   }
 
@@ -216,6 +222,222 @@ export function getTypeDef(type: string): RelTypeDef {
   };
 }
 
+export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
+  console.log(type);
+
+  if (type.tag === Kind.CONSTANT_TYPE && type.constantType?.value) {
+    const value = type.constantType.value.arguments.map(v =>
+      getPrimitiveValue(v),
+    );
+    let name = 'Constant';
+
+    if (value[0].type === 'String') {
+      name = 'Symbol';
+    } else {
+      name = `${value[0].type}(${value[0].value})`;
+    }
+
+    return {
+      type: 'Constant',
+      name: name,
+      value,
+    };
+  }
+
+  if (type.tag === Kind.PRIMITIVE_TYPE) {
+    switch (type.primitiveType) {
+      case PrimitiveType.STRING:
+        return {
+          type: 'String',
+        };
+      case PrimitiveType.CHAR:
+        return {
+          type: 'Char',
+        };
+      case PrimitiveType.BOOL:
+        return {
+          type: 'Bool',
+        };
+      case PrimitiveType.INT_8:
+        return {
+          type: 'Int8',
+        };
+      case PrimitiveType.INT_16:
+        return {
+          type: 'Int16',
+        };
+      case PrimitiveType.INT_32:
+        return {
+          type: 'Int32',
+        };
+      case PrimitiveType.INT_64:
+        return {
+          type: 'Int64',
+        };
+      case PrimitiveType.INT_128:
+        return {
+          type: 'Int128',
+        };
+      case PrimitiveType.UINT_8:
+        return {
+          type: 'UInt8',
+        };
+      case PrimitiveType.UINT_16:
+        return {
+          type: 'UInt16',
+        };
+      case PrimitiveType.UINT_32:
+        return {
+          type: 'UInt32',
+        };
+      case PrimitiveType.UINT_64:
+        return {
+          type: 'UInt64',
+        };
+      case PrimitiveType.UINT_128:
+        return {
+          type: 'UInt128',
+        };
+      case PrimitiveType.FLOAT_16:
+        return {
+          type: 'Float16',
+        };
+      case PrimitiveType.FLOAT_32:
+        return {
+          type: 'Float32',
+        };
+      case PrimitiveType.FLOAT_64:
+        return {
+          type: 'Float64',
+        };
+      // TODO should we throw an error here?
+    }
+  }
+
+  return {
+    type: 'Constant',
+    name: 'TODO',
+    value: [{ type: 'String', value: 'TODO' }],
+  };
+
+  // if (type === 'Dates.DateTime') {
+  //   return {
+  //     type: 'DateTime',
+  //   };
+  // }
+
+  // if (type === 'Dates.Date') {
+  //   return {
+  //     type: 'Date',
+  //   };
+  // }
+
+  // if (type === 'Dates.Year') {
+  //   return {
+  //     type: 'Year',
+  //   };
+  // }
+
+  // if (type === 'Dates.Month') {
+  //   return {
+  //     type: 'Month',
+  //   };
+  // }
+
+  // if (type === 'Dates.Week') {
+  //   return {
+  //     type: 'Week',
+  //   };
+  // }
+
+  // if (type === 'Dates.Day') {
+  //   return {
+  //     type: 'Day',
+  //   };
+  // }
+
+  // if (type === 'Dates.Hour') {
+  //   return {
+  //     type: 'Hour',
+  //   };
+  // }
+
+  // if (type === 'Dates.Minute') {
+  //   return {
+  //     type: 'Minute',
+  //   };
+  // }
+
+  // if (type === 'Dates.Second') {
+  //   return {
+  //     type: 'Second',
+  //   };
+  // }
+
+  // if (type === 'Dates.Millisecond') {
+  //   return {
+  //     type: 'Millisecond',
+  //   };
+  // }
+
+  // if (type === 'Dates.Microsecond') {
+  //   return {
+  //     type: 'Microsecond',
+  //   };
+  // }
+
+  // if (type === 'Dates.Nanosecond') {
+  //   return {
+  //     type: 'Nanosecond',
+  //   };
+  // }
+
+  // if (type === 'HashValue') {
+  //   return {
+  //     type: 'Hash',
+  //   };
+  // }
+
+  // if (type === 'Missing') {
+  //   return {
+  //     type: 'Missing',
+  //   };
+  // }
+
+  // if (type === 'FilePos') {
+  //   return {
+  //     type: 'FilePos',
+  //   };
+  // }
+
+  // const decimalMatch = type.match(decimalRegEx);
+
+  // if (decimalMatch && decimalMatch.length === 3) {
+  //   const bits = Number.parseInt(decimalMatch[1]);
+  //   const places = Number.parseInt(decimalMatch[2]);
+
+  //   return {
+  //     type: `Decimal${bits}` as any,
+  //     places,
+  //   };
+  // }
+
+  // const rationalMatch = type.match(rationalRegEx);
+
+  // if (rationalMatch && rationalMatch.length === 2) {
+  //   const bits = rationalMatch[1];
+
+  //   return {
+  //     type: `Rational${bits}` as any,
+  //   };
+  // }
+
+  // return {
+  //   type: 'Unknown',
+  //   name: type,
+  // };
+}
+
 export function convertValue<T extends RelTypedValue>(
   typeDef: RelTypeDef,
   value: any,
@@ -314,7 +536,7 @@ export function getDisplayValue(
   } as RelTypedValue;
 
   if (typeDef.type === 'Constant') {
-    return typeDef.value;
+    return typeDef.value.map(v => getDisplayValue(v, v.value)).join(', ');
   }
 
   switch (val.type) {
@@ -391,4 +613,102 @@ function int128ToBigInt(tuple: bigint[]) {
 
 function uint128ToBigInt(tuple: bigint[]) {
   return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
+}
+
+function getPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
+  switch (val.value.oneofKind) {
+    case 'stringVal':
+      return {
+        type: 'String',
+        // TODO should we get rid of the colon
+        value: `:${new TextDecoder().decode(val.value.stringVal)}`,
+      };
+    case 'charVal':
+      return {
+        type: 'Char',
+        value: String.fromCodePoint(val.value.charVal),
+      };
+    case 'boolVal':
+      return {
+        type: 'Bool',
+        value: val.value.boolVal,
+      };
+    case 'int8Val':
+      return {
+        type: 'Int8',
+        value: val.value.int8Val,
+      };
+    case 'int16Val':
+      return {
+        type: 'Int16',
+        value: val.value.int16Val,
+      };
+    case 'int32Val':
+      return {
+        type: 'Int32',
+        value: val.value.int32Val,
+      };
+    case 'int64Val':
+      return {
+        type: 'Int64',
+        value: val.value.int64Val,
+      };
+    case 'int128Val':
+      return {
+        type: 'Int128',
+        value: int128ToBigInt([
+          val.value.int128Val.highbits,
+          val.value.int128Val.lowbits,
+        ]),
+      };
+    case 'uint8Val':
+      return {
+        type: 'UInt8',
+        value: val.value.uint8Val,
+      };
+    case 'uint16Val':
+      return {
+        type: 'UInt16',
+        value: val.value.uint16Val,
+      };
+    case 'uint32Val':
+      return {
+        type: 'UInt32',
+        value: val.value.uint32Val,
+      };
+    case 'uint64Val':
+      return {
+        type: 'UInt64',
+        value: val.value.uint64Val,
+      };
+    case 'uint128Val':
+      return {
+        type: 'UInt128',
+        value: uint128ToBigInt([
+          val.value.uint128Val.highbits,
+          val.value.uint128Val.lowbits,
+        ]),
+      };
+    case 'float16Val':
+      return {
+        type: 'Float16',
+        value: val.value.float16Val,
+      };
+    case 'float32Val':
+      return {
+        type: 'Float32',
+        value: val.value.float32Val,
+      };
+    case 'float64Val':
+      return {
+        type: 'Float64',
+        value: val.value.float64Val,
+      };
+    default:
+      // Should we throw an error instead?
+      return {
+        type: 'String',
+        value: 'Unknown primitive value',
+      };
+  }
 }
