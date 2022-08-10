@@ -121,10 +121,21 @@ export async function readProtoMetadata(file: File | Blob) {
     throw new Error(`Unsupported metadata type: ${typeof file}`);
   }
 
-  const buffer = await file.arrayBuffer();
-  const data = new Uint8Array(buffer);
+  try {
+    const buffer = await file.arrayBuffer();
+    const data = new Uint8Array(buffer);
 
-  return MetadataInfo.fromBinary(data);
+    return MetadataInfo.fromBinary(data);
+  } catch (error: any) {
+    // TODO remove it latr
+    // old engines throw this error when there's no output
+    // so we'll just ignore this for some time
+    if (error.message === 'illegal tag: field no 0 wire type 0') {
+      return { relations: [] };
+    }
+
+    throw error;
+  }
 }
 
 async function readJson(file: File | string) {
