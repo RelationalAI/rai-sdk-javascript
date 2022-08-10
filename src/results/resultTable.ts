@@ -117,6 +117,8 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
 
       return colDef;
     });
+
+    console.log(this.typeDefs());
   }
 
   /**

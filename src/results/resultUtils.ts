@@ -223,8 +223,6 @@ export function getTypeDef(type: string): RelTypeDef {
 }
 
 export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
-  console.log(type);
-
   if (type.tag === Kind.CONSTANT_TYPE && type.constantType?.value) {
     const value = type.constantType.value.arguments.map(v =>
       getPrimitiveValue(v),
@@ -312,6 +310,35 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
         };
       // TODO should we throw an error here?
     }
+  }
+
+  if (type.tag === Kind.VALUE_TYPE && type.valueType) {
+    const typeDef = {
+      type: 'ValueType',
+      // TODO add name?
+      typeDefs: type.valueType.argumentTypes.map(t =>
+        getTypeDefFromProtobuf(t),
+      ),
+    } as const;
+
+    // TODO convert base value types
+
+    console.log('parsed value type', typeDef);
+
+    if (
+      typeDef.typeDefs[2]?.type === 'Constant' &&
+      typeDef.typeDefs[2].value[0].value === ':Date'
+    ) {
+      console.log('ITs a date');
+
+      return {
+        type: 'Date',
+      };
+    }
+
+    console.log('not a date');
+
+    return typeDef;
   }
 
   return {
@@ -521,6 +548,16 @@ export function convertValue<T extends RelTypedValue>(
     }
     case 'Constant':
       return typeDef.value;
+    case 'ValueType': {
+      const physicalTypeDefs = getPhysicalTypeDefs(typeDef.typeDefs);
+      const valueArray = value.toJSON();
+
+      return physicalTypeDefs.map((td, index) => {
+        // TODO throw an error if value is missing?
+        // index start from 1 for some reason
+        return convertValue(td, valueArray[index + 1]);
+      });
+    }
     case 'Unknown':
       return value && value.toJSON ? value.toJSON() : value;
   }
@@ -531,7 +568,7 @@ export function getDisplayValue(
   value: RelTypedValue['value'],
 ): string {
   const val = {
-    type: typeDef.type,
+    ...typeDef,
     value,
   } as RelTypedValue;
 
@@ -592,6 +629,15 @@ export function getDisplayValue(
     case 'Rational64':
     case 'Rational128':
       return `${val.value.numerator}/${val.value.denominator}`;
+    case 'ValueType': {
+      const physicalTypeDefs = getPhysicalTypeDefs(val.typeDefs);
+
+      return physicalTypeDefs
+        .map((td, index) => {
+          return getDisplayValue(td, val.value[index]);
+        })
+        .join(', ');
+    }
     case 'Unknown': {
       const _value = val.value as any;
 
@@ -711,4 +757,21 @@ function getPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
         value: 'Unknown primitive value',
       };
   }
+}
+
+function getPhysicalTypeDefs(typeDefs: RelTypeDef[]) {
+  const result: RelTypeDef[] = [];
+  const walk = (typeDefs: RelTypeDef[]) => {
+    typeDefs.forEach(td => {
+      if (td.type === 'ValueType') {
+        walk(td.typeDefs);
+      } else if (td.type !== 'Constant') {
+        result.push(td);
+      }
+    });
+  };
+
+  walk(typeDefs);
+
+  return result;
 }

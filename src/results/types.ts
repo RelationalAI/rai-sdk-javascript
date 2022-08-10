@@ -34,7 +34,7 @@ export type RelPrimitiveTypedValue =
   | Float32Value
   | Float64Value;
 
-export type RelTypedValue =
+export type RelBaseTypedValue =
   | RelPrimitiveTypedValue
   | DateTimeValue
   | DateValue
@@ -59,8 +59,9 @@ export type RelTypedValue =
   | Rational16Value
   | Rational32Value
   | Rational64Value
-  | Rational128Value
-  | UnknownType;
+  | Rational128Value;
+
+export type RelTypedValue = RelBaseTypedValue | ValueTypeValue | UnknownType;
 
 export type RelTypeDef = (
   | Omit<StringValue, 'value'>
@@ -103,15 +104,24 @@ export type RelTypeDef = (
   | Omit<Rational32Value, 'value'>
   | Omit<Rational64Value, 'value'>
   | Omit<Rational128Value, 'value'>
-  | Omit<UnknownType, 'value'>
   | ConstantValue
+  | Omit<ValueTypeValue, 'value'>
+  | Omit<UnknownType, 'value'>
 ) & { name?: string };
 
 export type ConstantValue = {
   type: 'Constant';
   // TODO should we remove it?
+  // maybe this's a thing because of name in ValueTypeValue ?
   name: string;
   value: RelPrimitiveTypedValue[];
+};
+
+export type ValueTypeValue = {
+  type: 'ValueType';
+  // TODO should we add name?
+  typeDefs: RelTypeDef[];
+  value: RelTypedValue[];
 };
 
 export type StringValue = {
@@ -333,7 +343,7 @@ export type Rational128Value = {
   };
 };
 
-// TODO: should add seprated type for Value Types
+// TODO: should be removed with JSON based metadata implementation?
 export type UnknownType = {
   type: 'Unknown';
   value: Record<string, any>;
