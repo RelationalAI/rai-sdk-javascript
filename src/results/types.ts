@@ -121,7 +121,7 @@ export type ValueTypeValue = {
   type: 'ValueType';
   // TODO should we add name?
   typeDefs: RelTypeDef[];
-  value: RelTypedValue[];
+  value: RelBaseTypedValue['value'][];
 };
 
 export type StringValue = {
