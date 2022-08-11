@@ -703,8 +703,8 @@ function getPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
       return {
         type: 'Int128',
         value: int128ToBigInt([
-          val.value.int128Val.highbits,
           val.value.int128Val.lowbits,
+          val.value.int128Val.highbits,
         ]),
       };
     case 'uint8Val':
@@ -731,8 +731,8 @@ function getPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
       return {
         type: 'UInt128',
         value: uint128ToBigInt([
-          val.value.uint128Val.highbits,
           val.value.uint128Val.lowbits,
+          val.value.uint128Val.highbits,
         ]),
       };
     case 'float16Val':
