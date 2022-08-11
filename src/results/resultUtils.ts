@@ -22,7 +22,13 @@ import {
   PrimitiveValue,
   RelType,
 } from '../proto/generated/schema';
-import { RelPrimitiveTypedValue, RelTypeDef, RelTypedValue } from './types';
+import {
+  ConstantValue,
+  RelPrimitiveTypedValue,
+  RelTypeDef,
+  RelTypedValue,
+  ValueTypeValue,
+} from './types';
 
 Decimal.config({ precision: 31 });
 
@@ -225,7 +231,7 @@ export function getTypeDef(type: string): RelTypeDef {
 export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
   if (type.tag === Kind.CONSTANT_TYPE && type.constantType?.value) {
     const value = type.constantType.value.arguments.map(v =>
-      getPrimitiveValue(v),
+      mapPrimitiveValue(v),
     );
     let name = 'Constant';
 
@@ -321,24 +327,7 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
       ),
     } as const;
 
-    // TODO convert base value types
-
-    console.log('parsed value type', typeDef);
-
-    if (
-      typeDef.typeDefs[2]?.type === 'Constant' &&
-      typeDef.typeDefs[2].value[0].value === ':Date'
-    ) {
-      console.log('ITs a date');
-
-      return {
-        type: 'Date',
-      };
-    }
-
-    console.log('not a date');
-
-    return typeDef;
+    return mapValueType(typeDef);
   }
 
   return {
@@ -550,12 +539,19 @@ export function convertValue<T extends RelTypedValue>(
       return typeDef.value;
     case 'ValueType': {
       const physicalTypeDefs = getPhysicalTypeDefs(typeDef.typeDefs);
-      const valueArray = value.toJSON();
+      const val = value?.toJSON ? value.toJSON() : value;
 
       return physicalTypeDefs.map((td, index) => {
         // TODO throw an error if value is missing?
-        // index start from 1 for some reason
-        return convertValue(td, valueArray[index + 1]);
+        const v =
+          typeof val === 'object' && !Array.isArray(val)
+            ? val[index + 1] // an object with number keys starting from 1
+            : // TODO inlined value type or whatever it's called
+              // we probably should check then that physicalTypeDefs.length === 1
+              // and throw an error
+              val;
+
+        return convertValue(td, v);
       });
     }
     case 'Unknown':
@@ -597,12 +593,6 @@ export function getDisplayValue(
     case 'Millisecond':
     case 'Microsecond':
     case 'Nanosecond':
-      return val.value.toString();
-    case 'Missing':
-      return 'missing';
-    case 'FilePos':
-      return val.value.toString();
-    case 'Hash':
     case 'Int8':
     case 'Int16':
     case 'Int32':
@@ -613,7 +603,11 @@ export function getDisplayValue(
     case 'UInt32':
     case 'UInt64':
     case 'UInt128':
+    case 'FilePos':
+    case 'Hash':
       return val.value.toString();
+    case 'Missing':
+      return 'missing';
     case 'Float16':
     case 'Float32':
     case 'Float64':
@@ -661,7 +655,7 @@ function uint128ToBigInt(tuple: bigint[]) {
   return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
 
-function getPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
+function mapPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
   switch (val.value.oneofKind) {
     case 'stringVal':
       return {
@@ -757,6 +751,92 @@ function getPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
         value: 'Unknown primitive value',
       };
   }
+}
+
+function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
+  const relNames = typeDef.typeDefs
+    .slice(0, 3)
+    .filter(
+      td => td.type === 'Constant' && td.value[0].type === 'String',
+    ) as ConstantValue[];
+
+  if (
+    relNames.length !== 3 ||
+    !(
+      relNames[0].value[0].value === ':rel' &&
+      relNames[1].value[0].value === ':base'
+    )
+  ) {
+    return typeDef;
+  }
+
+  const standardValueType = (relNames[2].value[0].value as string).slice(1);
+
+  switch (standardValueType) {
+    case 'DateTime':
+    case 'Date':
+    case 'Year':
+    case 'Month':
+    case 'Week':
+    case 'Day':
+    case 'Hour':
+    case 'Minute':
+    case 'Second':
+    case 'Millisecond':
+    case 'Microsecond':
+    case 'Nanosecond':
+    case 'FilePos':
+    case 'Missing':
+    case 'Hash':
+      return {
+        type: standardValueType,
+      };
+    case 'FixedDecimal': {
+      if (
+        typeDef.typeDefs.length === 6 &&
+        typeDef.typeDefs[3].type === 'Constant' &&
+        typeDef.typeDefs[4].type === 'Constant'
+      ) {
+        const bits = Number(typeDef.typeDefs[3].value[0].value);
+        const places = Number(typeDef.typeDefs[4].value[0].value);
+
+        if (bits === 16 || bits === 32 || bits === 64 || bits === 128) {
+          return {
+            type: `Decimal${bits}`,
+            places: places,
+          };
+        }
+      }
+      break;
+    }
+    // TODO try to comment this and make sure that
+    // the generic value type displaying doesn't fail
+    case 'Rational': {
+      if (
+        typeDef.typeDefs.length === 4 &&
+        typeDef.typeDefs[3].type === 'ValueType'
+      ) {
+        const tp = typeDef.typeDefs[3];
+
+        if (tp.typeDefs.length === 2) {
+          switch (tp.typeDefs[0].type) {
+            case 'Int8':
+              return { type: 'Rational8' };
+            case 'Int16':
+              return { type: 'Rational16' };
+            case 'Int32':
+              return { type: 'Rational32' };
+            case 'Int64':
+              return { type: 'Rational64' };
+            case 'Int128':
+              return { type: 'Rational128' };
+          }
+        }
+      }
+    }
+  }
+
+  return typeDef;
 }
 
 function getPhysicalTypeDefs(typeDefs: RelTypeDef[]) {

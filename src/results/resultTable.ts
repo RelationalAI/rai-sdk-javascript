@@ -18,6 +18,7 @@ import { StructRowProxy, Table } from 'apache-arrow';
 import { Table as PrintTable } from 'console-table-printer';
 
 import { ArrowRelation } from '../api/transaction/types';
+import { Kind, PrimitiveType, RelType } from '../proto/generated/schema';
 import {
   convertValue,
   getDisplayValue,
@@ -72,6 +73,7 @@ interface IteratorOf<T> {
 
 type ColumnDef = {
   typeDef: RelTypeDef;
+  metadata: RelType;
   arrowIndex?: number;
 };
 
@@ -108,7 +110,17 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       const typeDef =
         typeof t === 'string' ? getTypeDef(t) : getTypeDefFromProtobuf(t);
 
-      const colDef: ColumnDef = { typeDef };
+      const colDef: ColumnDef = {
+        typeDef,
+        metadata:
+          typeof t === 'object'
+            ? t
+            : // TODO get rid of it when removing JSON metadata based implementation
+              {
+                tag: Kind.UNSPECIFIED_KIND,
+                primitiveType: PrimitiveType.UNSPECIFIED_TYPE,
+              },
+      };
 
       if (typeDef.type !== 'Constant') {
         colDef.arrowIndex = arrowIndex;
@@ -117,8 +129,6 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
 
       return colDef;
     });
-
-    console.log(this.typeDefs());
   }
 
   /**
@@ -244,7 +254,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: `/${relationId}`,
       table: slicedTable,
-      metadata: this.relation.metadata,
+      metadata: { arguments: newColDefs.map(cd => cd.metadata) },
     });
   }
 
@@ -366,7 +376,11 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: `/${relationId}`,
       table: this.table,
-      metadata: this.relation.metadata,
+      metadata: {
+        arguments: this.colDefs
+          .filter(cd => cd.typeDef.type === 'Constant')
+          .map(cd => cd.metadata),
+      },
     });
   }
 
