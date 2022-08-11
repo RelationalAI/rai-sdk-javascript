@@ -121,6 +121,7 @@ export type ValueTypeValue = {
   type: 'ValueType';
   // TODO should we add name?
   typeDefs: RelTypeDef[];
+  // TODO fix the type, it could have nested ValueTypeValue['value'][] inside
   value: RelBaseTypedValue['value'][];
 };
 

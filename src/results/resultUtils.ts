@@ -420,15 +420,18 @@ export function convertValue<T extends RelTypedValue>(
     case 'Constant':
       return typeDef.value;
     case 'ValueType': {
-      const physicalTypeDefs = getPhysicalTypeDefs(typeDef.typeDefs);
+      const nonConstantTypeDefs = typeDef.typeDefs.filter(
+        td => td.type !== 'Constant',
+      );
       let val = value?.toArray ? value.toArray() : value;
 
-      if (physicalTypeDefs.length === 1) {
+      // TODO add explanation comment
+      // inlined value types? is that the proper term?
+      if (nonConstantTypeDefs.length === 1) {
         val = [val];
       }
 
-      return physicalTypeDefs.map((td, index) => {
-        // TODO throw an error if value is missing?
+      return nonConstantTypeDefs.map((td, index) => {
         return convertValue(td, val[index]);
       });
     }
@@ -502,11 +505,15 @@ export function getDisplayValue(
     case 'Rational128':
       return `${val.value.numerator}/${val.value.denominator}`;
     case 'ValueType': {
-      const physicalTypeDefs = getPhysicalTypeDefs(val.typeDefs);
+      const nonConstantTypeDefs = val.typeDefs.filter(
+        td => td.type !== 'Constant',
+      );
 
-      return physicalTypeDefs
+      return nonConstantTypeDefs
         .map((td, index) => {
-          return getDisplayValue(td, val.value[index]);
+          const displayValue = getDisplayValue(td, val.value[index]);
+
+          return td.type === 'ValueType' ? `(${displayValue})` : displayValue;
         })
         .join(', ');
     }
@@ -669,67 +676,48 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
       return {
         type: standardValueType,
       };
-    // case 'FixedDecimal': {
-    //   if (
-    //     typeDef.typeDefs.length === 6 &&
-    //     typeDef.typeDefs[3].type === 'Constant' &&
-    //     typeDef.typeDefs[4].type === 'Constant'
-    //   ) {
-    //     const bits = Number(typeDef.typeDefs[3].value[0].value);
-    //     const places = Number(typeDef.typeDefs[4].value[0].value);
+    case 'FixedDecimal': {
+      if (
+        typeDef.typeDefs.length === 6 &&
+        typeDef.typeDefs[3].type === 'Constant' &&
+        typeDef.typeDefs[4].type === 'Constant'
+      ) {
+        const bits = Number(typeDef.typeDefs[3].value[0].value);
+        const places = Number(typeDef.typeDefs[4].value[0].value);
 
-    //     if (bits === 16 || bits === 32 || bits === 64 || bits === 128) {
-    //       return {
-    //         type: `Decimal${bits}`,
-    //         places: places,
-    //       };
-    //     }
-    //   }
-    //   break;
-    // }
-    // TODO try to comment this and make sure that
-    // the generic value type displaying doesn't fail
-    // case 'Rational': {
-    //   if (
-    //     typeDef.typeDefs.length === 4 &&
-    //     typeDef.typeDefs[3].type === 'ValueType'
-    //   ) {
-    //     const tp = typeDef.typeDefs[3];
+        if (bits === 16 || bits === 32 || bits === 64 || bits === 128) {
+          return {
+            type: `Decimal${bits}`,
+            places: places,
+          };
+        }
+      }
+      break;
+    }
+    case 'Rational': {
+      if (
+        typeDef.typeDefs.length === 4 &&
+        typeDef.typeDefs[3].type === 'ValueType'
+      ) {
+        const tp = typeDef.typeDefs[3];
 
-    //     if (tp.typeDefs.length === 2) {
-    //       switch (tp.typeDefs[0].type) {
-    //         case 'Int8':
-    //           return { type: 'Rational8' };
-    //         case 'Int16':
-    //           return { type: 'Rational16' };
-    //         case 'Int32':
-    //           return { type: 'Rational32' };
-    //         case 'Int64':
-    //           return { type: 'Rational64' };
-    //         case 'Int128':
-    //           return { type: 'Rational128' };
-    //       }
-    //     }
-    //   }
-    // }
+        if (tp.typeDefs.length === 2) {
+          switch (tp.typeDefs[0].type) {
+            case 'Int8':
+              return { type: 'Rational8' };
+            case 'Int16':
+              return { type: 'Rational16' };
+            case 'Int32':
+              return { type: 'Rational32' };
+            case 'Int64':
+              return { type: 'Rational64' };
+            case 'Int128':
+              return { type: 'Rational128' };
+          }
+        }
+      }
+    }
   }
 
   return typeDef;
-}
-
-function getPhysicalTypeDefs(typeDefs: RelTypeDef[]) {
-  const result: RelTypeDef[] = [];
-  const walk = (typeDefs: RelTypeDef[]) => {
-    typeDefs.forEach(td => {
-      if (td.type === 'ValueType') {
-        walk(td.typeDefs);
-      } else if (td.type !== 'Constant') {
-        result.push(td);
-      }
-    });
-  };
-
-  walk(typeDefs);
-
-  return result;
 }
