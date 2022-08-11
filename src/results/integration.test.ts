@@ -21,7 +21,7 @@ import {
   getClient,
 } from '../testUtils';
 import { ResultTable } from './resultTable';
-import { tests } from './testData';
+import { tests, valueTypeTests } from './testData';
 
 describe('Integration', () => {
   const databaseName = `js-sdk-tests-${Date.now()}`;
@@ -42,7 +42,7 @@ describe('Integration', () => {
     await client.deleteDatabase(databaseName);
   });
 
-  describe('Rel to JS types', () => {
+  describe('Rel to JS standard types', () => {
     tests.forEach(test => {
       const testFn = test.only ? it.only : it;
 
@@ -53,6 +53,22 @@ describe('Integration', () => {
         const values = table.get(0);
 
         expect(type).toEqual(test.type);
+        expect(values).toEqual(test.values);
+      });
+    });
+  });
+
+  describe('Rel to JS value types', () => {
+    valueTypeTests.forEach(test => {
+      const testFn = test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} value type`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDef = table.columnAt(0).typeDef;
+        const values = table.get(0);
+
+        expect(typeDef).toEqual(test.typeDef);
         expect(values).toEqual(test.values);
       });
     });

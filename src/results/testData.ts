@@ -16,9 +16,9 @@
 
 import Decimal from 'decimal.js';
 
-import { RelTypedValue } from './types';
+import { RelTypeDef, RelTypedValue } from './types';
 
-type Test = {
+type RelStandardTypeTest = {
   relType: string;
   type: RelTypedValue['type'];
   query: string;
@@ -31,7 +31,7 @@ type Test = {
 
 // This should cover all types from https://docs.relational.ai/rel/ref/data-types#overview
 
-export const tests: Test[] = [
+export const tests: RelStandardTypeTest[] = [
   {
     relType: 'String',
     type: 'String',
@@ -413,5 +413,120 @@ export const tests: Test[] = [
       },
     ],
     displayValues: ['123456789101112313/9123456789101112313'],
+  },
+];
+
+type RelValueTypeTest = {
+  name: string;
+  typeDef: RelTypeDef;
+  query: string;
+  values: RelTypedValue['value'][];
+  only?: boolean;
+};
+
+export const valueTypeTests: RelValueTypeTest[] = [
+  {
+    name: 'Int',
+    typeDef: {
+      type: 'ValueType',
+      typeDefs: [
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: [{ type: 'String', value: ':MyType' }],
+        },
+        {
+          type: 'Int64',
+        },
+      ],
+    },
+    query: `
+      value type MyType = Int
+      def output = ^MyType[123]
+    `,
+    values: [[123n]],
+  },
+  {
+    name: 'Int, String',
+    typeDef: {
+      type: 'ValueType',
+      typeDefs: [
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: [{ type: 'String', value: ':MyType' }],
+        },
+        {
+          type: 'Int64',
+        },
+        {
+          type: 'String',
+        },
+      ],
+    },
+    query: `
+      value type MyType = Int, String
+      def output = ^MyType[123, "abc"]
+    `,
+    values: [[123n, 'abc']],
+  },
+  {
+    name: 'Int128',
+    typeDef: {
+      type: 'ValueType',
+      typeDefs: [
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: [{ type: 'String', value: ':MyType' }],
+        },
+        {
+          type: 'Int128',
+        },
+      ],
+    },
+    query: `
+      value type MyType = SignedInt[128]
+      def output = ^MyType[123445677777999999999]
+    `,
+    values: [[123445677777999999999n]],
+  },
+  {
+    name: 'OuterType(InnerType(Int, String), String)',
+    typeDef: {
+      type: 'ValueType',
+      typeDefs: [
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: [{ type: 'String', value: ':OuterType' }],
+        },
+        {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              name: 'Symbol',
+              value: [{ type: 'String', value: ':InnerType' }],
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'String',
+            },
+          ],
+        },
+        {
+          type: 'String',
+        },
+      ],
+    },
+    query: `
+      value type InnerType = Int, String
+      value type OuterType = InnerType, String
+      def output = ^OuterType[^InnerType[123, "inner"], "outer"]
+    `,
+    values: [[[123n, 'inner'], 'outer']],
   },
 ];
