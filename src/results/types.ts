@@ -114,7 +114,7 @@ export type ConstantValue = {
   // TODO should we remove it?
   // maybe this's a thing because of name in ValueTypeValue ?
   name: string;
-  value: RelPrimitiveTypedValue[];
+  value: RelBaseTypedValue[];
 };
 
 export type ValueTypeValue = {

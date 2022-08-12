@@ -87,7 +87,7 @@ describe('Integration', () => {
 
   describe('Rel to JS standard types', () => {
     standardTypeTests.forEach(test => {
-      const testFn = test.only ? it.only : it;
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
       testFn(`should handle ${test.name} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
@@ -101,15 +101,17 @@ describe('Integration', () => {
     });
   });
 
-  describe('Rel to JS value types', () => {
-    valueTypeTests.forEach(test => {
-      const testFn = test.only ? it.only : it;
+  describe.only('Rel to JS specialization', () => {
+    specializationTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
-      testFn(`should handle ${test.name} value type`, async () => {
+      testFn(`should handle ${test.name} specialization`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
         const typeDef = table.columnAt(0).typeDef;
         const values = table.get(0);
+
+        table.print();
 
         expect(typeDef).toEqual(test.typeDef);
         expect(values).toEqual(test.values);
@@ -117,11 +119,11 @@ describe('Integration', () => {
     });
   });
 
-  describe('Rel to JS specialization', () => {
-    specializationTests.forEach(test => {
-      const testFn = test.only ? it.only : it;
+  describe('Rel to JS value types', () => {
+    valueTypeTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
-      testFn(`should handle ${test.name} specialization`, async () => {
+      testFn(`should handle ${test.name} value type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
         const typeDef = table.columnAt(0).typeDef;

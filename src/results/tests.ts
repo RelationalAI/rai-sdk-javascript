@@ -25,6 +25,7 @@ type Test = {
   values: RelTypedValue['value'][];
   displayValues: string[];
   only?: boolean;
+  skip?: boolean;
 };
 
 // This should cover all types from https://docs.relational.ai/rel/ref/data-types#overview
@@ -441,6 +442,845 @@ export const standardTypeTests: Test[] = [
   },
 ];
 
+export const specializationTests: Test[] = [
+  {
+    name: 'String(symbol)',
+    typeDef: {
+      type: 'Constant',
+      name: 'Symbol',
+      value: [
+        {
+          type: 'String',
+          value: ':foo',
+        },
+      ],
+    },
+    query: `def output = :foo`,
+    values: [':foo'],
+    displayValues: [':foo'],
+  },
+  {
+    name: 'String',
+    typeDef: {
+      type: 'Constant',
+      name: 'Symbol',
+      value: [
+        {
+          type: 'String',
+          value: ':foo',
+        },
+      ],
+    },
+    query: `
+      def v = "foo"
+      def output = #(v)
+    `,
+    values: [':foo'],
+    displayValues: [':foo'],
+  },
+  {
+    name: 'String with slash',
+    typeDef: {
+      type: 'Constant',
+      name: 'Symbol',
+      value: [
+        {
+          type: 'String',
+          value: ':foo / bar',
+        },
+      ],
+    },
+    query: `
+      def v = "foo / bar"
+      def output = #(v)
+    `,
+    values: [':foo / bar'],
+    displayValues: [':foo / bar'],
+  },
+  {
+    name: 'Bool',
+    typeDef: {
+      type: 'Constant',
+      name: 'Bool(true)',
+      value: [
+        {
+          type: 'Bool',
+          value: true,
+        },
+      ],
+    },
+    query: `
+      def v = boolean_true
+      def output = #(v)
+    `,
+    values: [true],
+    displayValues: ['true'],
+  },
+  {
+    name: 'Char',
+    typeDef: {
+      type: 'Constant',
+      name: 'Char(👍)',
+      value: [
+        {
+          type: 'Char',
+          value: '👍',
+        },
+      ],
+    },
+    query: `
+      def v = '👍'
+      def output = #(v)
+    `,
+    values: ['👍'],
+    displayValues: ['👍'],
+  },
+  {
+    name: 'DateTime',
+    typeDef: {
+      type: 'Constant',
+      name: 'DateTime(2021-10-11T15:22:31.000Z)',
+      value: [
+        {
+          type: 'DateTime',
+          value: new Date('2021-10-11T15:22:31.000Z'),
+        },
+      ],
+    },
+    query: `
+      def v = 2021-10-12T01:22:31+10:00
+      def output = #(v)
+    `,
+    values: [new Date('2021-10-11T15:22:31.000Z')],
+    displayValues: ['2021-10-11T15:22:31.000Z'],
+  },
+  {
+    name: 'Date',
+    typeDef: {
+      type: 'Constant',
+      name: 'Date(2021-10-12)',
+      value: [
+        {
+          type: 'Date',
+          value: new Date('2021-10-12'),
+        },
+      ],
+    },
+    query: `
+      def v = 2021-10-12
+      def output = #(v)
+    `,
+    values: [new Date('2021-10-12')],
+    displayValues: ['2021-10-12'],
+  },
+  {
+    name: 'Year',
+    typeDef: {
+      type: 'Constant',
+      name: 'Year(2022)',
+      value: [
+        {
+          type: 'Year',
+          value: 2022n,
+        },
+      ],
+    },
+    query: `
+      def v = Year[2022]
+      def output = #(v)
+    `,
+    values: [2022n],
+    displayValues: ['2022'],
+  },
+  {
+    name: 'Month',
+    typeDef: {
+      type: 'Constant',
+      name: 'Month(1)',
+      value: [
+        {
+          type: 'Month',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Month[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Week',
+    typeDef: {
+      type: 'Constant',
+      name: 'Week(1)',
+      value: [
+        {
+          type: 'Week',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Week[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Day',
+    typeDef: {
+      type: 'Constant',
+      name: 'Day(1)',
+      value: [
+        {
+          type: 'Day',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Day[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Hour',
+    typeDef: {
+      type: 'Constant',
+      name: 'Hour(1)',
+      value: [
+        {
+          type: 'Hour',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Hour[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Minute',
+    typeDef: {
+      type: 'Constant',
+      name: 'Minute(1)',
+      value: [
+        {
+          type: 'Minute',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Minute[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Second',
+    typeDef: {
+      type: 'Constant',
+      name: 'Second(1)',
+      value: [
+        {
+          type: 'Second',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Second[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Millisecond',
+    typeDef: {
+      type: 'Constant',
+      name: 'Millisecond(1)',
+      value: [
+        {
+          type: 'Millisecond',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Millisecond[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Microsecond',
+    typeDef: {
+      type: 'Constant',
+      name: 'Microsecond(1)',
+      value: [
+        {
+          type: 'Microsecond',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Microsecond[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Nanosecond',
+    typeDef: {
+      type: 'Constant',
+      name: 'Nanosecond(1)',
+      value: [
+        {
+          type: 'Nanosecond',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      def v = Nanosecond[1]
+      def output = #(v)
+    `,
+    values: [1n],
+    displayValues: ['1'],
+  },
+  {
+    name: 'Hash',
+    typeDef: {
+      type: 'Constant',
+      name: 'Hash(290925887971139297379988470542779955742)',
+      value: [
+        {
+          type: 'Hash',
+          value: 1n,
+        },
+      ],
+    },
+    query: `
+      entity type Foo = Int
+      def v = ^Foo[12]
+      def output = #(v)
+    `,
+    values: [290925887971139297379988470542779955742n],
+    displayValues: ['290925887971139297379988470542779955742'],
+  },
+  {
+    name: 'Missing',
+    typeDef: {
+      type: 'Constant',
+      name: 'Missing(missing)',
+      value: [
+        {
+          type: 'Missing',
+          value: null,
+        },
+      ],
+    },
+    query: `
+      def v = missing
+      def output = #(v)
+    `,
+    values: [null],
+    displayValues: ['missing'],
+    // TODO enable this when specialization on Missing is fixed
+    skip: true,
+  },
+  {
+    name: 'FilePos',
+    typeDef: {
+      type: 'Constant',
+      name: 'FilePos(2)',
+      value: [
+        {
+          type: 'FilePos',
+          value: 2n,
+        },
+      ],
+    },
+    query: `
+      def config:data="""
+      a,b,c
+      1,2,3
+      """
+
+      def csv = load_csv[config]
+      def v(p) = csv(_, p, _)
+      def output = #(v)
+    `,
+    values: [2n],
+    displayValues: ['2'],
+  },
+  {
+    name: 'Int8',
+    typeDef: {
+      type: 'Constant',
+      name: 'Int8(-12)',
+      value: [
+        {
+          type: 'Int8',
+          value: -12,
+        },
+      ],
+    },
+    query: `
+      def v = int[8, -12]
+      def output = #(v)
+    `,
+    values: [-12],
+    displayValues: ['-12'],
+  },
+  {
+    name: 'Int16',
+    typeDef: {
+      type: 'Constant',
+      name: 'Int16(-123)',
+      value: [
+        {
+          type: 'Int16',
+          value: -123,
+        },
+      ],
+    },
+    query: `
+      def v = int[16, -123]
+      def output = #(v)
+    `,
+    values: [-123],
+    displayValues: ['-123'],
+  },
+  {
+    name: 'Int32',
+    typeDef: {
+      type: 'Constant',
+      name: 'Int32(-1234)',
+      value: [
+        {
+          type: 'Int32',
+          value: -1234,
+        },
+      ],
+    },
+    query: `
+      def v = int[32, -1234]
+      def output = #(v)
+    `,
+    values: [-1234],
+    displayValues: ['-1234'],
+  },
+  {
+    name: 'Int64',
+    typeDef: {
+      type: 'Constant',
+      name: 'Int64(-12345)',
+      value: [
+        {
+          type: 'Int64',
+          value: -12345n,
+        },
+      ],
+    },
+    query: `
+      def v = int[64, -12345]
+      def output = #(v)
+    `,
+    values: [-12345n],
+    displayValues: ['-12345'],
+  },
+  {
+    name: 'Int128',
+    typeDef: {
+      type: 'Constant',
+      name: 'Int128(123456789101112131415)',
+      value: [
+        {
+          type: 'Int128',
+          value: 123456789101112131415n,
+        },
+      ],
+    },
+    query: `
+      def v = int[128, 123456789101112131415]
+      def output = #(v)
+    `,
+    values: [123456789101112131415n],
+    displayValues: ['123456789101112131415'],
+  },
+  {
+    name: 'UInt8',
+    typeDef: {
+      type: 'Constant',
+      name: 'UInt8(12)',
+      value: [
+        {
+          type: 'UInt8',
+          value: 12,
+        },
+      ],
+    },
+    query: `
+      def v = uint[8, 12]
+      def output = #(v)
+    `,
+    values: [12],
+    displayValues: ['12'],
+  },
+  {
+    name: 'UInt16',
+    typeDef: {
+      type: 'Constant',
+      name: 'UInt16(123)',
+      value: [
+        {
+          type: 'UInt16',
+          value: 123,
+        },
+      ],
+    },
+    query: `
+      def v = uint[16, 123]
+      def output = #(v)
+    `,
+    values: [123],
+    displayValues: ['123'],
+  },
+  {
+    name: 'UInt32',
+    typeDef: {
+      type: 'Constant',
+      name: 'UInt32(1234)',
+      value: [
+        {
+          type: 'UInt32',
+          value: 1234,
+        },
+      ],
+    },
+    query: `
+      def v = uint[32, 1234]
+      def output = #(v)
+    `,
+    values: [1234],
+    displayValues: ['1234'],
+  },
+  {
+    name: 'UInt64',
+    typeDef: {
+      type: 'Constant',
+      name: 'UInt64(12345)',
+      value: [
+        {
+          type: 'UInt64',
+          value: 12345n,
+        },
+      ],
+    },
+    query: `
+      def v = uint[64, 12345]
+      def output = #(v)
+    `,
+    values: [12345n],
+    displayValues: ['12345'],
+  },
+  {
+    name: 'UInt128',
+    typeDef: {
+      type: 'Constant',
+      name: 'UInt128(123456789101112131415)',
+      value: [
+        {
+          type: 'UInt128',
+          value: 123456789101112131415n,
+        },
+      ],
+    },
+    query: `
+      def v = uint[128, 123456789101112131415]
+      def output = #(v)
+    `,
+    values: [123456789101112131415n],
+    displayValues: ['123456789101112131415'],
+  },
+  {
+    name: 'Float16',
+    typeDef: {
+      type: 'Constant',
+      name: 'Float16(42.5)',
+      value: [
+        {
+          type: 'Float16',
+          value: 42.5,
+        },
+      ],
+    },
+    query: `
+      def v = float[16, 42.5]
+      def output = #(v)
+    `,
+    values: [42.5],
+    displayValues: ['42.5'],
+  },
+  {
+    name: 'Float32',
+    typeDef: {
+      type: 'Constant',
+      name: 'Float32(42.5)',
+      value: [
+        {
+          type: 'Float32',
+          value: 42.5,
+        },
+      ],
+    },
+    query: `
+      def v = float[32, 42.5]
+      def output = #(v)
+    `,
+    values: [42.5],
+    displayValues: ['42.5'],
+  },
+  {
+    name: 'Float64',
+    typeDef: {
+      type: 'Constant',
+      name: 'Float64(42.5)',
+      value: [
+        {
+          type: 'Float64',
+          value: 42.5,
+        },
+      ],
+    },
+    query: `
+      def v = float[64, 42.5]
+      def output = #(v)
+    `,
+    values: [42.5],
+    displayValues: ['42.5'],
+  },
+  {
+    name: 'Decimal16',
+    typeDef: {
+      type: 'Constant',
+      name: 'Decimal16(12.34)',
+      value: [
+        {
+          type: 'Decimal16',
+          value: new Decimal('12.34'),
+          places: 2,
+        },
+      ],
+    },
+    query: `
+      def v = parse_decimal[16, 2, "12.34"]
+      def output = #(v)
+    `,
+    values: [new Decimal('12.34')],
+    displayValues: ['12.34'],
+  },
+  {
+    name: 'Decimal32',
+    typeDef: {
+      type: 'Constant',
+      name: 'Decimal32(12.34)',
+      value: [
+        {
+          type: 'Decimal32',
+          value: new Decimal('12.34'),
+          places: 2,
+        },
+      ],
+    },
+    query: `
+      def v = parse_decimal[32, 2, "12.34"]
+      def output = #(v)
+    `,
+    values: [new Decimal('12.34')],
+    displayValues: ['12.34'],
+  },
+  {
+    name: 'Decimal64',
+    typeDef: {
+      type: 'Constant',
+      name: 'Decimal64(12.34)',
+      value: [
+        {
+          type: 'Decimal64',
+          value: new Decimal('12.34'),
+          places: 2,
+        },
+      ],
+    },
+    query: `
+      def v = parse_decimal[64, 2, "12.34"]
+      def output = #(v)
+    `,
+    values: [new Decimal('12.34')],
+    displayValues: ['12.34'],
+  },
+  {
+    name: 'Decimal128',
+    typeDef: {
+      type: 'Constant',
+      name: 'Decimal128(12345678901011121314.34)',
+      value: [
+        {
+          type: 'Decimal128',
+          value: new Decimal('12345678901011121314.34'),
+          places: 2,
+        },
+      ],
+    },
+    query: `
+      def v = parse_decimal[128, 2, "12345678901011121314.34"]
+      def output = #(v)
+    `,
+    values: [new Decimal('12.34')],
+    displayValues: ['12.34'],
+  },
+  {
+    name: 'Rational8',
+    typeDef: {
+      type: 'Constant',
+      name: 'Rational8(1/2)',
+      value: [
+        {
+          type: 'Rational8',
+          value: { numerator: 1, denominator: 2 },
+        },
+      ],
+    },
+    query: `
+      def v = rational[8, 1, 2]
+      def output = #(v)
+    `,
+    values: [
+      {
+        numerator: 1,
+        denominator: 2,
+      },
+    ],
+    displayValues: ['1/2'],
+  },
+  {
+    name: 'Rational16',
+    typeDef: {
+      type: 'Constant',
+      name: 'Rational16(1/2)',
+      value: [
+        {
+          type: 'Rational16',
+          value: { numerator: 1, denominator: 2 },
+        },
+      ],
+    },
+    query: `
+      def v = rational[16, 1, 2]
+      def output = #(v)
+    `,
+    values: [
+      {
+        numerator: 1,
+        denominator: 2,
+      },
+    ],
+    displayValues: ['1/2'],
+  },
+  {
+    name: 'Rational32',
+    typeDef: {
+      type: 'Constant',
+      name: 'Rational32(1/2)',
+      value: [
+        {
+          type: 'Rational32',
+          value: { numerator: 1, denominator: 2 },
+        },
+      ],
+    },
+    query: `
+      def v = rational[32, 1, 2]
+      def output = #(v)
+    `,
+    values: [
+      {
+        numerator: 1,
+        denominator: 2,
+      },
+    ],
+    displayValues: ['1/2'],
+  },
+  {
+    name: 'Rational64',
+    typeDef: {
+      type: 'Constant',
+      name: 'Rational64(1/2)',
+      value: [
+        {
+          type: 'Rational64',
+          value: { numerator: 1n, denominator: 2n },
+        },
+      ],
+    },
+    query: `
+      def v = rational[64, 1, 2]
+      def output = #(v)
+    `,
+    values: [
+      {
+        numerator: 1n,
+        denominator: 2n,
+      },
+    ],
+    displayValues: ['1/2'],
+  },
+  {
+    name: 'Rational128',
+    typeDef: {
+      type: 'Constant',
+      name: 'Rational128(1/2)',
+      value: [
+        {
+          type: 'Rational128',
+          value: {
+            numerator: 123456789101112313n,
+            denominator: 9123456789101112313n,
+          },
+        },
+      ],
+    },
+    query: `
+      def v = rational[128, 123456789101112313, 9123456789101112313]
+      def output = #(v)
+    `,
+    values: [
+      {
+        numerator: 123456789101112313n,
+        denominator: 9123456789101112313n,
+      },
+    ],
+    displayValues: ['123456789101112313/9123456789101112313'],
+  },
+];
+
 export const valueTypeTests: Test[] = [
   {
     name: 'Int',
@@ -549,45 +1389,5 @@ export const valueTypeTests: Test[] = [
      `,
     values: [[[123n, 'inner'], 'outer']],
     displayValues: ['(123, inner), outer'],
-  },
-];
-
-export const specializationTests: Test[] = [
-  {
-    name: 'String',
-    typeDef: {
-      type: 'Constant',
-      name: 'Symbol',
-      value: [
-        {
-          type: 'String',
-          value: ':foo',
-        },
-      ],
-    },
-    query: `
-       def output = :foo
-     `,
-    values: [':foo'],
-    displayValues: [':foo'],
-  },
-  {
-    name: 'Int8',
-    typeDef: {
-      type: 'Constant',
-      name: 'Int8(3)',
-      value: [
-        {
-          type: 'Int8',
-          value: 3,
-        },
-      ],
-    },
-    query: `
-       def v = int[8, 3]
-       def output = #(v)
-     `,
-    values: [3],
-    displayValues: ['3'],
   },
 ];
