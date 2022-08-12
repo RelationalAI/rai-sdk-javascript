@@ -17,8 +17,10 @@
 import { tableFromIPC } from 'apache-arrow';
 
 import { MetadataInfo } from '../../proto/generated/message';
+import { RelationId } from '../../proto/generated/schema';
 import {
   ArrowRelation,
+  ArrowResult,
   LabeledAction,
   TransactionAsyncFile,
   TransactionAsyncResult,
@@ -52,13 +54,14 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   //   throw new Error('metadata proto part not found');
   // }
 
+  const metadata = metadataProto
+    ? await readProtoMetadata(metadataProto.file as File)
+    : undefined;
+
   const txn = await readJson(transaction.file);
   const result: TransactionAsyncResult = {
     transaction: txn,
-    results: await readArrowFiles(files),
-    metadata: metadataProto
-      ? await readProtoMetadata(metadataProto.file as File)
-      : undefined,
+    results: await makeArrowRelations(await readArrowFiles(files), metadata),
   };
 
   if (problems) {
@@ -69,7 +72,7 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
 }
 
 export async function readArrowFiles(files: TransactionAsyncFile[]) {
-  const results: ArrowRelation[] = [];
+  const results: ArrowResult[] = [];
 
   for (const file of files) {
     if (
@@ -80,12 +83,37 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
 
       results.push({
         relationId: file.name,
+        filename: file.file.name,
         table,
       });
     }
   }
 
   return results;
+}
+
+export async function makeArrowRelations(
+  results: ArrowResult[],
+  metadata?: MetadataInfo,
+) {
+  const metadataMap = (metadata?.relations || []).reduce<
+    Record<string, RelationId | undefined>
+  >((memo, item) => {
+    memo[item.fileName] = item.relationId;
+
+    return memo;
+  }, {});
+
+  return results.map(r => {
+    const metadata: RelationId = metadataMap[r.filename] || { arguments: [] };
+    const relation: ArrowRelation = {
+      relationId: r.relationId,
+      table: r.table,
+      metadata,
+    };
+
+    return relation;
+  });
 }
 
 export async function readProtoMetadata(file: File | Blob) {

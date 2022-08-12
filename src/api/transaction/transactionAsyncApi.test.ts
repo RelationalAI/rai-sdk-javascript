@@ -31,7 +31,170 @@ const multipartContentType =
 // def output = :foo
 // def output = :"foo;bar", 1
 // def output = 1
-const transactionAsyncMock = {
+const expectedArrow = [
+  {
+    filename: '0.arrow',
+    relationId: '/:output/:foo',
+    table: expect.anything(),
+  },
+  {
+    filename: '1.arrow',
+    relationId: '/:output/:foo;bar/Int64',
+    table: expect.anything(),
+  },
+  {
+    filename: '2.arrow',
+    relationId: '/:output/Int64',
+    table: expect.anything(),
+  },
+];
+const expectedMetadata = {
+  relations: [
+    {
+      fileName: '0.arrow',
+      relationId: {
+        arguments: [
+          {
+            tag: 3,
+            primitiveType: 0,
+            constantType: {
+              relType: {
+                tag: 1,
+                primitiveType: 17,
+              },
+              value: {
+                arguments: [
+                  {
+                    tag: 17,
+                    value: {
+                      oneofKind: 'stringVal',
+                      stringVal: new Uint8Array([111, 117, 116, 112, 117, 116]),
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            tag: 3,
+            primitiveType: 0,
+            constantType: {
+              relType: {
+                tag: 1,
+                primitiveType: 17,
+              },
+              value: {
+                arguments: [
+                  {
+                    tag: 17,
+                    value: {
+                      oneofKind: 'stringVal',
+                      stringVal: new Uint8Array([102, 111, 111]),
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      fileName: '1.arrow',
+      relationId: {
+        arguments: [
+          {
+            tag: 3,
+            primitiveType: 0,
+            constantType: {
+              relType: {
+                tag: 1,
+                primitiveType: 17,
+              },
+              value: {
+                arguments: [
+                  {
+                    tag: 17,
+                    value: {
+                      oneofKind: 'stringVal',
+                      stringVal: new Uint8Array([111, 117, 116, 112, 117, 116]),
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            tag: 3,
+            primitiveType: 0,
+            constantType: {
+              relType: {
+                tag: 1,
+                primitiveType: 17,
+              },
+              value: {
+                arguments: [
+                  {
+                    tag: 17,
+                    value: {
+                      oneofKind: 'stringVal',
+                      stringVal: new Uint8Array([
+                        102,
+                        111,
+                        111,
+                        59,
+                        98,
+                        97,
+                        114,
+                      ]),
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            tag: 1,
+            primitiveType: 2,
+          },
+        ],
+      },
+    },
+    {
+      fileName: '2.arrow',
+      relationId: {
+        arguments: [
+          {
+            tag: 3,
+            primitiveType: 0,
+            constantType: {
+              relType: {
+                tag: 1,
+                primitiveType: 17,
+              },
+              value: {
+                arguments: [
+                  {
+                    tag: 17,
+                    value: {
+                      oneofKind: 'stringVal',
+                      stringVal: new Uint8Array([111, 117, 116, 112, 117, 116]),
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            tag: 1,
+            primitiveType: 2,
+          },
+        ],
+      },
+    },
+  ],
+};
+const expectedTransactionAsyncResult = {
   transaction: {
     id: '57216bf7-1728-4f1e-d382-26ac15db96a5',
     response_format_version: '2.0.3',
@@ -39,177 +202,22 @@ const transactionAsyncMock = {
   },
   problems: [],
   results: [
-    { relationId: '/:output/:foo', table: expect.anything() },
-    { relationId: '/:output/:foo;bar/Int64', table: expect.anything() },
-    { relationId: '/:output/Int64', table: expect.anything() },
+    {
+      relationId: '/:output/:foo',
+      table: expect.anything(),
+      metadata: expectedMetadata.relations[0].relationId,
+    },
+    {
+      relationId: '/:output/:foo;bar/Int64',
+      table: expect.anything(),
+      metadata: expectedMetadata.relations[1].relationId,
+    },
+    {
+      relationId: '/:output/Int64',
+      table: expect.anything(),
+      metadata: expectedMetadata.relations[2].relationId,
+    },
   ],
-  metadata: {
-    relations: [
-      {
-        fileName: '0.arrow',
-        relationId: {
-          arguments: [
-            {
-              tag: 3,
-              primitiveType: 0,
-              constantType: {
-                relType: {
-                  tag: 1,
-                  primitiveType: 17,
-                },
-                value: {
-                  arguments: [
-                    {
-                      tag: 17,
-                      value: {
-                        oneofKind: 'stringVal',
-                        stringVal: new Uint8Array([
-                          111,
-                          117,
-                          116,
-                          112,
-                          117,
-                          116,
-                        ]),
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              tag: 3,
-              primitiveType: 0,
-              constantType: {
-                relType: {
-                  tag: 1,
-                  primitiveType: 17,
-                },
-                value: {
-                  arguments: [
-                    {
-                      tag: 17,
-                      value: {
-                        oneofKind: 'stringVal',
-                        stringVal: new Uint8Array([102, 111, 111]),
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-        },
-      },
-      {
-        fileName: '1.arrow',
-        relationId: {
-          arguments: [
-            {
-              tag: 3,
-              primitiveType: 0,
-              constantType: {
-                relType: {
-                  tag: 1,
-                  primitiveType: 17,
-                },
-                value: {
-                  arguments: [
-                    {
-                      tag: 17,
-                      value: {
-                        oneofKind: 'stringVal',
-                        stringVal: new Uint8Array([
-                          111,
-                          117,
-                          116,
-                          112,
-                          117,
-                          116,
-                        ]),
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              tag: 3,
-              primitiveType: 0,
-              constantType: {
-                relType: {
-                  tag: 1,
-                  primitiveType: 17,
-                },
-                value: {
-                  arguments: [
-                    {
-                      tag: 17,
-                      value: {
-                        oneofKind: 'stringVal',
-                        stringVal: new Uint8Array([
-                          102,
-                          111,
-                          111,
-                          59,
-                          98,
-                          97,
-                          114,
-                        ]),
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              tag: 1,
-              primitiveType: 2,
-            },
-          ],
-        },
-      },
-      {
-        fileName: '2.arrow',
-        relationId: {
-          arguments: [
-            {
-              tag: 3,
-              primitiveType: 0,
-              constantType: {
-                relType: {
-                  tag: 1,
-                  primitiveType: 17,
-                },
-                value: {
-                  arguments: [
-                    {
-                      tag: 17,
-                      value: {
-                        oneofKind: 'stringVal',
-                        stringVal: new Uint8Array([
-                          111,
-                          117,
-                          116,
-                          112,
-                          117,
-                          116,
-                        ]),
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              tag: 1,
-              primitiveType: 2,
-            },
-          ],
-        },
-      },
-    ],
-  },
 };
 
 describe('TransactionAsyncApi', () => {
@@ -260,7 +268,7 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(transactionAsyncMock);
+    expect(result).toEqual(expectedTransactionAsyncResult);
   });
 
   it('should list transactions', async () => {
@@ -313,7 +321,7 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(transactionAsyncMock.results);
+    expect(result).toEqual(expectedArrow);
   });
 
   it('should get transaction metadata', async () => {
