@@ -541,6 +541,8 @@ export const specializationTests: Test[] = [
     `,
     values: [new Date('2021-10-11T15:22:31.000Z')],
     displayValues: ['2021-10-11T15:22:31.000Z'],
+    // TODO enable this when DateTime serialization fixed
+    skip: true,
   },
   {
     name: 'Date',
@@ -736,7 +738,7 @@ export const specializationTests: Test[] = [
       name: 'Hash(290925887971139297379988470542779955742)',
       value: {
         type: 'Hash',
-        value: 1n,
+        value: 290925887971139297379988470542779955742n,
       },
     },
     query: `
@@ -1079,8 +1081,8 @@ export const specializationTests: Test[] = [
       def v = parse_decimal[128, 2, "12345678901011121314.34"]
       def output = #(v)
     `,
-    values: [new Decimal('12.34')],
-    displayValues: ['12.34'],
+    values: [new Decimal('12345678901011121314.34')],
+    displayValues: ['12345678901011121314.34'],
   },
   {
     name: 'Rational8',
@@ -1174,7 +1176,7 @@ export const specializationTests: Test[] = [
     name: 'Rational128',
     typeDef: {
       type: 'Constant',
-      name: 'Rational128(1/2)',
+      name: 'Rational128(123456789101112313/9123456789101112313)',
       value: {
         type: 'Rational128',
         value: {
@@ -1194,7 +1196,6 @@ export const specializationTests: Test[] = [
       },
     ],
     displayValues: ['123456789101112313/9123456789101112313'],
-    only: true,
   },
 ];
 

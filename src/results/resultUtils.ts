@@ -24,7 +24,6 @@ import {
 } from '../proto/generated/schema';
 import {
   ConstantValue,
-  RelPrimitiveTypedValue,
   RelTypeDef,
   RelTypedValue,
   ValueTypeValue,
@@ -234,26 +233,44 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
     type.constantType?.value &&
     type.constantType?.relType
   ) {
-    const value = type.constantType.value.arguments.map(v =>
-      mapPrimitiveValue(v),
-    );
-    let name = 'Constant';
+    const typeDef = getTypeDefFromProtobuf(type.constantType.relType);
+    const values = type.constantType.value.arguments.map(mapPrimitiveValue);
 
-    if (value[0].type === 'String') {
-      name = 'Symbol';
+    if (typeDef.type !== 'ValueType') {
+      const value = convertValue(
+        typeDef,
+        values.length === 1 ? values[0] : values,
+      );
+
+      return {
+        type: 'Constant',
+        name:
+          typeDef.type === 'String'
+            ? 'Symbol'
+            : `${typeDef.type}(${getDisplayValue(typeDef, value)})`,
+        value: {
+          ...typeDef,
+          value,
+        } as RelTypedValue,
+      };
     } else {
-      name = `${value[0].type}(${value[0].value})`;
-    }
+      // TODO fix it, this won't work for nested value types
+      const value = convertValue(typeDef, values);
 
-    return {
-      type: 'Constant',
-      name: name,
-      value: value[0],
-    };
+      return {
+        type: 'Constant',
+        name: 'ValueType',
+        value: {
+          ...typeDef,
+          value,
+        } as RelTypedValue,
+      };
+    }
   }
 
   if (type.tag === Kind.PRIMITIVE_TYPE) {
     switch (type.primitiveType) {
+      case PrimitiveType.SYMBOL:
       case PrimitiveType.STRING:
         return {
           type: 'String',
@@ -545,102 +562,43 @@ function uint128ToBigInt(tuple: bigint[]) {
   return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
 
-function mapPrimitiveValue(val: PrimitiveValue): RelPrimitiveTypedValue {
+function mapPrimitiveValue(val: PrimitiveValue) {
   switch (val.value.oneofKind) {
     case 'stringVal':
-      return {
-        type: 'String',
-        // TODO should we get rid of the colon
-        value: `:${new TextDecoder().decode(val.value.stringVal)}`,
-      };
+      return `:${new TextDecoder().decode(val.value.stringVal)}`;
     case 'charVal':
-      return {
-        type: 'Char',
-        value: String.fromCodePoint(val.value.charVal),
-      };
+      return val.value.charVal;
     case 'boolVal':
-      return {
-        type: 'Bool',
-        value: val.value.boolVal,
-      };
+      return val.value.boolVal;
     case 'int8Val':
-      return {
-        type: 'Int8',
-        value: val.value.int8Val,
-      };
+      return val.value.int8Val;
     case 'int16Val':
-      return {
-        type: 'Int16',
-        value: val.value.int16Val,
-      };
+      return val.value.int16Val;
     case 'int32Val':
-      return {
-        type: 'Int32',
-        value: val.value.int32Val,
-      };
+      return val.value.int32Val;
     case 'int64Val':
-      return {
-        type: 'Int64',
-        value: val.value.int64Val,
-      };
+      return val.value.int64Val;
     case 'int128Val':
-      return {
-        type: 'Int128',
-        value: int128ToBigInt([
-          val.value.int128Val.lowbits,
-          val.value.int128Val.highbits,
-        ]),
-      };
+      return [val.value.int128Val.lowbits, val.value.int128Val.highbits];
     case 'uint8Val':
-      return {
-        type: 'UInt8',
-        value: val.value.uint8Val,
-      };
+      return val.value.uint8Val;
     case 'uint16Val':
-      return {
-        type: 'UInt16',
-        value: val.value.uint16Val,
-      };
+      return val.value.uint16Val;
     case 'uint32Val':
-      return {
-        type: 'UInt32',
-        value: val.value.uint32Val,
-      };
+      return val.value.uint32Val;
     case 'uint64Val':
-      return {
-        type: 'UInt64',
-        value: val.value.uint64Val,
-      };
+      return val.value.uint64Val;
     case 'uint128Val':
-      return {
-        type: 'UInt128',
-        value: uint128ToBigInt([
-          val.value.uint128Val.lowbits,
-          val.value.uint128Val.highbits,
-        ]),
-      };
+      return [val.value.uint128Val.lowbits, val.value.uint128Val.highbits];
     case 'float16Val':
-      return {
-        type: 'Float16',
-        value: val.value.float16Val,
-      };
+      return val.value.float16Val;
     case 'float32Val':
-      return {
-        type: 'Float32',
-        value: val.value.float32Val,
-      };
+      return val.value.float32Val;
     case 'float64Val':
-      return {
-        type: 'Float64',
-        value: val.value.float64Val,
-      };
-    default:
-      // Should we throw an error instead?
-      return {
-        type: 'String',
-        value: 'Unknown primitive value',
-      };
+      return val.value.float64Val;
   }
+
+  throw new Error('Unknown primitive value');
 }
 
 function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {

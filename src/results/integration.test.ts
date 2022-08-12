@@ -101,7 +101,7 @@ describe('Integration', () => {
     });
   });
 
-  describe.only('Rel to JS specialization', () => {
+  describe('Rel to JS specialization', () => {
     specializationTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
