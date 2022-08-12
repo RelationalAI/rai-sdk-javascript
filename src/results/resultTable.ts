@@ -99,7 +99,9 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   constructor(private relation: ArrowRelation) {
     this.table = relation.table;
 
-    const isProtoMetadataAvailable = !!relation.metadata.arguments.length;
+    const isProtoMetadataAvailable = !!relation.metadata.arguments.filter(
+      t => t.tag !== Kind.UNSPECIFIED_KIND,
+    ).length;
     const types = !isProtoMetadataAvailable
       ? relation.relationId.split('/').filter(x => x)
       : relation.metadata.arguments;

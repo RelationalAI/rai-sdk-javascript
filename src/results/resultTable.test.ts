@@ -49,18 +49,18 @@ describe('ResultTable', () => {
         {
           type: 'Constant',
           name: 'Int64(1)',
-          value: 'Int64(1)',
+          value: [{ type: 'String', value: 'Int64(1)' }],
         },
         {
           type: 'Constant',
           name: 'Symbol',
-          value: ':foo',
+          value: [{ type: 'String', value: ':foo' }],
         },
         { type: 'String' },
         {
           type: 'Constant',
           name: 'Symbol',
-          value: ':bar',
+          value: [{ type: 'String', value: ':bar' }],
         },
         { type: 'Char' },
         { type: 'Int64' },
@@ -81,13 +81,13 @@ describe('ResultTable', () => {
       expect(columns[0].typeDef).toEqual({
         type: 'Constant',
         name: 'Int64(1)',
-        value: 'Int64(1)',
+        value: [{ type: 'String', value: 'Int64(1)' }],
       });
       expect(columns[0].length).toEqual(4);
       expect(columns[1].typeDef).toEqual({
         type: 'Constant',
         name: 'Symbol',
-        value: ':foo',
+        value: [{ type: 'String', value: ':foo' }],
       });
       expect(columns[1].length).toEqual(4);
       expect(columns[2].typeDef).toEqual({ type: 'String' });
@@ -95,7 +95,7 @@ describe('ResultTable', () => {
       expect(columns[3].typeDef).toEqual({
         type: 'Constant',
         name: 'Symbol',
-        value: ':bar',
+        value: [{ type: 'String', value: ':bar' }],
       });
       expect(columns[3].length).toEqual(4);
       expect(columns[4].typeDef).toEqual({ type: 'Char' });
@@ -110,13 +110,13 @@ describe('ResultTable', () => {
       expect(table.columnAt(0).typeDef).toEqual({
         type: 'Constant',
         name: 'Int64(1)',
-        value: 'Int64(1)',
+        value: [{ type: 'String', value: 'Int64(1)' }],
       });
       expect(table.columnAt(0).length).toEqual(4);
       expect(table.columnAt(1).typeDef).toEqual({
         type: 'Constant',
         name: 'Symbol',
-        value: ':foo',
+        value: [{ type: 'String', value: ':foo' }],
       });
       expect(table.columnAt(1).length).toEqual(4);
       expect(table.columnAt(2).typeDef).toEqual({ type: 'String' });
@@ -124,7 +124,7 @@ describe('ResultTable', () => {
       expect(table.columnAt(3).typeDef).toEqual({
         type: 'Constant',
         name: 'Symbol',
-        value: ':bar',
+        value: [{ type: 'String', value: ':bar' }],
       });
       expect(table.columnAt(3).length).toEqual(4);
       expect(table.columnAt(4).typeDef).toEqual({ type: 'Char' });

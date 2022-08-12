@@ -15,7 +15,7 @@
  */
 
 import { convertValue, getDisplayValue, getTypeDef } from './resultUtils';
-import { tests } from './testData';
+import { tests } from './testsJson';
 
 describe('resultUtils', () => {
   describe('getTypeDef', () => {

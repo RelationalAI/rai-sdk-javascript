@@ -21,9 +21,13 @@ import {
   getClient,
 } from '../testUtils';
 import { ResultTable } from './resultTable';
-import { specializationTests, tests, valueTypeTests } from './testData';
+import {
+  specializationTests,
+  standardTypeTests,
+  valueTypeTests,
+} from './tests';
 
-describe.only('Integration', () => {
+describe('Integration', () => {
   // const databaseName = `js-sdk-tests-${Date.now()}`;
   // const engineName = `js-sdk-tests-${Date.now()}`;
   const databaseName = `js-sdk-tests-local`;
@@ -82,16 +86,16 @@ describe.only('Integration', () => {
   // });
 
   describe('Rel to JS standard types', () => {
-    tests.forEach(test => {
+    standardTypeTests.forEach(test => {
       const testFn = test.only ? it.only : it;
 
-      testFn(`should handle ${test.type} type`, async () => {
+      testFn(`should handle ${test.name} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
-        const type = table.columnAt(0).typeDef.type;
+        const typeDef = table.columnAt(0).typeDef;
         const values = table.get(0);
 
-        expect(type).toEqual(test.type);
+        expect(typeDef).toEqual(test.typeDef);
         expect(values).toEqual(test.values);
       });
     });
@@ -122,8 +126,6 @@ describe.only('Integration', () => {
         const table = new ResultTable(result.results[0]).sliceColumns(1);
         const typeDef = table.columnAt(0).typeDef;
         const values = table.get(0);
-
-        table.print();
 
         expect(typeDef).toEqual(test.typeDef);
         expect(values).toEqual(test.values);
