@@ -50,7 +50,7 @@ export function getTypeDef(type: string): RelTypeDef {
     return {
       type: 'Constant',
       name: 'Symbol',
-      value: [{ type: 'String', value: type }],
+      value: { type: 'String', value: type },
     };
   }
 
@@ -58,7 +58,7 @@ export function getTypeDef(type: string): RelTypeDef {
     return {
       type: 'Constant',
       name: type,
-      value: [{ type: 'String', value: type }],
+      value: { type: 'String', value: type },
     };
   }
 
@@ -229,7 +229,11 @@ export function getTypeDef(type: string): RelTypeDef {
 }
 
 export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
-  if (type.tag === Kind.CONSTANT_TYPE && type.constantType?.value) {
+  if (
+    type.tag === Kind.CONSTANT_TYPE &&
+    type.constantType?.value &&
+    type.constantType?.relType
+  ) {
     const value = type.constantType.value.arguments.map(v =>
       mapPrimitiveValue(v),
     );
@@ -244,7 +248,7 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
     return {
       type: 'Constant',
       name: name,
-      value,
+      value: value[0],
     };
   }
 
@@ -418,11 +422,7 @@ export function convertValue<T extends RelTypedValue>(
       };
     }
     case 'Constant': {
-      if (typeDef.value.length === 1) {
-        return typeDef.value[0].value;
-      }
-
-      return typeDef.value.map(v => v.value);
+      return typeDef.value.value;
     }
     case 'ValueType': {
       const nonConstantTypeDefs = typeDef.typeDefs.filter(
@@ -455,7 +455,7 @@ export function getDisplayValue(
   } as RelTypedValue;
 
   if (typeDef.type === 'Constant') {
-    return typeDef.value.map(v => getDisplayValue(v, v.value)).join(', ');
+    return getDisplayValue(typeDef.value, value);
   }
 
   switch (val.type) {
@@ -647,20 +647,17 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
   const relNames = typeDef.typeDefs
     .slice(0, 3)
     .filter(
-      td => td.type === 'Constant' && td.value[0].type === 'String',
+      td => td.type === 'Constant' && td.value.type === 'String',
     ) as ConstantValue[];
 
   if (
     relNames.length !== 3 ||
-    !(
-      relNames[0].value[0].value === ':rel' &&
-      relNames[1].value[0].value === ':base'
-    )
+    !(relNames[0].value.value === ':rel' && relNames[1].value.value === ':base')
   ) {
     return typeDef;
   }
 
-  const standardValueType = (relNames[2].value[0].value as string).slice(1);
+  const standardValueType = (relNames[2].value.value as string).slice(1);
 
   switch (standardValueType) {
     case 'DateTime':
@@ -687,8 +684,8 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
         typeDef.typeDefs[3].type === 'Constant' &&
         typeDef.typeDefs[4].type === 'Constant'
       ) {
-        const bits = Number(typeDef.typeDefs[3].value[0].value);
-        const places = Number(typeDef.typeDefs[4].value[0].value);
+        const bits = Number(typeDef.typeDefs[3].value.value);
+        const places = Number(typeDef.typeDefs[4].value.value);
 
         if (bits === 16 || bits === 32 || bits === 64 || bits === 128) {
           return {
