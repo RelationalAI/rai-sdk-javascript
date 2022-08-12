@@ -25,7 +25,7 @@ import {
   getTypeDef,
   getTypeDefFromProtobuf,
 } from './resultUtils';
-import { ConstantValue, RelTypeDef, RelTypedValue } from './types';
+import { RelTypeDef, RelTypedValue } from './types';
 
 export interface ResultColumn {
   /**
@@ -189,7 +189,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       *[Symbol.iterator]() {
         if (colDef.typeDef.type === 'Constant') {
           for (let i = 0; i < length; i++) {
-            yield colDef.typeDef.value;
+            yield convertValue(colDef.typeDef, null);
           }
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -213,7 +213,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
         }
 
         if (colDef.typeDef.type === 'Constant') {
-          return colDef.typeDef.value;
+          return convertValue(colDef.typeDef, null);
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const arrowColumn = table.getChildAt(colDef.arrowIndex!)!;
@@ -305,7 +305,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   get(index: number) {
     if (isFullySpecialized(this.colDefs) && index === 0) {
       return this.colDefs.map(c => {
-        return (c.typeDef as ConstantValue).value;
+        return convertValue(c.typeDef, null);
       });
     }
 
@@ -398,7 +398,7 @@ function arrowRowToValues(arrowRow: StructRowProxy, colDefs: ColumnDef[]) {
   const arr = arrowRow.toArray();
   const row = colDefs.map(colDef => {
     if (colDef.typeDef.type === 'Constant') {
-      return colDef.typeDef.value;
+      return convertValue(colDef.typeDef, null);
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);

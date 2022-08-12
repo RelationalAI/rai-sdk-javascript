@@ -417,8 +417,13 @@ export function convertValue<T extends RelTypedValue>(
         denominator: int128ToBigInt(Array.from(value[1])),
       };
     }
-    case 'Constant':
-      return typeDef.value;
+    case 'Constant': {
+      if (typeDef.value.length === 1) {
+        return typeDef.value[0].value;
+      }
+
+      return typeDef.value.map(v => v.value);
+    }
     case 'ValueType': {
       const nonConstantTypeDefs = typeDef.typeDefs.filter(
         td => td.type !== 'Constant',

@@ -21,11 +21,13 @@ import {
   getClient,
 } from '../testUtils';
 import { ResultTable } from './resultTable';
-import { tests, valueTypeTests } from './testData';
+import { specializationTests, tests, valueTypeTests } from './testData';
 
-describe('Integration', () => {
-  const databaseName = `js-sdk-tests-${Date.now()}`;
-  const engineName = `js-sdk-tests-${Date.now()}`;
+describe.only('Integration', () => {
+  // const databaseName = `js-sdk-tests-${Date.now()}`;
+  // const engineName = `js-sdk-tests-${Date.now()}`;
+  const databaseName = `js-sdk-tests-local`;
+  const engineName = `js-sdk-tests-local`;
   let client: Client;
 
   jest.setTimeout(1000 * 60 * 10);
@@ -37,10 +39,47 @@ describe('Integration', () => {
     await createDatabaseIfNotExists(client, databaseName);
   });
 
-  afterAll(async () => {
-    await client.deleteEngine(engineName);
-    await client.deleteDatabase(databaseName);
-  });
+  // afterAll(async () => {
+  //   await client.deleteEngine(engineName);
+  //   await client.deleteDatabase(databaseName);
+  // });
+
+  // it.only(`should handle`, async () => {
+  //   // const query = `
+  //   // value type MyType = SignedInt[128], String
+  //   // def output = ^MyType[12344567777799999999, "abc"]
+  //   // `;
+  //   const query = `
+  //   def output = :"Country Subject Descriptor Units Scale Country/Series-specific Notes", 1
+  //   `;
+  //   // const query = `
+  //   // value type NestedTwo = Int, String
+  //   // value type NestedOne = NestedTwo, Int
+  //   // value type MyType = NestedOne, Int
+  //   // def output = ^MyType[^NestedOne[^NestedTwo[888, "b"], 999], 101010]
+  //   // `;
+  //   // const query = `
+  //   // def decml = parse_decimal[128, 2, "123123123123123123213.85"]
+  //   // def output = decml
+  //   // `;
+  //   // const query = `
+  //   // value type MyType = Int, String, Date
+  //   // def a = ^MyType[123, "abc", 2021-10-12]
+  //   // def output = a
+  //   // `;
+  //   // const query = `
+  //   // value type MyType = Int, String, Date
+  //   // def a = ^MyType[123123123123123123213, "abc", 2021-10-12]
+  //   // def output = a
+  //   // `;
+  //   const result = await client.exec(databaseName, engineName, query);
+  //   debugger;
+  //   const table = new ResultTable(result.results[0]).sliceColumns(1);
+
+  //   table.print();
+
+  //   console.log('values', table.values());
+  // });
 
   describe('Rel to JS standard types', () => {
     tests.forEach(test => {
@@ -67,6 +106,24 @@ describe('Integration', () => {
         const table = new ResultTable(result.results[0]).sliceColumns(1);
         const typeDef = table.columnAt(0).typeDef;
         const values = table.get(0);
+
+        expect(typeDef).toEqual(test.typeDef);
+        expect(values).toEqual(test.values);
+      });
+    });
+  });
+
+  describe('Rel to JS specialization', () => {
+    specializationTests.forEach(test => {
+      const testFn = test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} specialization`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDef = table.columnAt(0).typeDef;
+        const values = table.get(0);
+
+        table.print();
 
         expect(typeDef).toEqual(test.typeDef);
         expect(values).toEqual(test.values);

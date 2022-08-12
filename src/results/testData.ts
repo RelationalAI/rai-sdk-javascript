@@ -530,3 +530,41 @@ export const valueTypeTests: RelValueTypeTest[] = [
     values: [[[123n, 'inner'], 'outer']],
   },
 ];
+
+export const specializationTests: RelValueTypeTest[] = [
+  {
+    name: 'String',
+    typeDef: {
+      type: 'Constant',
+      name: 'Symbol',
+      value: [
+        {
+          type: 'String',
+          value: ':foo',
+        },
+      ],
+    },
+    query: `
+      def output = :foo
+    `,
+    values: [':foo'],
+  },
+  {
+    name: 'Int8',
+    typeDef: {
+      type: 'Constant',
+      name: 'Int8(3)',
+      value: [
+        {
+          type: 'Int8',
+          value: 3,
+        },
+      ],
+    },
+    query: `
+      def v = int[8, 3]
+      def output = #(v)
+    `,
+    values: [3],
+  },
+];
