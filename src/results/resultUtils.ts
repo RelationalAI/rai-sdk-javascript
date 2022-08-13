@@ -234,9 +234,9 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
     type.constantType?.relType
   ) {
     const typeDef = getTypeDefFromProtobuf(type.constantType.relType);
-    const values = type.constantType.value.arguments.map(mapPrimitiveValue);
 
     if (typeDef.type !== 'ValueType') {
+      const values = type.constantType.value.arguments.map(mapPrimitiveValue);
       const value = convertValue(
         typeDef,
         values.length === 1 ? values[0] : values,
@@ -254,15 +254,17 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
         } as RelTypedValue,
       };
     } else {
-      // TODO fix it, this won't work for nested value types
-      const value = convertValue(typeDef, values);
+      const value = unflattenContantValue(
+        typeDef,
+        type.constantType.value.arguments,
+      );
 
       return {
         type: 'Constant',
-        name: 'ValueType',
+        name: `${typeDef.type}(${getDisplayValue(typeDef, value)})`,
         value: {
           ...typeDef,
-          value,
+          value: convertValue(typeDef, value),
         } as RelTypedValue,
       };
     }
@@ -680,4 +682,30 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
   }
 
   return typeDef;
+}
+
+type PValue = ReturnType<typeof mapPrimitiveValue>;
+type NestedPrimitiveValue = PValue | NestedPrimitiveValue[];
+
+export function unflattenContantValue(
+  typeDef: RelTypeDef,
+  value: PrimitiveValue[],
+) {
+  const values = value.map(mapPrimitiveValue);
+  const res: NestedPrimitiveValue[] = [];
+
+  const walk = (typeDef: RelTypeDef, result: any[]) => {
+    if (typeDef.type === 'ValueType') {
+      const r: any[] = [];
+      result.push(r);
+
+      typeDef.typeDefs.forEach(td => walk(td, r));
+    } else if (typeDef.type !== 'Constant') {
+      result.push(values.splice(0, 1)[0]);
+    }
+  };
+
+  walk(typeDef, res);
+
+  return res[0];
 }
