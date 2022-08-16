@@ -657,25 +657,20 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
       break;
     }
     case 'Rational': {
-      if (
-        typeDef.typeDefs.length === 4 &&
-        typeDef.typeDefs[3].type === 'ValueType'
-      ) {
+      if (typeDef.typeDefs.length === 5 && typeDef.typeDefs[3]) {
         const tp = typeDef.typeDefs[3];
 
-        if (tp.typeDefs.length === 2) {
-          switch (tp.typeDefs[0].type) {
-            case 'Int8':
-              return { type: 'Rational8' };
-            case 'Int16':
-              return { type: 'Rational16' };
-            case 'Int32':
-              return { type: 'Rational32' };
-            case 'Int64':
-              return { type: 'Rational64' };
-            case 'Int128':
-              return { type: 'Rational128' };
-          }
+        switch (tp.type) {
+          case 'Int8':
+            return { type: 'Rational8' };
+          case 'Int16':
+            return { type: 'Rational16' };
+          case 'Int32':
+            return { type: 'Rational32' };
+          case 'Int64':
+            return { type: 'Rational64' };
+          case 'Int128':
+            return { type: 'Rational128' };
         }
       }
     }
