@@ -25,10 +25,8 @@ import { ResultTable } from './resultTable';
 import { tests } from './testsJson';
 
 describe('Integration Json', () => {
-  // const databaseName = `js-sdk-tests-${Date.now()}`;
-  // const engineName = `js-sdk-tests-${Date.now()}`;
-  const databaseName = `js-sdk-tests-local`;
-  const engineName = `js-sdk-tests-local`;
+  const databaseName = `js-sdk-tests-${Date.now()}`;
+  const engineName = `js-sdk-tests-${Date.now()}`;
   let client: Client;
 
   jest.setTimeout(1000 * 60 * 10);
@@ -40,10 +38,10 @@ describe('Integration Json', () => {
     await createDatabaseIfNotExists(client, databaseName);
   });
 
-  // afterAll(async () => {
-  //   await client.deleteEngine(engineName);
-  //   await client.deleteDatabase(databaseName);
-  // });
+  afterAll(async () => {
+    await client.deleteEngine(engineName);
+    await client.deleteDatabase(databaseName);
+  });
 
   describe('Rel to JS types', () => {
     tests.forEach(test => {
