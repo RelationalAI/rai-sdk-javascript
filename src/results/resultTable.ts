@@ -380,7 +380,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       table: this.table,
       metadata: {
         arguments: this.colDefs
-          .filter(cd => cd.typeDef.type === 'Constant')
+          .filter(cd => cd.typeDef.type !== 'Constant')
           .map(cd => cd.metadata),
       },
     });
