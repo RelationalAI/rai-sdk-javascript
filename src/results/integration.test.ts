@@ -22,6 +22,7 @@ import {
 } from '../testUtils';
 import { ResultTable } from './resultTable';
 import {
+  miscValueTypeTests,
   specializationTests,
   standardTypeTests,
   valueTypeTests,
@@ -75,6 +76,22 @@ describe('Integration', () => {
 
   describe('Rel to JS value types', () => {
     valueTypeTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} in value type`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDef = table.columnAt(0).typeDef;
+        const values = table.get(0);
+
+        expect(typeDef).toEqual(test.typeDef);
+        expect(values).toEqual(test.values);
+      });
+    });
+  });
+
+  describe('Rel to JS value types misc', () => {
+    miscValueTypeTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
       testFn(`should handle ${test.name} value type`, async () => {
