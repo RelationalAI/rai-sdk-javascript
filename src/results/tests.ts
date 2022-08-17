@@ -2384,4 +2384,43 @@ export const miscValueTypeTests: Test[] = [
     values: [[[123n, 'inner'], 'outer']],
     displayValues: ['(123, inner), outer'],
   },
+  {
+    name: 'Module',
+    typeDef: {
+      type: 'ValueType',
+      typeDefs: [
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: { type: 'String', value: ':Foo' },
+        },
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: { type: 'String', value: ':Bar' },
+        },
+        {
+          type: 'Constant',
+          name: 'Symbol',
+          value: { type: 'String', value: ':MyType' },
+        },
+        {
+          type: 'Int64',
+        },
+        {
+          type: 'Int64',
+        },
+      ],
+    },
+    query: `
+      module Foo
+        module Bar
+          value type MyType = Int, Int
+        end
+      end
+      def output = Foo:Bar:^MyType[1, 2]
+     `,
+    values: [[1n, 2n]],
+    displayValues: ['1, 2'],
+  },
 ];
