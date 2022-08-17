@@ -2723,3 +2723,75 @@ export const miscValueTypeTests: Test[] = [
     displayValues: ['(:Foo, :Bar, :MyType, 12, 34)'],
   },
 ];
+
+// TODO uncomment this when specialization on value types is fixed
+export const valueTypeSpecializationTests: Test[] = [
+  {
+    name: 'String(symbol)',
+    query: `
+      value type MyType = :foo; :bar; :baz
+      def v = ^MyType[:foo]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'ValueType',
+        typeDefs: [
+          {
+            type: 'Constant',
+            name: 'Symbol',
+            value: { type: 'String', value: ':MyType' },
+          },
+          {
+            type: 'Constant',
+            name: 'Symbol',
+            value: { type: 'String', value: ':foo' },
+          },
+        ],
+      },
+    ],
+    values: [[':MyType', ':foo']],
+    displayValues: ['(:MyType, :foo)'],
+    skip: true,
+  },
+  {
+    name: 'Int',
+    query: `
+      value type MyType = Int
+      def v = ^MyType[123]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        name: 'Int64(123)',
+        value: { type: 'Int64', value: 123n },
+      },
+    ],
+    values: [':MyType', 123n],
+    displayValues: ['(:MyType, 123)'],
+    skip: true,
+  },
+  {
+    name: 'Int, Int',
+    query: `
+      value type MyType = Int, Int
+      def v = ^MyType[123, 456]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        name: 'ValueType((123, 456))',
+        value: {
+          type: 'ValueType',
+          typeDefs: [{ type: 'Int64' }, { type: 'Int64' }],
+          value: [123n, 456n],
+        },
+      },
+    ],
+    values: [[':MyType', 123n, 456n]],
+    displayValues: ['(:MyType, 123, 456)'],
+    skip: true,
+  },
+];

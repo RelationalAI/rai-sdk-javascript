@@ -26,6 +26,7 @@ import {
   miscValueTypeTests,
   specializationTests,
   standardTypeTests,
+  valueTypeSpecializationTests,
   valueTypeTests,
 } from './tests';
 
@@ -113,6 +114,26 @@ describe('Integration', () => {
 
   describe('Rel to JS value types misc', () => {
     miscValueTypeTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} value type`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDefs = table.typeDefs();
+        const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
+
+        expect(typeDefs).toEqual(test.typeDefs);
+        expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
+      });
+    });
+  });
+
+  describe('Rel to JS value types specialization', () => {
+    valueTypeSpecializationTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
       testFn(`should handle ${test.name} value type`, async () => {
