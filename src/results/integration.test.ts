@@ -21,6 +21,7 @@ import {
   getClient,
 } from '../testUtils';
 import { ResultTable } from './resultTable';
+import { getDisplayValue } from './resultUtils';
 import {
   miscValueTypeTests,
   specializationTests,
@@ -29,8 +30,11 @@ import {
 } from './tests';
 
 describe('Integration', () => {
-  const databaseName = `js-sdk-tests-${Date.now()}`;
-  const engineName = `js-sdk-tests-${Date.now()}`;
+  // TODO revert back this
+  //   const databaseName = `js-sdk-tests-${Date.now()}`;
+  //   const engineName = `js-sdk-tests-${Date.now()}`;
+  const databaseName = `js-sdk-tests-local`;
+  const engineName = `js-sdk-tests-local`;
   let client: Client;
 
   jest.setTimeout(1000 * 60 * 10);
@@ -42,6 +46,11 @@ describe('Integration', () => {
     await createDatabaseIfNotExists(client, databaseName);
   });
 
+  // afterAll(async () => {
+  //   await client.deleteEngine(engineName);
+  //   await client.deleteDatabase(databaseName);
+  // });
+
   describe('Rel to JS standard types', () => {
     standardTypeTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
@@ -49,11 +58,15 @@ describe('Integration', () => {
       testFn(`should handle ${test.name} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
-        const typeDef = table.columnAt(0).typeDef;
+        const typeDefs = table.typeDefs();
         const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
 
-        expect(typeDef).toEqual(test.typeDef);
+        expect(typeDefs).toEqual(test.typeDefs);
         expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
       });
     });
   });
@@ -65,11 +78,15 @@ describe('Integration', () => {
       testFn(`should handle ${test.name} specialization`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
-        const typeDef = table.columnAt(0).typeDef;
+        const typeDefs = table.typeDefs();
         const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
 
-        expect(typeDef).toEqual(test.typeDef);
+        expect(typeDefs).toEqual(test.typeDefs);
         expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
       });
     });
   });
@@ -81,11 +98,15 @@ describe('Integration', () => {
       testFn(`should handle ${test.name} in value type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
-        const typeDef = table.columnAt(0).typeDef;
+        const typeDefs = table.typeDefs();
         const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
 
-        expect(typeDef).toEqual(test.typeDef);
+        expect(typeDefs).toEqual(test.typeDefs);
         expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
       });
     });
   });
@@ -97,11 +118,15 @@ describe('Integration', () => {
       testFn(`should handle ${test.name} value type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
-        const typeDef = table.columnAt(0).typeDef;
+        const typeDefs = table.typeDefs();
         const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
 
-        expect(typeDef).toEqual(test.typeDef);
+        expect(typeDefs).toEqual(test.typeDefs);
         expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
       });
     });
   });
