@@ -26,6 +26,7 @@ const printTableSnapshot = readFileSync(
 );
 
 describe('ResultTable', () => {
+  // TODO re-write this using protobuf metadata
   const relation: ArrowRelation = {
     relationId: '/Int64(1)/:foo/String/:bar/Char/Int64',
     table: tableFromArrays({
