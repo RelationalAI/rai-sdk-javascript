@@ -1425,10 +1425,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    // TODO fix this
-    values: [':foo'],
-    displayValues: [':foo'],
-    skip: true,
+    values: [[':MyType', ':foo']],
+    displayValues: ['(:MyType, :foo)'],
   },
   {
     name: 'String',
@@ -1454,8 +1452,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 'abc']],
-    displayValues: ['1, abc'],
+    values: [[':MyType', 1n, 'abc']],
+    displayValues: ['(:MyType, 1, abc)'],
   },
   {
     name: 'Bool',
@@ -1481,8 +1479,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, false]],
-    displayValues: ['1, false'],
+    values: [[':MyType', 1n, false]],
+    displayValues: ['(:MyType, 1, false)'],
   },
   {
     name: 'Char',
@@ -1508,8 +1506,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, '👍']],
-    displayValues: ['1, 👍'],
+    values: [[':MyType', 1n, '👍']],
+    displayValues: ['(:MyType, 1, 👍)'],
   },
   {
     name: 'DateTime',
@@ -1535,8 +1533,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, new Date('2021-10-11T15:22:31.000Z')]],
-    displayValues: ['1, 2021-10-11T15:22:31.000Z'],
+    values: [[':MyType', 1n, new Date('2021-10-11T15:22:31.000Z')]],
+    displayValues: ['(:MyType, 1, 2021-10-11T15:22:31.000Z)'],
   },
   {
     name: 'Date',
@@ -1562,8 +1560,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, new Date('2021-10-12')]],
-    displayValues: ['1, 2021-10-12'],
+    values: [[':MyType', 1n, new Date('2021-10-12')]],
+    displayValues: ['(:MyType, 1, 2021-10-12)'],
   },
   {
     name: 'Year',
@@ -1589,8 +1587,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2022n]],
-    displayValues: ['1, 2022'],
+    values: [[':MyType', 1n, 2022n]],
+    displayValues: ['(:MyType, 1, 2022)'],
   },
   {
     name: 'Month',
@@ -1616,8 +1614,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Week',
@@ -1643,8 +1641,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Day',
@@ -1670,8 +1668,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Hour',
@@ -1697,8 +1695,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Minute',
@@ -1724,8 +1722,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Second',
@@ -1751,8 +1749,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Millisecond',
@@ -1778,8 +1776,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Microsecond',
@@ -1805,8 +1803,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Nanosecond',
@@ -1832,8 +1830,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Hash',
@@ -1860,8 +1858,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 59005302613613978016770438099762432572n]],
-    displayValues: ['1, 59005302613613978016770438099762432572'],
+    values: [[':MyType', 1n, 59005302613613978016770438099762432572n]],
+    displayValues: ['(:MyType, 1, 59005302613613978016770438099762432572)'],
   },
   {
     name: 'Missing',
@@ -1887,8 +1885,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, null]],
-    displayValues: ['1, missing'],
+    values: [[':MyType', 1n, null]],
+    displayValues: ['(:MyType, 1, missing)'],
   },
   {
     name: 'FilePos',
@@ -1921,8 +1919,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
   },
   {
     name: 'Int8',
@@ -1948,8 +1946,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, -12]],
-    displayValues: ['1, -12'],
+    values: [[':MyType', 1n, -12]],
+    displayValues: ['(:MyType, 1, -12)'],
   },
   {
     name: 'Int16',
@@ -1975,8 +1973,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, -123]],
-    displayValues: ['1, -123'],
+    values: [[':MyType', 1n, -123]],
+    displayValues: ['(:MyType, 1, -123)'],
   },
   {
     name: 'Int32',
@@ -2002,8 +2000,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, -1234]],
-    displayValues: ['1, -1234'],
+    values: [[':MyType', 1n, -1234]],
+    displayValues: ['(:MyType, 1, -1234)'],
   },
   {
     name: 'Int64',
@@ -2029,8 +2027,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, -12345n]],
-    displayValues: ['1, -12345'],
+    values: [[':MyType', 1n, -12345n]],
+    displayValues: ['(:MyType, 1, -12345)'],
   },
   {
     name: 'Int128',
@@ -2056,8 +2054,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 123456789101112131415n]],
-    displayValues: ['1, 123456789101112131415'],
+    values: [[':MyType', 1n, 123456789101112131415n]],
+    displayValues: ['(:MyType, 1, 123456789101112131415)'],
   },
   {
     name: 'UInt8',
@@ -2083,8 +2081,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 12]],
-    displayValues: ['1, 12'],
+    values: [[':MyType', 1n, 12]],
+    displayValues: ['(:MyType, 1, 12)'],
   },
   {
     name: 'UInt16',
@@ -2110,8 +2108,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 123]],
-    displayValues: ['1, 123'],
+    values: [[':MyType', 1n, 123]],
+    displayValues: ['(:MyType, 1, 123)'],
   },
   {
     name: 'UInt32',
@@ -2137,8 +2135,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 1234]],
-    displayValues: ['1, 1234'],
+    values: [[':MyType', 1n, 1234]],
+    displayValues: ['(:MyType, 1, 1234)'],
   },
   {
     name: 'UInt64',
@@ -2164,8 +2162,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 12345n]],
-    displayValues: ['1, 12345'],
+    values: [[':MyType', 1n, 12345n]],
+    displayValues: ['(:MyType, 1, 12345)'],
   },
   {
     name: 'UInt128',
@@ -2191,8 +2189,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 123456789101112131415n]],
-    displayValues: ['1, 123456789101112131415'],
+    values: [[':MyType', 1n, 123456789101112131415n]],
+    displayValues: ['(:MyType, 1, 123456789101112131415)'],
   },
   {
     name: 'Float16',
@@ -2218,8 +2216,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 42.5]],
-    displayValues: ['1, 42.5'],
+    values: [[':MyType', 1n, 42.5]],
+    displayValues: ['(:MyType, 1, 42.5)'],
   },
   {
     name: 'Float32',
@@ -2245,8 +2243,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 42.5]],
-    displayValues: ['1, 42.5'],
+    values: [[':MyType', 1n, 42.5]],
+    displayValues: ['(:MyType, 1, 42.5)'],
   },
   {
     name: 'Float64',
@@ -2272,8 +2270,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 42.5]],
-    displayValues: ['1, 42.5'],
+    values: [[':MyType', 1n, 42.5]],
+    displayValues: ['(:MyType, 1, 42.5)'],
   },
   {
     name: 'Decimal16',
@@ -2300,8 +2298,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, new Decimal('12.34')]],
-    displayValues: ['1, 12.34'],
+    values: [[':MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:MyType, 1, 12.34)'],
   },
   {
     name: 'Decimal32',
@@ -2328,8 +2326,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, new Decimal('12.34')]],
-    displayValues: ['1, 12.34'],
+    values: [[':MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:MyType, 1, 12.34)'],
   },
   {
     name: 'Decimal64',
@@ -2356,8 +2354,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, new Decimal('12.34')]],
-    displayValues: ['1, 12.34'],
+    values: [[':MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:MyType, 1, 12.34)'],
   },
   {
     name: 'Decimal128',
@@ -2384,8 +2382,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, new Decimal('12345678901011121314.34')]],
-    displayValues: ['1, 12345678901011121314.34'],
+    values: [[':MyType', 1n, new Decimal('12345678901011121314.34')]],
+    displayValues: ['(:MyType, 1, 12345678901011121314.34)'],
   },
   {
     name: 'Rational8',
@@ -2413,6 +2411,7 @@ export const valueTypeTests: Test[] = [
     ],
     values: [
       [
+        ':MyType',
         1n,
         {
           numerator: 1,
@@ -2420,7 +2419,7 @@ export const valueTypeTests: Test[] = [
         },
       ],
     ],
-    displayValues: ['1, 1/2'],
+    displayValues: ['(:MyType, 1, 1/2)'],
   },
   {
     name: 'Rational16',
@@ -2448,6 +2447,7 @@ export const valueTypeTests: Test[] = [
     ],
     values: [
       [
+        ':MyType',
         1n,
         {
           numerator: 1,
@@ -2455,7 +2455,7 @@ export const valueTypeTests: Test[] = [
         },
       ],
     ],
-    displayValues: ['1, 1/2'],
+    displayValues: ['(:MyType, 1, 1/2)'],
   },
   {
     name: 'Rational32',
@@ -2483,6 +2483,7 @@ export const valueTypeTests: Test[] = [
     ],
     values: [
       [
+        ':MyType',
         1n,
         {
           numerator: 1,
@@ -2490,7 +2491,7 @@ export const valueTypeTests: Test[] = [
         },
       ],
     ],
-    displayValues: ['1, 1/2'],
+    displayValues: ['(:MyType, 1, 1/2)'],
   },
   {
     name: 'Rational64',
@@ -2518,6 +2519,7 @@ export const valueTypeTests: Test[] = [
     ],
     values: [
       [
+        ':MyType',
         1n,
         {
           numerator: 1n,
@@ -2525,7 +2527,7 @@ export const valueTypeTests: Test[] = [
         },
       ],
     ],
-    displayValues: ['1, 1/2'],
+    displayValues: ['(:MyType, 1, 1/2)'],
   },
   {
     name: 'Rational128',
@@ -2553,6 +2555,7 @@ export const valueTypeTests: Test[] = [
     ],
     values: [
       [
+        ':MyType',
         1n,
         {
           numerator: 123456789101112313n,
@@ -2560,7 +2563,7 @@ export const valueTypeTests: Test[] = [
         },
       ],
     ],
-    displayValues: ['1, 123456789101112313/9123456789101112313'],
+    displayValues: ['(:MyType, 1, 123456789101112313/9123456789101112313)'],
   },
 ];
 
@@ -2586,8 +2589,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[123n]],
-    displayValues: ['123'],
+    values: [[':MyType', 123n]],
+    displayValues: ['(:MyType, 123)'],
   },
   {
     name: 'Int128',
@@ -2610,8 +2613,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[123445677777999999999n]],
-    displayValues: ['123445677777999999999'],
+    values: [[':MyType', 123445677777999999999n]],
+    displayValues: ['(:MyType, 123445677777999999999)'],
   },
   {
     name: 'Date',
@@ -2634,8 +2637,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[new Date('2021-10-12')]],
-    displayValues: ['2021-10-12'],
+    values: [[':MyType', new Date('2021-10-12')]],
+    displayValues: ['(:MyType, 2021-10-12)'],
   },
   {
     name: 'OuterType(InnerType(Int, String), String)',
@@ -2675,8 +2678,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[[123n, 'inner'], 'outer']],
-    displayValues: ['(123, inner), outer'],
+    values: [[':OuterType', [':InnerType', 123n, 'inner'], 'outer']],
+    displayValues: ['(:OuterType, (:InnerType, 123, inner), outer)'],
   },
   {
     name: 'Module',
@@ -2686,7 +2689,7 @@ export const miscValueTypeTests: Test[] = [
           value type MyType = Int, Int
         end
       end
-      def output = Foo:Bar:^MyType[1, 2]
+      def output = Foo:Bar:^MyType[12, 34]
     `,
     typeDefs: [
       {
@@ -2716,7 +2719,7 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[1n, 2n]],
-    displayValues: ['1, 2'],
+    values: [[':Foo', ':Bar', ':MyType', 12n, 34n]],
+    displayValues: ['(:Foo, :Bar, :MyType, 12, 34)'],
   },
 ];

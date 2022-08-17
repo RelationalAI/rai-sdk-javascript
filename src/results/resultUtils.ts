@@ -444,19 +444,25 @@ export function convertValue<T extends RelTypedValue>(
       return typeDef.value.value;
     }
     case 'ValueType': {
-      const nonConstantTypeDefs = typeDef.typeDefs.filter(
+      const physicalTypeDefs = typeDef.typeDefs.filter(
         td => td.type !== 'Constant',
       );
       let val = value?.toArray ? value.toArray() : value;
 
-      // TODO add explanation comment
-      // inlined value types? is that the proper term?
-      if (nonConstantTypeDefs.length === 1) {
+      // wrapping inlined value type value
+      if (physicalTypeDefs.length === 1) {
         val = [val];
       }
 
-      return nonConstantTypeDefs.map((td, index) => {
-        return convertValue(td, val[index]);
+      let physicalIndex = -1;
+
+      return typeDef.typeDefs.map(td => {
+        if (td.type === 'Constant') {
+          return convertValue(td, null);
+        } else {
+          physicalIndex++;
+          return convertValue(td, val[physicalIndex]);
+        }
       });
     }
     case 'Unknown':
@@ -529,17 +535,13 @@ export function getDisplayValue(
     case 'Rational128':
       return `${val.value.numerator}/${val.value.denominator}`;
     case 'ValueType': {
-      const nonConstantTypeDefs = val.typeDefs.filter(
-        td => td.type !== 'Constant',
-      );
-
-      return nonConstantTypeDefs
+      const displayValue = val.typeDefs
         .map((td, index) => {
-          const displayValue = getDisplayValue(td, val.value[index]);
-
-          return td.type === 'ValueType' ? `(${displayValue})` : displayValue;
+          return getDisplayValue(td, val.value[index]);
         })
         .join(', ');
+
+      return `(${displayValue})`;
     }
     case 'Unknown': {
       const _value = val.value as any;
