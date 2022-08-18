@@ -18,7 +18,7 @@ import Decimal from 'decimal.js';
 
 import { RelTypedValue } from './types';
 
-type RelStandardTypeTest = {
+type Test = {
   relType: string;
   type: RelTypedValue['type'];
   query: string;
@@ -31,7 +31,7 @@ type RelStandardTypeTest = {
 
 // This should cover all types from https://docs.relational.ai/rel/ref/data-types#overview
 
-export const tests: RelStandardTypeTest[] = [
+export const tests: Test[] = [
   {
     relType: 'String',
     type: 'String',
