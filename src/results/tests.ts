@@ -569,7 +569,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Symbol',
         value: {
           type: 'String',
           value: ':foo',
@@ -588,7 +587,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Symbol',
         value: {
           type: 'String',
           value: ':foo',
@@ -607,7 +605,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Symbol',
         value: {
           type: 'String',
           value: ':foo / bar',
@@ -626,7 +623,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Bool(true)',
         value: {
           type: 'Bool',
           value: true,
@@ -645,7 +641,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Char(👍)',
         value: {
           type: 'Char',
           value: '👍',
@@ -664,7 +659,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'DateTime(2021-10-11T15:22:31.000Z)',
         value: {
           type: 'DateTime',
           value: new Date('2021-10-11T15:22:31.000Z'),
@@ -685,7 +679,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Date(2021-10-12)',
         value: {
           type: 'Date',
           value: new Date('2021-10-12'),
@@ -704,7 +697,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Year(2022)',
         value: {
           type: 'Year',
           value: 2022n,
@@ -723,7 +715,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Month(1)',
         value: {
           type: 'Month',
           value: 1n,
@@ -742,7 +733,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Week(1)',
         value: {
           type: 'Week',
           value: 1n,
@@ -761,7 +751,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Day(1)',
         value: {
           type: 'Day',
           value: 1n,
@@ -780,7 +769,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Hour(1)',
         value: {
           type: 'Hour',
           value: 1n,
@@ -799,7 +787,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Minute(1)',
         value: {
           type: 'Minute',
           value: 1n,
@@ -818,7 +805,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Second(1)',
         value: {
           type: 'Second',
           value: 1n,
@@ -837,7 +823,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Millisecond(1)',
         value: {
           type: 'Millisecond',
           value: 1n,
@@ -856,7 +841,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Microsecond(1)',
         value: {
           type: 'Microsecond',
           value: 1n,
@@ -875,7 +859,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Nanosecond(1)',
         value: {
           type: 'Nanosecond',
           value: 1n,
@@ -895,7 +878,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Hash(290925887971139297379988470542779955742)',
         value: {
           type: 'Hash',
           value: 290925887971139297379988470542779955742n,
@@ -914,7 +896,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Missing(missing)',
         value: {
           type: 'Missing',
           value: null,
@@ -939,7 +920,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'FilePos(2)',
         value: {
           type: 'FilePos',
           value: 2n,
@@ -958,7 +938,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Int8(-12)',
         value: {
           type: 'Int8',
           value: -12,
@@ -977,7 +956,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Int16(-123)',
         value: {
           type: 'Int16',
           value: -123,
@@ -996,7 +974,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Int32(-1234)',
         value: {
           type: 'Int32',
           value: -1234,
@@ -1015,7 +992,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Int64(-12345)',
         value: {
           type: 'Int64',
           value: -12345n,
@@ -1034,7 +1010,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Int128(123456789101112131415)',
         value: {
           type: 'Int128',
           value: 123456789101112131415n,
@@ -1053,7 +1028,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'UInt8(12)',
         value: {
           type: 'UInt8',
           value: 12,
@@ -1072,7 +1046,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'UInt16(123)',
         value: {
           type: 'UInt16',
           value: 123,
@@ -1091,7 +1064,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'UInt32(1234)',
         value: {
           type: 'UInt32',
           value: 1234,
@@ -1110,7 +1082,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'UInt64(12345)',
         value: {
           type: 'UInt64',
           value: 12345n,
@@ -1129,7 +1100,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'UInt128(123456789101112131415)',
         value: {
           type: 'UInt128',
           value: 123456789101112131415n,
@@ -1148,7 +1118,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Float16(42.5)',
         value: {
           type: 'Float16',
           value: 42.5,
@@ -1167,7 +1136,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Float32(42.5)',
         value: {
           type: 'Float32',
           value: 42.5,
@@ -1186,7 +1154,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Float64(42.5)',
         value: {
           type: 'Float64',
           value: 42.5,
@@ -1205,7 +1172,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Decimal16(12.34)',
         value: {
           type: 'Decimal16',
           value: new Decimal('12.34'),
@@ -1225,7 +1191,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Decimal32(12.34)',
         value: {
           type: 'Decimal32',
           value: new Decimal('12.34'),
@@ -1245,7 +1210,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Decimal64(12.34)',
         value: {
           type: 'Decimal64',
           value: new Decimal('12.34'),
@@ -1265,7 +1229,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Decimal128(12345678901011121314.34)',
         value: {
           type: 'Decimal128',
           value: new Decimal('12345678901011121314.34'),
@@ -1287,7 +1250,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Rational8(1/2)',
         value: {
           type: 'Rational8',
           value: { numerator: 1, denominator: 2 },
@@ -1309,7 +1271,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Rational16(1/2)',
         value: {
           type: 'Rational16',
           value: { numerator: 1, denominator: 2 },
@@ -1333,7 +1294,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Rational32(1/2)',
         value: {
           type: 'Rational32',
           value: { numerator: 1, denominator: 2 },
@@ -1357,7 +1317,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Rational64(1/2)',
         value: {
           type: 'Rational64',
           value: { numerator: 1n, denominator: 2n },
@@ -1381,7 +1340,6 @@ export const specializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Rational128(123456789101112313/9123456789101112313)',
         value: {
           type: 'Rational128',
           value: {
@@ -1414,12 +1372,10 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':foo' },
           },
         ],
@@ -1440,7 +1396,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1467,7 +1422,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1494,7 +1448,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1521,7 +1474,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1548,7 +1500,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1575,7 +1526,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1602,7 +1552,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1629,7 +1578,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1656,7 +1604,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1683,7 +1630,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1710,7 +1656,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1737,7 +1682,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1764,7 +1708,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1791,7 +1734,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1818,7 +1760,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1846,7 +1787,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1873,7 +1813,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1907,7 +1846,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1934,7 +1872,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1961,7 +1898,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -1988,7 +1924,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2015,7 +1950,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2042,7 +1976,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2069,7 +2002,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2096,7 +2028,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2123,7 +2054,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2150,7 +2080,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2177,7 +2106,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2204,7 +2132,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2231,7 +2158,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2258,7 +2184,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2285,7 +2210,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2313,7 +2237,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2341,7 +2264,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2369,7 +2291,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2397,7 +2318,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2433,7 +2353,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2469,7 +2388,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2505,7 +2423,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2541,7 +2458,6 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2580,7 +2496,6 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2604,7 +2519,6 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2628,7 +2542,6 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2653,7 +2566,6 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':OuterType' },
           },
           {
@@ -2661,7 +2573,6 @@ export const miscValueTypeTests: Test[] = [
             typeDefs: [
               {
                 type: 'Constant',
-                name: 'Symbol',
                 value: { type: 'String', value: ':InnerType' },
               },
               {
@@ -2697,17 +2608,14 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':Foo' },
           },
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':Bar' },
           },
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
@@ -2724,7 +2632,7 @@ export const miscValueTypeTests: Test[] = [
   },
 ];
 
-// TODO uncomment this when specialization on value types is fixed
+// TODO uncomment this when specialization on value types isfixed
 export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'String(symbol)',
@@ -2739,12 +2647,10 @@ export const valueTypeSpecializationTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':MyType' },
           },
           {
             type: 'Constant',
-            name: 'Symbol',
             value: { type: 'String', value: ':foo' },
           },
         ],
@@ -2764,7 +2670,6 @@ export const valueTypeSpecializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'Int64(123)',
         value: { type: 'Int64', value: 123n },
       },
     ],
@@ -2782,7 +2687,6 @@ export const valueTypeSpecializationTests: Test[] = [
     typeDefs: [
       {
         type: 'Constant',
-        name: 'ValueType((123, 456))',
         value: {
           type: 'ValueType',
           typeDefs: [{ type: 'Int64' }, { type: 'Int64' }],

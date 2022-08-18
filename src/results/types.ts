@@ -63,7 +63,7 @@ export type RelBaseTypedValue =
 
 export type RelTypedValue = RelBaseTypedValue | ValueTypeValue | UnknownType;
 
-export type RelTypeDef = (
+export type RelTypeDef =
   | Omit<StringValue, 'value'>
   | Omit<BoolValue, 'value'>
   | Omit<CharValue, 'value'>
@@ -106,20 +106,15 @@ export type RelTypeDef = (
   | Omit<Rational128Value, 'value'>
   | ConstantValue
   | Omit<ValueTypeValue, 'value'>
-  | Omit<UnknownType, 'value'>
-) & { name?: string };
+  | Omit<UnknownType, 'value'>;
 
 export type ConstantValue = {
   type: 'Constant';
-  // TODO should we remove it?
-  // maybe this's a thing because of name in ValueTypeValue ?
-  name: string;
   value: RelTypedValue;
 };
 
 export type ValueTypeValue = {
   type: 'ValueType';
-  // TODO should we add name?
   typeDefs: RelTypeDef[];
   // TODO fix the type, it could have nested ValueTypeValue['value'][] inside
   value: RelBaseTypedValue['value'][];

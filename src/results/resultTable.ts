@@ -21,6 +21,7 @@ import { ArrowRelation } from '../api/transaction/types';
 import { Kind, PrimitiveType, RelType } from '../proto/generated/schema';
 import {
   convertValue,
+  getDisplayName,
   getDisplayValue,
   getTypeDef,
   getTypeDefFromProtobuf,
@@ -345,7 +346,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     const pTable = new PrintTable({
       columns: this.colDefs.map((colDef, i) => ({
         name: i.toString(),
-        title: colDef.typeDef.name || colDef.typeDef.type,
+        title: getDisplayName(colDef.typeDef),
       })),
     });
 

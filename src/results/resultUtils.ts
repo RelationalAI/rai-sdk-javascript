@@ -48,7 +48,6 @@ export function getTypeDef(type: string): RelTypeDef {
   if (type.startsWith(':')) {
     return {
       type: 'Constant',
-      name: 'Symbol',
       value: { type: 'String', value: type },
     };
   }
@@ -56,7 +55,6 @@ export function getTypeDef(type: string): RelTypeDef {
   if (type.includes('(') && !type.startsWith('(')) {
     return {
       type: 'Constant',
-      name: type,
       value: { type: 'String', value: type },
     };
   }
@@ -223,7 +221,6 @@ export function getTypeDef(type: string): RelTypeDef {
 
   return {
     type: 'Unknown',
-    name: type,
   };
 }
 
@@ -244,10 +241,6 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
 
       return {
         type: 'Constant',
-        name:
-          typeDef.type === 'String'
-            ? 'Symbol'
-            : `${typeDef.type}(${getDisplayValue(typeDef, value)})`,
         value: {
           ...typeDef,
           value,
@@ -261,7 +254,6 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
 
       return {
         type: 'Constant',
-        name: `${typeDef.type}(${getDisplayValue(typeDef, value)})`,
         value: {
           ...typeDef,
           value: convertValue(typeDef, value),
@@ -342,13 +334,12 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
   }
 
   if (type.tag === Kind.VALUE_TYPE && type.valueType) {
-    const typeDef = {
+    const typeDef: RelTypeDef = {
       type: 'ValueType',
-      // TODO add name?
       typeDefs: type.valueType.argumentTypes.map(t =>
         getTypeDefFromProtobuf(t),
       ),
-    } as const;
+    };
 
     return mapValueType(typeDef);
   }
@@ -558,6 +549,23 @@ export function getDisplayValue(
   }
 }
 
+export function getDisplayName(typeDef: RelTypeDef): string {
+  switch (typeDef.type) {
+    case 'ValueType': {
+      const name = typeDef.typeDefs.map(td => getDisplayName(td)).join(', ');
+
+      return `(${name})`;
+    }
+    case 'Constant': {
+      const name = getDisplayName(typeDef.value);
+
+      return `${name}(${getDisplayValue(typeDef.value, typeDef.value.value)})`;
+    }
+    default:
+      return typeDef.type;
+  }
+}
+
 function int128ToBigInt(tuple: bigint[]) {
   return (BigInt.asIntN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
@@ -684,10 +692,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
 type PValue = ReturnType<typeof mapPrimitiveValue>;
 type NestedPrimitiveValue = PValue | NestedPrimitiveValue[];
 
-export function unflattenContantValue(
-  typeDef: RelTypeDef,
-  value: PrimitiveValue[],
-) {
+function unflattenContantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
   const values = value.map(mapPrimitiveValue);
   const res: NestedPrimitiveValue[] = [];
 

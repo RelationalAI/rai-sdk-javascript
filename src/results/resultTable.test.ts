@@ -49,18 +49,15 @@ describe('ResultTable', () => {
       expect(table.typeDefs()).toEqual([
         {
           type: 'Constant',
-          name: 'Int64(1)',
           value: { type: 'String', value: 'Int64(1)' },
         },
         {
           type: 'Constant',
-          name: 'Symbol',
           value: { type: 'String', value: ':foo' },
         },
         { type: 'String' },
         {
           type: 'Constant',
-          name: 'Symbol',
           value: { type: 'String', value: ':bar' },
         },
         { type: 'Char' },
@@ -81,13 +78,11 @@ describe('ResultTable', () => {
       expect(columns.length).toEqual(6);
       expect(columns[0].typeDef).toEqual({
         type: 'Constant',
-        name: 'Int64(1)',
         value: { type: 'String', value: 'Int64(1)' },
       });
       expect(columns[0].length).toEqual(4);
       expect(columns[1].typeDef).toEqual({
         type: 'Constant',
-        name: 'Symbol',
         value: { type: 'String', value: ':foo' },
       });
       expect(columns[1].length).toEqual(4);
@@ -95,7 +90,6 @@ describe('ResultTable', () => {
       expect(columns[2].length).toEqual(4);
       expect(columns[3].typeDef).toEqual({
         type: 'Constant',
-        name: 'Symbol',
         value: { type: 'String', value: ':bar' },
       });
       expect(columns[3].length).toEqual(4);
@@ -110,13 +104,11 @@ describe('ResultTable', () => {
 
       expect(table.columnAt(0).typeDef).toEqual({
         type: 'Constant',
-        name: 'Int64(1)',
         value: { type: 'String', value: 'Int64(1)' },
       });
       expect(table.columnAt(0).length).toEqual(4);
       expect(table.columnAt(1).typeDef).toEqual({
         type: 'Constant',
-        name: 'Symbol',
         value: { type: 'String', value: ':foo' },
       });
       expect(table.columnAt(1).length).toEqual(4);
@@ -124,7 +116,6 @@ describe('ResultTable', () => {
       expect(table.columnAt(2).length).toEqual(4);
       expect(table.columnAt(3).typeDef).toEqual({
         type: 'Constant',
-        name: 'Symbol',
         value: { type: 'String', value: ':bar' },
       });
       expect(table.columnAt(3).length).toEqual(4);
@@ -309,14 +300,14 @@ describe('ResultTable', () => {
 
       // colors are making it hard to read
       // it should looks like
-      // ┌──────────┬────────┬────────┬────────┬──────┬───────┐
-      // │ Int64(1) │ Symbol │ String │ Symbol │ Char │ Int64 │
-      // ├──────────┼────────┼────────┼────────┼──────┼───────┤
-      // │ Int64(1) │   :foo │      w │   :bar │    a │     1 │
-      // │ Int64(1) │   :foo │      x │   :bar │    b │     2 │
-      // │ Int64(1) │   :foo │      y │   :bar │    c │     3 │
-      // │ Int64(1) │   :foo │      z │   :bar │    d │     4 │
-      // └──────────┴────────┴────────┴────────┴──────┴───────┘
+      // ┌──────────────────┬──────────────┬────────┬──────────────┬──────┬───────┐
+      // │ String(Int64(1)) │ String(:foo) │ String │ String(:bar) │ Char │ Int64 │
+      // ├──────────────────┼──────────────┼────────┼──────────────┼──────┼───────┤
+      // │         Int64(1) │         :foo │      w │         :bar │    a │     1 │
+      // │         Int64(1) │         :foo │      x │         :bar │    b │     2 │
+      // │         Int64(1) │         :foo │      y │         :bar │    c │     3 │
+      // │         Int64(1) │         :foo │      z │         :bar │    d │     4 │
+      // └──────────────────┴──────────────┴────────┴──────────────┴──────┴───────┘
 
       // eslint-disable-next-line no-console
       expect(console.log).toHaveBeenCalledWith(printTableSnapshot);
