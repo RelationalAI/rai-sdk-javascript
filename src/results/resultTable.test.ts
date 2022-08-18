@@ -18,6 +18,7 @@ import { tableFromArrays } from 'apache-arrow';
 import { readFileSync } from 'fs';
 
 import { ArrowRelation } from '../api/transaction/types';
+import { MetadataInfo } from '../proto/generated/message';
 import { ResultTable } from './resultTable';
 
 const printTableSnapshot = readFileSync(
@@ -25,8 +26,19 @@ const printTableSnapshot = readFileSync(
   'utf-8',
 );
 
+function makeMetadata(json: any) {
+  const metadata = MetadataInfo.fromJson({
+    relations: [{ fileName: '', relationId: json }],
+  }).relations[0].relationId;
+
+  if (!metadata) {
+    throw new Error('Failed to make metadata');
+  }
+
+  return metadata;
+}
+
 describe('ResultTable', () => {
-  // TODO re-write this using protobuf metadata
   const relation: ArrowRelation = {
     relationId: '/Int64(1)/:foo/String/:bar/Char/Int64',
     table: tableFromArrays({
@@ -34,12 +46,115 @@ describe('ResultTable', () => {
       v2: [97, 98, 99, 100],
       v3: [1n, 2n, 3n, 4n],
     }),
-    metadata: { arguments: [] },
+    metadata: makeMetadata({
+      arguments: [
+        {
+          tag: 'CONSTANT_TYPE',
+          constantType: {
+            relType: {
+              tag: 'PRIMITIVE_TYPE',
+              primitiveType: 'INT_64',
+            },
+            value: {
+              arguments: [
+                {
+                  tag: 'INT_64',
+                  int64Val: '1',
+                },
+              ],
+            },
+          },
+        },
+        {
+          tag: 'CONSTANT_TYPE',
+          constantType: {
+            relType: {
+              tag: 'PRIMITIVE_TYPE',
+              primitiveType: 'STRING',
+            },
+            value: {
+              arguments: [
+                {
+                  tag: 'STRING',
+                  stringVal: 'Zm9v',
+                },
+              ],
+            },
+          },
+        },
+        {
+          tag: 'PRIMITIVE_TYPE',
+          primitiveType: 'STRING',
+        },
+        {
+          tag: 'CONSTANT_TYPE',
+          constantType: {
+            relType: {
+              tag: 'PRIMITIVE_TYPE',
+              primitiveType: 'STRING',
+            },
+            value: {
+              arguments: [
+                {
+                  tag: 'STRING',
+                  stringVal: 'YmFy',
+                },
+              ],
+            },
+          },
+        },
+        {
+          tag: 'PRIMITIVE_TYPE',
+          primitiveType: 'CHAR',
+        },
+        {
+          tag: 'PRIMITIVE_TYPE',
+          primitiveType: 'INT_64',
+        },
+      ],
+    }),
   };
   const specialRelation: ArrowRelation = {
     relationId: '/Int64(1)/:foo',
     table: tableFromArrays({}),
-    metadata: { arguments: [] },
+    metadata: makeMetadata({
+      arguments: [
+        {
+          tag: 'CONSTANT_TYPE',
+          constantType: {
+            relType: {
+              tag: 'PRIMITIVE_TYPE',
+              primitiveType: 'INT_64',
+            },
+            value: {
+              arguments: [
+                {
+                  tag: 'INT_64',
+                  int64Val: '1',
+                },
+              ],
+            },
+          },
+        },
+        {
+          tag: 'CONSTANT_TYPE',
+          constantType: {
+            relType: {
+              tag: 'PRIMITIVE_TYPE',
+              primitiveType: 'STRING',
+            },
+            value: {
+              arguments: [
+                {
+                  tag: 'STRING',
+                  stringVal: 'Zm9v',
+                },
+              ],
+            },
+          },
+        },
+      ],
+    }),
   };
 
   describe('Default', () => {
@@ -49,7 +164,7 @@ describe('ResultTable', () => {
       expect(table.typeDefs()).toEqual([
         {
           type: 'Constant',
-          value: { type: 'String', value: 'Int64(1)' },
+          value: { type: 'Int64', value: 1n },
         },
         {
           type: 'Constant',
@@ -78,7 +193,7 @@ describe('ResultTable', () => {
       expect(columns.length).toEqual(6);
       expect(columns[0].typeDef).toEqual({
         type: 'Constant',
-        value: { type: 'String', value: 'Int64(1)' },
+        value: { type: 'Int64', value: 1n },
       });
       expect(columns[0].length).toEqual(4);
       expect(columns[1].typeDef).toEqual({
@@ -104,7 +219,7 @@ describe('ResultTable', () => {
 
       expect(table.columnAt(0).typeDef).toEqual({
         type: 'Constant',
-        value: { type: 'String', value: 'Int64(1)' },
+        value: { type: 'Int64', value: 1n },
       });
       expect(table.columnAt(0).length).toEqual(4);
       expect(table.columnAt(1).typeDef).toEqual({
@@ -128,7 +243,7 @@ describe('ResultTable', () => {
     it('should be able to iterate column values', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        ['Int64(1)', 'Int64(1)', 'Int64(1)', 'Int64(1)'],
+        [1n, 1n, 1n, 1n],
         [':foo', ':foo', ':foo', ':foo'],
         ['w', 'x', 'y', 'z'],
         [':bar', ':bar', ':bar', ':bar'],
@@ -151,7 +266,7 @@ describe('ResultTable', () => {
     it('should get column values', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        ['Int64(1)', 'Int64(1)', 'Int64(1)', 'Int64(1)'],
+        [1n, 1n, 1n, 1n],
         [':foo', ':foo', ':foo', ':foo'],
         ['w', 'x', 'y', 'z'],
         [':bar', ':bar', ':bar', ':bar'],
@@ -166,7 +281,7 @@ describe('ResultTable', () => {
     it('should get column value by index', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        ['Int64(1)', 'Int64(1)', 'Int64(1)', 'Int64(1)'],
+        [1n, 1n, 1n, 1n],
         [':foo', ':foo', ':foo', ':foo'],
         ['w', 'x', 'y', 'z'],
         [':bar', ':bar', ':bar', ':bar'],
@@ -191,7 +306,7 @@ describe('ResultTable', () => {
       expect(table.columnAt(0).length).toEqual(1);
       expect(table.columnAt(1).length).toEqual(1);
 
-      expect(table.columnAt(0).values()).toEqual(['Int64(1)']);
+      expect(table.columnAt(0).values()).toEqual([1n]);
       expect(table.columnAt(1).values()).toEqual([':foo']);
       expect(table.columnAt(1).get(0)).toEqual(':foo');
       expect(table.columnAt(1).get(-1)).toBeUndefined();
@@ -201,14 +316,12 @@ describe('ResultTable', () => {
     it('should slice columns', () => {
       const table = new ResultTable(relation);
 
-      expect(table.sliceColumns(undefined, 2).values()).toEqual([
-        ['Int64(1)', ':foo'],
-      ]);
+      expect(table.sliceColumns(undefined, 2).values()).toEqual([[1n, ':foo']]);
       expect(table.sliceColumns(undefined, 3).values()).toEqual([
-        ['Int64(1)', ':foo', 'w'],
-        ['Int64(1)', ':foo', 'x'],
-        ['Int64(1)', ':foo', 'y'],
-        ['Int64(1)', ':foo', 'z'],
+        [1n, ':foo', 'w'],
+        [1n, ':foo', 'x'],
+        [1n, ':foo', 'y'],
+        [1n, ':foo', 'z'],
       ]);
       expect(table.sliceColumns(4).values()).toEqual([
         ['a', 1n],
@@ -233,10 +346,10 @@ describe('ResultTable', () => {
     it('should be able to iterate table values', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        ['Int64(1)', ':foo', 'w', ':bar', 'a', 1n],
-        ['Int64(1)', ':foo', 'x', ':bar', 'b', 2n],
-        ['Int64(1)', ':foo', 'y', ':bar', 'c', 3n],
-        ['Int64(1)', ':foo', 'z', ':bar', 'd', 4n],
+        [1n, ':foo', 'w', ':bar', 'a', 1n],
+        [1n, ':foo', 'x', ':bar', 'b', 2n],
+        [1n, ':foo', 'y', ':bar', 'c', 3n],
+        [1n, ':foo', 'z', ':bar', 'd', 4n],
       ];
 
       let i = 0;
@@ -250,10 +363,10 @@ describe('ResultTable', () => {
     it('should get table values', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        ['Int64(1)', ':foo', 'w', ':bar', 'a', 1n],
-        ['Int64(1)', ':foo', 'x', ':bar', 'b', 2n],
-        ['Int64(1)', ':foo', 'y', ':bar', 'c', 3n],
-        ['Int64(1)', ':foo', 'z', ':bar', 'd', 4n],
+        [1n, ':foo', 'w', ':bar', 'a', 1n],
+        [1n, ':foo', 'x', ':bar', 'b', 2n],
+        [1n, ':foo', 'y', ':bar', 'c', 3n],
+        [1n, ':foo', 'z', ':bar', 'd', 4n],
       ];
 
       expect(table.values()).toEqual(expectedValues);
@@ -262,23 +375,23 @@ describe('ResultTable', () => {
     it('should get values by index', () => {
       const table = new ResultTable(relation);
 
-      expect(table.get(2)).toEqual(['Int64(1)', ':foo', 'y', ':bar', 'c', 3n]);
+      expect(table.get(2)).toEqual([1n, ':foo', 'y', ':bar', 'c', 3n]);
     });
 
     it('should slice table', () => {
       const table = new ResultTable(relation);
 
       expect(table.slice(undefined, 2).values()).toEqual([
-        ['Int64(1)', ':foo', 'w', ':bar', 'a', 1n],
-        ['Int64(1)', ':foo', 'x', ':bar', 'b', 2n],
+        [1n, ':foo', 'w', ':bar', 'a', 1n],
+        [1n, ':foo', 'x', ':bar', 'b', 2n],
       ]);
       expect(table.slice(2).values()).toEqual([
-        ['Int64(1)', ':foo', 'y', ':bar', 'c', 3n],
-        ['Int64(1)', ':foo', 'z', ':bar', 'd', 4n],
+        [1n, ':foo', 'y', ':bar', 'c', 3n],
+        [1n, ':foo', 'z', ':bar', 'd', 4n],
       ]);
       expect(table.slice(1, 3).values()).toEqual([
-        ['Int64(1)', ':foo', 'x', ':bar', 'b', 2n],
-        ['Int64(1)', ':foo', 'y', ':bar', 'c', 3n],
+        [1n, ':foo', 'x', ':bar', 'b', 2n],
+        [1n, ':foo', 'y', ':bar', 'c', 3n],
       ]);
     });
 
@@ -287,8 +400,8 @@ describe('ResultTable', () => {
 
       expect(table.length).toEqual(1);
 
-      expect(table.values()).toEqual([['Int64(1)', ':foo']]);
-      expect(table.get(0)).toEqual(['Int64(1)', ':foo']);
+      expect(table.values()).toEqual([[1n, ':foo']]);
+      expect(table.get(0)).toEqual([1n, ':foo']);
     });
 
     it('should print table', () => {
@@ -300,14 +413,14 @@ describe('ResultTable', () => {
 
       // colors are making it hard to read
       // it should looks like
-      // ┌──────────────────┬──────────────┬────────┬──────────────┬──────┬───────┐
-      // │ String(Int64(1)) │ String(:foo) │ String │ String(:bar) │ Char │ Int64 │
-      // ├──────────────────┼──────────────┼────────┼──────────────┼──────┼───────┤
-      // │         Int64(1) │         :foo │      w │         :bar │    a │     1 │
-      // │         Int64(1) │         :foo │      x │         :bar │    b │     2 │
-      // │         Int64(1) │         :foo │      y │         :bar │    c │     3 │
-      // │         Int64(1) │         :foo │      z │         :bar │    d │     4 │
-      // └──────────────────┴──────────────┴────────┴──────────────┴──────┴───────┘
+      // ┌──────────┬──────────────┬────────┬──────────────┬──────┬───────┐
+      // │ Int64(1) │ String(:foo) │ String │ String(:bar) │ Char │ Int64 │
+      // ├──────────┼──────────────┼────────┼──────────────┼──────┼───────┤
+      // │        1 │         :foo │      w │         :bar │    a │     1 │
+      // │        1 │         :foo │      x │         :bar │    b │     2 │
+      // │        1 │         :foo │      y │         :bar │    c │     3 │
+      // │        1 │         :foo │      z │         :bar │    d │     4 │
+      // └──────────┴──────────────┴────────┴──────────────┴──────┴───────┘
 
       // eslint-disable-next-line no-console
       expect(console.log).toHaveBeenCalledWith(printTableSnapshot);

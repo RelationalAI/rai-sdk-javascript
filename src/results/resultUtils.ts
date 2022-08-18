@@ -329,7 +329,6 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
         return {
           type: 'Float64',
         };
-      // TODO should we throw an error here?
     }
   }
 
@@ -344,7 +343,6 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
     return mapValueType(typeDef);
   }
 
-  // TODO should we keep it or just throw an error?
   return {
     type: 'Unknown',
   };
