@@ -549,10 +549,19 @@ export function getDisplayValue(
   }
 }
 
+// TODO add unit tests
 export function getDisplayName(typeDef: RelTypeDef): string {
   switch (typeDef.type) {
     case 'ValueType': {
-      const name = typeDef.typeDefs.map(td => getDisplayName(td)).join(', ');
+      const name = typeDef.typeDefs
+        .map(td => {
+          if (td.type === 'Constant' && td.value.type === 'String') {
+            return td.value.value;
+          } else {
+            return getDisplayName(td);
+          }
+        })
+        .join(', ');
 
       return `(${name})`;
     }
