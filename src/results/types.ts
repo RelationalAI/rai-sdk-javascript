@@ -116,8 +116,7 @@ export type ConstantValue = {
 export type ValueTypeValue = {
   type: 'ValueType';
   typeDefs: RelTypeDef[];
-  // TODO fix the type, it could have nested ValueTypeValue['value'][] inside
-  value: RelBaseTypedValue['value'][];
+  value: (RelBaseTypedValue['value'] | RelBaseTypedValue['value'][])[];
 };
 
 export type StringValue = {

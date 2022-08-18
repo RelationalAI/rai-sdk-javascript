@@ -24,8 +24,7 @@ import {
 import { ResultTable } from './resultTable';
 import { tests } from './testsJson';
 
-// TODO enable this
-describe.skip('Integration Json', () => {
+describe('Integration Json', () => {
   const databaseName = `js-sdk-tests-${Date.now()}`;
   const engineName = `js-sdk-tests-${Date.now()}`;
   let client: Client;

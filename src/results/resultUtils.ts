@@ -547,7 +547,6 @@ export function getDisplayValue(
   }
 }
 
-// TODO add unit tests
 export function getDisplayName(typeDef: RelTypeDef): string {
   switch (typeDef.type) {
     case 'ValueType': {
