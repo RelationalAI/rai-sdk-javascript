@@ -247,7 +247,7 @@ export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
         } as RelTypedValue,
       };
     } else {
-      const value = unflattenContantValue(
+      const value = unflattenConstantValue(
         typeDef,
         type.constantType.value.arguments,
       );
@@ -698,7 +698,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
 type PValue = ReturnType<typeof mapPrimitiveValue>;
 type NestedPrimitiveValue = PValue | NestedPrimitiveValue[];
 
-function unflattenContantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
+function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
   const values = value.map(mapPrimitiveValue);
   const res: NestedPrimitiveValue[] = [];
 
