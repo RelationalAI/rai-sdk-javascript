@@ -21,7 +21,14 @@ import {
   getClient,
 } from '../testUtils';
 import { ResultTable } from './resultTable';
-import { tests } from './testData';
+import { getDisplayValue } from './resultUtils';
+import {
+  miscValueTypeTests,
+  specializationTests,
+  standardTypeTests,
+  valueTypeSpecializationTests,
+  valueTypeTests,
+} from './tests';
 
 describe('Integration', () => {
   const databaseName = `js-sdk-tests-${Date.now()}`;
@@ -42,18 +49,102 @@ describe('Integration', () => {
     await client.deleteDatabase(databaseName);
   });
 
-  describe('Rel to JS types', () => {
-    tests.forEach(test => {
-      const testFn = test.only ? it.only : it;
+  describe('Rel to JS standard types', () => {
+    standardTypeTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
-      testFn(`should handle ${test.type} type`, async () => {
+      testFn(`should handle ${test.name} type`, async () => {
         const result = await client.exec(databaseName, engineName, test.query);
         const table = new ResultTable(result.results[0]).sliceColumns(1);
-        const type = table.columnAt(0).typeDef.type;
+        const typeDefs = table.typeDefs();
         const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
 
-        expect(type).toEqual(test.type);
+        expect(typeDefs).toEqual(test.typeDefs);
         expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
+      });
+    });
+  });
+
+  describe('Rel to JS specialization', () => {
+    specializationTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} specialization`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDefs = table.typeDefs();
+        const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
+
+        expect(typeDefs).toEqual(test.typeDefs);
+        expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
+      });
+    });
+  });
+
+  describe('Rel to JS value types', () => {
+    valueTypeTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} in value type`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDefs = table.typeDefs();
+        const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
+
+        expect(typeDefs).toEqual(test.typeDefs);
+        expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
+      });
+    });
+  });
+
+  describe('Rel to JS value types misc', () => {
+    miscValueTypeTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} value type`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDefs = table.typeDefs();
+        const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
+
+        expect(typeDefs).toEqual(test.typeDefs);
+        expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
+      });
+    });
+  });
+
+  describe('Rel to JS value types specialization', () => {
+    valueTypeSpecializationTests.forEach(test => {
+      const testFn = test.skip ? it.skip : test.only ? it.only : it;
+
+      testFn(`should handle ${test.name} value type`, async () => {
+        const result = await client.exec(databaseName, engineName, test.query);
+        const table = new ResultTable(result.results[0]).sliceColumns(1);
+        const typeDefs = table.typeDefs();
+        const values = table.get(0);
+        const displayValues = values?.map((v, i) =>
+          getDisplayValue(typeDefs[i], v),
+        );
+
+        expect(typeDefs).toEqual(test.typeDefs);
+        expect(values).toEqual(test.values);
+        expect(displayValues).toEqual(test.displayValues);
       });
     });
   });

@@ -16,7 +16,18 @@
 
 import Decimal from 'decimal.js';
 
-import { RelTypeDef, RelTypedValue } from './types';
+import {
+  Kind,
+  PrimitiveType,
+  PrimitiveValue,
+  RelType,
+} from '../proto/generated/schema';
+import {
+  ConstantValue,
+  RelTypeDef,
+  RelTypedValue,
+  ValueTypeValue,
+} from './types';
 
 Decimal.config({ precision: 31 });
 
@@ -37,16 +48,14 @@ export function getTypeDef(type: string): RelTypeDef {
   if (type.startsWith(':')) {
     return {
       type: 'Constant',
-      name: 'Symbol',
-      value: type,
+      value: { type: 'String', value: type },
     };
   }
 
   if (type.includes('(') && !type.startsWith('(')) {
     return {
       type: 'Constant',
-      name: type,
-      value: type,
+      value: { type: 'String', value: type },
     };
   }
 
@@ -212,7 +221,130 @@ export function getTypeDef(type: string): RelTypeDef {
 
   return {
     type: 'Unknown',
-    name: type,
+  };
+}
+
+export function getTypeDefFromProtobuf(type: RelType): RelTypeDef {
+  if (
+    type.tag === Kind.CONSTANT_TYPE &&
+    type.constantType?.value &&
+    type.constantType?.relType
+  ) {
+    const typeDef = getTypeDefFromProtobuf(type.constantType.relType);
+
+    if (typeDef.type !== 'ValueType') {
+      const values = type.constantType.value.arguments.map(mapPrimitiveValue);
+      const value = convertValue(
+        typeDef,
+        values.length === 1 ? values[0] : values,
+      );
+
+      return {
+        type: 'Constant',
+        value: {
+          ...typeDef,
+          value,
+        } as RelTypedValue,
+      };
+    } else {
+      const value = unflattenConstantValue(
+        typeDef,
+        type.constantType.value.arguments,
+      );
+
+      return {
+        type: 'Constant',
+        value: {
+          ...typeDef,
+          value: convertValue(typeDef, value),
+        } as RelTypedValue,
+      };
+    }
+  }
+
+  if (type.tag === Kind.PRIMITIVE_TYPE) {
+    switch (type.primitiveType) {
+      case PrimitiveType.SYMBOL:
+      case PrimitiveType.STRING:
+        return {
+          type: 'String',
+        };
+      case PrimitiveType.CHAR:
+        return {
+          type: 'Char',
+        };
+      case PrimitiveType.BOOL:
+        return {
+          type: 'Bool',
+        };
+      case PrimitiveType.INT_8:
+        return {
+          type: 'Int8',
+        };
+      case PrimitiveType.INT_16:
+        return {
+          type: 'Int16',
+        };
+      case PrimitiveType.INT_32:
+        return {
+          type: 'Int32',
+        };
+      case PrimitiveType.INT_64:
+        return {
+          type: 'Int64',
+        };
+      case PrimitiveType.INT_128:
+        return {
+          type: 'Int128',
+        };
+      case PrimitiveType.UINT_8:
+        return {
+          type: 'UInt8',
+        };
+      case PrimitiveType.UINT_16:
+        return {
+          type: 'UInt16',
+        };
+      case PrimitiveType.UINT_32:
+        return {
+          type: 'UInt32',
+        };
+      case PrimitiveType.UINT_64:
+        return {
+          type: 'UInt64',
+        };
+      case PrimitiveType.UINT_128:
+        return {
+          type: 'UInt128',
+        };
+      case PrimitiveType.FLOAT_16:
+        return {
+          type: 'Float16',
+        };
+      case PrimitiveType.FLOAT_32:
+        return {
+          type: 'Float32',
+        };
+      case PrimitiveType.FLOAT_64:
+        return {
+          type: 'Float64',
+        };
+    }
+  }
+
+  if (type.tag === Kind.VALUE_TYPE && type.valueType) {
+    const typeDef: RelTypeDef = {
+      type: 'ValueType',
+      typeDefs: type.valueType.argumentTypes.map(t =>
+        getTypeDefFromProtobuf(t),
+      ),
+    };
+
+    return mapValueType(typeDef);
+  }
+
+  return {
+    type: 'Unknown',
   };
 }
 
@@ -297,8 +429,31 @@ export function convertValue<T extends RelTypedValue>(
         denominator: int128ToBigInt(Array.from(value[1])),
       };
     }
-    case 'Constant':
-      return typeDef.value;
+    case 'Constant': {
+      return typeDef.value.value;
+    }
+    case 'ValueType': {
+      const physicalTypeDefs = typeDef.typeDefs.filter(
+        td => td.type !== 'Constant',
+      );
+      let val = value?.toArray ? value.toArray() : value;
+
+      // wrapping inlined value type value
+      if (physicalTypeDefs.length === 1) {
+        val = [val];
+      }
+
+      let physicalIndex = -1;
+
+      return typeDef.typeDefs.map(td => {
+        if (td.type === 'Constant') {
+          return convertValue(td, null);
+        } else {
+          physicalIndex++;
+          return convertValue(td, val[physicalIndex]);
+        }
+      });
+    }
     case 'Unknown':
       return value && value.toJSON ? value.toJSON() : value;
   }
@@ -309,12 +464,12 @@ export function getDisplayValue(
   value: RelTypedValue['value'],
 ): string {
   const val = {
-    type: typeDef.type,
+    ...typeDef,
     value,
   } as RelTypedValue;
 
   if (typeDef.type === 'Constant') {
-    return typeDef.value;
+    return getDisplayValue(typeDef.value, value);
   }
 
   switch (val.type) {
@@ -338,12 +493,6 @@ export function getDisplayValue(
     case 'Millisecond':
     case 'Microsecond':
     case 'Nanosecond':
-      return val.value.toString();
-    case 'Missing':
-      return 'missing';
-    case 'FilePos':
-      return val.value.toString();
-    case 'Hash':
     case 'Int8':
     case 'Int16':
     case 'Int32':
@@ -354,7 +503,11 @@ export function getDisplayValue(
     case 'UInt32':
     case 'UInt64':
     case 'UInt128':
+    case 'FilePos':
+    case 'Hash':
       return val.value.toString();
+    case 'Missing':
+      return 'missing';
     case 'Float16':
     case 'Float32':
     case 'Float64':
@@ -370,6 +523,15 @@ export function getDisplayValue(
     case 'Rational64':
     case 'Rational128':
       return `${val.value.numerator}/${val.value.denominator}`;
+    case 'ValueType': {
+      const displayValue = val.typeDefs
+        .map((td, index) => {
+          return getDisplayValue(td, val.value[index]);
+        })
+        .join(', ');
+
+      return `(${displayValue})`;
+    }
     case 'Unknown': {
       const _value = val.value as any;
 
@@ -385,10 +547,173 @@ export function getDisplayValue(
   }
 }
 
+export function getDisplayName(typeDef: RelTypeDef): string {
+  switch (typeDef.type) {
+    case 'ValueType': {
+      const name = typeDef.typeDefs
+        .map(td => {
+          if (td.type === 'Constant' && td.value.type === 'String') {
+            return td.value.value;
+          } else {
+            return getDisplayName(td);
+          }
+        })
+        .join(', ');
+
+      return `(${name})`;
+    }
+    case 'Constant': {
+      const name = getDisplayName(typeDef.value);
+
+      return `${name}(${getDisplayValue(typeDef.value, typeDef.value.value)})`;
+    }
+    default:
+      return typeDef.type;
+  }
+}
+
 function int128ToBigInt(tuple: bigint[]) {
   return (BigInt.asIntN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
 
 function uint128ToBigInt(tuple: bigint[]) {
   return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
+}
+
+function mapPrimitiveValue(val: PrimitiveValue) {
+  switch (val.value.oneofKind) {
+    case 'stringVal':
+      return `:${new TextDecoder().decode(val.value.stringVal)}`;
+    case 'charVal':
+      return val.value.charVal;
+    case 'boolVal':
+      return val.value.boolVal;
+    case 'int8Val':
+      return val.value.int8Val;
+    case 'int16Val':
+      return val.value.int16Val;
+    case 'int32Val':
+      return val.value.int32Val;
+    case 'int64Val':
+      return val.value.int64Val;
+    case 'int128Val':
+      return [val.value.int128Val.lowbits, val.value.int128Val.highbits];
+    case 'uint8Val':
+      return val.value.uint8Val;
+    case 'uint16Val':
+      return val.value.uint16Val;
+    case 'uint32Val':
+      return val.value.uint32Val;
+    case 'uint64Val':
+      return val.value.uint64Val;
+    case 'uint128Val':
+      return [val.value.uint128Val.lowbits, val.value.uint128Val.highbits];
+    case 'float16Val':
+      return val.value.float16Val;
+    case 'float32Val':
+      return val.value.float32Val;
+    case 'float64Val':
+      return val.value.float64Val;
+  }
+
+  throw new Error('Unknown primitive value');
+}
+
+function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
+  const relNames = typeDef.typeDefs
+    .slice(0, 3)
+    .filter(
+      td => td.type === 'Constant' && td.value.type === 'String',
+    ) as ConstantValue[];
+
+  if (
+    relNames.length !== 3 ||
+    !(relNames[0].value.value === ':rel' && relNames[1].value.value === ':base')
+  ) {
+    return typeDef;
+  }
+
+  const standardValueType = (relNames[2].value.value as string).slice(1);
+
+  switch (standardValueType) {
+    case 'DateTime':
+    case 'Date':
+    case 'Year':
+    case 'Month':
+    case 'Week':
+    case 'Day':
+    case 'Hour':
+    case 'Minute':
+    case 'Second':
+    case 'Millisecond':
+    case 'Microsecond':
+    case 'Nanosecond':
+    case 'FilePos':
+    case 'Missing':
+    case 'Hash':
+      return {
+        type: standardValueType,
+      };
+    case 'FixedDecimal': {
+      if (
+        typeDef.typeDefs.length === 6 &&
+        typeDef.typeDefs[3].type === 'Constant' &&
+        typeDef.typeDefs[4].type === 'Constant'
+      ) {
+        const bits = Number(typeDef.typeDefs[3].value.value);
+        const places = Number(typeDef.typeDefs[4].value.value);
+
+        if (bits === 16 || bits === 32 || bits === 64 || bits === 128) {
+          return {
+            type: `Decimal${bits}`,
+            places: places,
+          };
+        }
+      }
+      break;
+    }
+    case 'Rational': {
+      if (typeDef.typeDefs.length === 5 && typeDef.typeDefs[3]) {
+        const tp = typeDef.typeDefs[3];
+
+        switch (tp.type) {
+          case 'Int8':
+            return { type: 'Rational8' };
+          case 'Int16':
+            return { type: 'Rational16' };
+          case 'Int32':
+            return { type: 'Rational32' };
+          case 'Int64':
+            return { type: 'Rational64' };
+          case 'Int128':
+            return { type: 'Rational128' };
+        }
+      }
+    }
+  }
+
+  return typeDef;
+}
+
+type PValue = ReturnType<typeof mapPrimitiveValue>;
+type NestedPrimitiveValue = PValue | NestedPrimitiveValue[];
+
+function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
+  const values = value.map(mapPrimitiveValue);
+  const res: NestedPrimitiveValue[] = [];
+
+  const walk = (typeDef: RelTypeDef, result: any[]) => {
+    if (typeDef.type === 'ValueType') {
+      const r: any[] = [];
+      result.push(r);
+
+      typeDef.typeDefs.forEach(td => walk(td, r));
+    } else if (typeDef.type !== 'Constant') {
+      result.push(values.splice(0, 1)[0]);
+    }
+  };
+
+  walk(typeDef, res);
+
+  return res[0];
 }

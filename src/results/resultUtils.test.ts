@@ -14,8 +14,13 @@
  * under the License.
  */
 
-import { convertValue, getDisplayValue, getTypeDef } from './resultUtils';
-import { tests } from './testData';
+import {
+  convertValue,
+  getDisplayName,
+  getDisplayValue,
+  getTypeDef,
+} from './resultUtils';
+import { tests } from './testsJson';
 
 describe('resultUtils', () => {
   describe('getTypeDef', () => {
@@ -67,6 +72,82 @@ describe('resultUtils', () => {
 
         expect(displayValues).toEqual(test.displayValues);
       });
+    });
+  });
+
+  describe('getDisplayName', () => {
+    it('should get display name for Int64 type def', () => {
+      expect(getDisplayName({ type: 'Int64' })).toEqual('Int64');
+    });
+
+    it('should get display name for string constant type def', () => {
+      expect(
+        getDisplayName({
+          type: 'Constant',
+          value: { type: 'String', value: ':foo' },
+        }),
+      ).toEqual('String(:foo)');
+    });
+
+    it('should get display name for rational constant type def', () => {
+      expect(
+        getDisplayName({
+          type: 'Constant',
+          value: {
+            type: 'Rational32',
+            value: { numerator: 1, denominator: 2 },
+          },
+        }),
+      ).toEqual('Rational32(1/2)');
+    });
+
+    it('should get display name for value type type def', () => {
+      expect(
+        getDisplayName({
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+          ],
+        }),
+      ).toEqual('(:MyType, Int64)');
+    });
+
+    it('should get display name for nested value type type def', () => {
+      expect(
+        getDisplayName({
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'ValueType',
+              typeDefs: [
+                {
+                  type: 'Constant',
+                  value: { type: 'String', value: ':InnerType' },
+                },
+                {
+                  type: 'Int64',
+                },
+                {
+                  type: 'String',
+                },
+              ],
+            },
+            {
+              type: 'Int64',
+            },
+          ],
+        }),
+      ).toEqual('(:MyType, (:InnerType, Int64, String), Int64)');
     });
   });
 });

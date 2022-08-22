@@ -18,8 +18,15 @@ import { StructRowProxy, Table } from 'apache-arrow';
 import { Table as PrintTable } from 'console-table-printer';
 
 import { ArrowRelation } from '../api/transaction/types';
-import { convertValue, getDisplayValue, getTypeDef } from './resultUtils';
-import { ConstantValue, RelTypeDef, RelTypedValue } from './types';
+import { Kind, PrimitiveType, RelType } from '../proto/generated/schema';
+import {
+  convertValue,
+  getDisplayName,
+  getDisplayValue,
+  getTypeDef,
+  getTypeDefFromProtobuf,
+} from './resultUtils';
+import { RelTypeDef, RelTypedValue } from './types';
 
 export interface ResultColumn {
   /**
@@ -67,6 +74,7 @@ interface IteratorOf<T> {
 
 type ColumnDef = {
   typeDef: RelTypeDef;
+  metadata: RelType;
   arrowIndex?: number;
 };
 
@@ -92,14 +100,30 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   constructor(private relation: ArrowRelation) {
     this.table = relation.table;
 
-    const types = relation.relationId.split('/').filter(x => x);
+    const isProtoMetadataAvailable = !!relation.metadata.arguments.filter(
+      t => t.tag !== Kind.UNSPECIFIED_KIND,
+    ).length;
+    const types = !isProtoMetadataAvailable
+      ? relation.relationId.split('/').filter(x => x)
+      : relation.metadata.arguments;
 
     let arrowIndex = 0;
 
     this.colDefs = types.map(t => {
-      const typeDef = getTypeDef(t);
+      const typeDef =
+        typeof t === 'string' ? getTypeDef(t) : getTypeDefFromProtobuf(t);
 
-      const colDef: ColumnDef = { typeDef };
+      const colDef: ColumnDef = {
+        typeDef,
+        metadata:
+          typeof t === 'object'
+            ? t
+            : // TODO get rid of it when removing JSON metadata based implementation
+              {
+                tag: Kind.UNSPECIFIED_KIND,
+                primitiveType: PrimitiveType.UNSPECIFIED_TYPE,
+              },
+      };
 
       if (typeDef.type !== 'Constant') {
         colDef.arrowIndex = arrowIndex;
@@ -168,7 +192,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       *[Symbol.iterator]() {
         if (colDef.typeDef.type === 'Constant') {
           for (let i = 0; i < length; i++) {
-            yield colDef.typeDef.value;
+            yield convertValue(colDef.typeDef, null);
           }
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -192,7 +216,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
         }
 
         if (colDef.typeDef.type === 'Constant') {
-          return colDef.typeDef.value;
+          return convertValue(colDef.typeDef, null);
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const arrowColumn = table.getChildAt(colDef.arrowIndex!)!;
@@ -233,7 +257,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: `/${relationId}`,
       table: slicedTable,
-      metadata: this.relation.metadata,
+      metadata: { arguments: newColDefs.map(cd => cd.metadata) },
     });
   }
 
@@ -284,7 +308,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   get(index: number) {
     if (isFullySpecialized(this.colDefs) && index === 0) {
       return this.colDefs.map(c => {
-        return (c.typeDef as ConstantValue).value;
+        return convertValue(c.typeDef, null);
       });
     }
 
@@ -322,7 +346,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     const pTable = new PrintTable({
       columns: this.colDefs.map((colDef, i) => ({
         name: i.toString(),
-        title: colDef.typeDef.name || colDef.typeDef.type,
+        title: getDisplayName(colDef.typeDef),
       })),
     });
 
@@ -355,7 +379,11 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
     return new ResultTable({
       relationId: `/${relationId}`,
       table: this.table,
-      metadata: this.relation.metadata,
+      metadata: {
+        arguments: this.colDefs
+          .filter(cd => cd.typeDef.type !== 'Constant')
+          .map(cd => cd.metadata),
+      },
     });
   }
 
@@ -373,7 +401,7 @@ function arrowRowToValues(arrowRow: StructRowProxy, colDefs: ColumnDef[]) {
   const arr = arrowRow.toArray();
   const row = colDefs.map(colDef => {
     if (colDef.typeDef.type === 'Constant') {
-      return colDef.typeDef.value;
+      return convertValue(colDef.typeDef, null);
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return convertValue(colDef.typeDef, arr[colDef.arrowIndex!]);

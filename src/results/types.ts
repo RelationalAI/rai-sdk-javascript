@@ -16,10 +16,26 @@
 
 import Decimal from 'decimal.js';
 
-export type RelTypedValue =
+export type RelPrimitiveTypedValue =
   | StringValue
   | BoolValue
   | CharValue
+  | Int8Value
+  | Int16Value
+  | Int32Value
+  | Int64Value
+  | Int128Value
+  | UInt8Value
+  | UInt16Value
+  | UInt32Value
+  | UInt64Value
+  | UInt128Value
+  | Float16Value
+  | Float32Value
+  | Float64Value;
+
+export type RelBaseTypedValue =
+  | RelPrimitiveTypedValue
   | DateTimeValue
   | DateValue
   | YearValue
@@ -35,19 +51,6 @@ export type RelTypedValue =
   | HashValue
   | MissingValue
   | FilePosValue
-  | Int8Value
-  | Int16Value
-  | Int32Value
-  | Int64Value
-  | Int128Value
-  | UInt8Value
-  | UInt16Value
-  | UInt32Value
-  | UInt64Value
-  | UInt128Value
-  | Float16Value
-  | Float32Value
-  | Float64Value
   | Decimal16Value
   | Decimal32Value
   | Decimal64Value
@@ -56,10 +59,11 @@ export type RelTypedValue =
   | Rational16Value
   | Rational32Value
   | Rational64Value
-  | Rational128Value
-  | UnknownType;
+  | Rational128Value;
 
-export type RelTypeDef = (
+export type RelTypedValue = RelBaseTypedValue | ValueTypeValue | UnknownType;
+
+export type RelTypeDef =
   | Omit<StringValue, 'value'>
   | Omit<BoolValue, 'value'>
   | Omit<CharValue, 'value'>
@@ -100,15 +104,19 @@ export type RelTypeDef = (
   | Omit<Rational32Value, 'value'>
   | Omit<Rational64Value, 'value'>
   | Omit<Rational128Value, 'value'>
-  | Omit<UnknownType, 'value'>
   | ConstantValue
-) & { name?: string };
+  | Omit<ValueTypeValue, 'value'>
+  | Omit<UnknownType, 'value'>;
 
 export type ConstantValue = {
   type: 'Constant';
-  name: string;
-  // TODO value shouldn't be restricted to strings, just JSON metadata restriction
-  value: string;
+  value: RelTypedValue;
+};
+
+export type ValueTypeValue = {
+  type: 'ValueType';
+  typeDefs: RelTypeDef[];
+  value: (RelBaseTypedValue['value'] | RelBaseTypedValue['value'][])[];
 };
 
 export type StringValue = {
@@ -330,7 +338,7 @@ export type Rational128Value = {
   };
 };
 
-// TODO: should add seprated type for Value Types
+// TODO: should be removed with JSON based metadata implementation?
 export type UnknownType = {
   type: 'Unknown';
   value: Record<string, any>;
