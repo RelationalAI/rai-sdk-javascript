@@ -527,13 +527,15 @@ export function getDisplayValue(
     case 'Rational128':
       return `${val.value.numerator}/${val.value.denominator}`;
     case 'ValueType': {
-      const displayValue = val.typeDefs
+      const constructor = (val.value[0] as string).slice(1);
+      const displayValues = val.typeDefs
+        .slice(1)
         .map((td, index) => {
-          return getDisplayValue(td, val.value[index]);
+          return getDisplayValue(td, val.value[index + 1]);
         })
         .join(', ');
 
-      return `(${displayValue})`;
+      return `^${constructor}[${displayValues}]`;
     }
     case 'Unknown': {
       const _value = val.value as any;
