@@ -395,6 +395,52 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
   arrow() {
     return this.table;
   }
+
+  /**
+   * Return a Rel literal representation of this result table.
+   *
+   * @returns String
+   */
+  toRelLiteral(): string {
+    if (this.length === 0) {
+      return '{}';
+    }
+
+    const typeDefs = this.typeDefs();
+
+    return (
+      '{\n' +
+      this.values()
+        .map(row => {
+          const rel = row
+            .map((val: RelTypedValue['value'], index: number) => {
+              const typeDef = typeDefs[index];
+
+              switch (typeDef.type) {
+                case 'Constant': {
+                  switch (typeDef.value.type) {
+                    case 'String': {
+                      return val;
+                    }
+                    case 'Int64':
+                      return `#(${val})`;
+                  }
+                  break;
+                }
+                case 'String':
+                  return `"${val}"`;
+                case 'Int64':
+                  return val?.toString();
+              }
+            })
+            .join(', ');
+
+          return `(${rel})`;
+        })
+        .join(';\n') +
+      '\n}'
+    );
+  }
 }
 
 function arrowRowToValues(arrowRow: StructRowProxy, colDefs: ColumnDef[]) {
