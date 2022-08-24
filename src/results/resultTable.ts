@@ -409,7 +409,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
         const tuple = row
           .map((val: RelTypedValue['value'], index: number) => {
             const typeDef = typeDefs[index];
-            return getDisplayValue(typeDef, val);
+            return getDisplayValue(typeDef, val, true);
           })
           .join(', ');
 
