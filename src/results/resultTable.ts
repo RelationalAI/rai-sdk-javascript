@@ -412,7 +412,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
       '{\n' +
       this.values()
         .map(row => {
-          const rel = row
+          const tuple = row
             .map((val: RelTypedValue['value'], index: number) => {
               const typeDef = typeDefs[index];
 
@@ -435,7 +435,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
             })
             .join(', ');
 
-          return `(${rel})`;
+          return `  (${tuple})`;
         })
         .join(';\n') +
       '\n}'
