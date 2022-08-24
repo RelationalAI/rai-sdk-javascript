@@ -38,9 +38,11 @@ async function run(
     tags,
   );
 
-  result.results
-    .map(rel => new ResultTable(rel))
-    .forEach(resultTable => console.log(resultTable.toRelLiteral()));
+  const literal =
+    '{\n' +
+    result.results.map(rel => new ResultTable(rel).toRelLiteral()).join(';\n') +
+    '\n}';
+  console.log(literal);
 }
 
 (async () => {

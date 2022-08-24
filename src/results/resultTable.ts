@@ -402,44 +402,20 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * @returns String
    */
   toRelLiteral(): string {
-    if (this.length === 0) {
-      return '{}';
-    }
-
     const typeDefs = this.typeDefs();
 
-    return (
-      '{\n' +
-      this.values()
-        .map(row => {
-          const tuple = row
-            .map((val: RelTypedValue['value'], index: number) => {
-              const typeDef = typeDefs[index];
+    return this.values()
+      .map(row => {
+        const tuple = row
+          .map((val: RelTypedValue['value'], index: number) => {
+            const typeDef = typeDefs[index];
+            return getDisplayValue(typeDef, val);
+          })
+          .join(', ');
 
-              switch (typeDef.type) {
-                case 'Constant': {
-                  switch (typeDef.value.type) {
-                    case 'String': {
-                      return val;
-                    }
-                    case 'Int64':
-                      return `#(${val})`;
-                  }
-                  break;
-                }
-                case 'String':
-                  return `"${val}"`;
-                case 'Int64':
-                  return val?.toString();
-              }
-            })
-            .join(', ');
-
-          return `  (${tuple})`;
-        })
-        .join(';\n') +
-      '\n}'
-    );
+        return `  (${tuple})`;
+      })
+      .join(';\n');
   }
 }
 
