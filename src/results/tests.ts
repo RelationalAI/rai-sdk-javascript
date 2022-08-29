@@ -2661,27 +2661,38 @@ export const valueTypeSpecializationTests: Test[] = [
     skip: true,
   },
   {
-    name: 'Int',
+    name: 'String',
     query: `
-      value type MyType = Int
-      def v = ^MyType[123]
+      value type MyType = Int, String
+      def v = ^MyType[1, "abc"]
       def output = #(v)
     `,
     typeDefs: [
       {
-        type: 'Constant',
-        value: { type: 'Int64', value: 123n },
+        type: 'ValueType',
+        typeDefs: [
+          {
+            type: 'Constant',
+            value: { type: 'String', value: ':MyType' },
+          },
+          {
+            type: 'Int64',
+          },
+          {
+            type: 'String',
+          },
+        ],
       },
     ],
-    values: [':MyType', 123n],
-    displayValues: ['(:MyType, 123)'],
+    values: [[':MyType', 1n, 'abc']],
+    displayValues: ['(:MyType, 1, abc)'],
     skip: true,
   },
   {
-    name: 'Int, Int',
+    name: 'Bool',
     query: `
-      value type MyType = Int, Int
-      def v = ^MyType[123, 456]
+      value type MyType = Int, Boolean
+      def v = ^MyType[1, boolean_false]
       def output = #(v)
     `,
     typeDefs: [
@@ -2689,13 +2700,1332 @@ export const valueTypeSpecializationTests: Test[] = [
         type: 'Constant',
         value: {
           type: 'ValueType',
-          typeDefs: [{ type: 'Int64' }, { type: 'Int64' }],
-          value: [123n, 456n],
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Bool',
+            },
+          ],
+          value: [':MyType', 1n, false],
         },
       },
     ],
-    values: [[':MyType', 123n, 456n]],
-    displayValues: ['(:MyType, 123, 456)'],
+    values: [[':MyType', 1n, false]],
+    displayValues: ['(:MyType, 1, false)'],
+    skip: true,
+  },
+  {
+    name: 'Char',
+    query: `
+      value type MyType = Int, Char
+      def v = ^MyType[1, '👍']
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Char',
+            },
+          ],
+          value: [':MyType', 1n, '👍'],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, '👍']],
+    displayValues: ['(:MyType, 1, 👍)'],
+    skip: true,
+  },
+  {
+    name: 'DateTime',
+    query: `
+      value type MyType = Int, DateTime
+      def v = ^MyType[1, 2021-10-12T01:22:31+10:00]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'DateTime',
+            },
+          ],
+          value: [':MyType', 1n, new Date('2021-10-11T15:22:31.000Z')],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, new Date('2021-10-11T15:22:31.000Z')]],
+    displayValues: ['(:MyType, 1, 2021-10-11T15:22:31.000Z)'],
+    skip: true,
+  },
+  {
+    name: 'Date',
+    query: `
+      value type MyType = Int, Date
+      def v = ^MyType[1, 2021-10-12]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Date',
+            },
+          ],
+          value: [':MyType', 1n, new Date('2021-10-12')],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, new Date('2021-10-12')]],
+    displayValues: ['(:MyType, 1, 2021-10-12)'],
+    skip: true,
+  },
+  {
+    name: 'Year',
+    query: `
+      value type MyType = Int, is_Year
+      def v = ^MyType[1, Year[2022]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Year',
+            },
+          ],
+          value: [':MyType', 1n, 2022n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2022n]],
+    displayValues: ['(:MyType, 1, 2022)'],
+    skip: true,
+  },
+  {
+    name: 'Month',
+    query: `
+      value type MyType = Int, is_Month
+      def v = ^MyType[1, Month[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Month',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Week',
+    query: `
+      value type MyType = Int, is_Week
+      def v = ^MyType[1, Week[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Week',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Day',
+    query: `
+      value type MyType = Int, is_Day
+      def v = ^MyType[1, Day[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Day',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Hour',
+    query: `
+      value type MyType = Int, is_Hour
+      def v = ^MyType[1, Hour[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Hour',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Minute',
+    query: `
+      value type MyType = Int, is_Minute
+      def v = ^MyType[1, Minute[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Minute',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Second',
+    query: `
+      value type MyType = Int, is_Second
+      def v = ^MyType[1, Second[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Second',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Millisecond',
+    query: `
+      value type MyType = Int, is_Millisecond
+      def v = ^MyType[1, Millisecond[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Millisecond',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Microsecond',
+    query: `
+      value type MyType = Int, is_Microsecond
+      def v = ^MyType[1, Microsecond[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Microsecond',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Nanosecond',
+    query: `
+      value type MyType = Int, is_Nanosecond
+      def v = ^MyType[1, Nanosecond[2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Nanosecond',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Hash',
+    query: `
+      value type MyType = Int, Hash
+      def h(x) = hash128["abc", _, x]
+      def v = ^MyType[1, h]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Hash',
+            },
+          ],
+          value: [':MyType', 1n, 59005302613613978016770438099762432572n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 59005302613613978016770438099762432572n]],
+    displayValues: ['(:MyType, 1, 59005302613613978016770438099762432572)'],
+    skip: true,
+  },
+  {
+    name: 'Missing',
+    query: `
+      value type MyType = Int, Missing
+      def v = ^MyType[1, missing]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Missing',
+            },
+          ],
+          value: [':MyType', 1n, null],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, null]],
+    displayValues: ['(:MyType, 1, missing)'],
+    skip: true,
+  },
+  {
+    name: 'FilePos',
+    query: `
+      def config:data="""
+      a,b,c
+      1,2,3
+      """
+      
+      def csv = load_csv[config]
+      def f(p) = csv(_, p, _)
+      value type MyType = Int, FilePos
+      def v = ^MyType[1, f]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'FilePos',
+            },
+          ],
+          value: [':MyType', 1n, 2n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 2n]],
+    displayValues: ['(:MyType, 1, 2)'],
+    skip: true,
+  },
+  {
+    name: 'Int8',
+    query: `
+      value type MyType = Int, SignedInt[8]
+      def v = ^MyType[1, int[8, -12]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Int8',
+            },
+          ],
+          value: [':MyType', 1n, -12],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, -12]],
+    displayValues: ['(:MyType, 1, -12)'],
+    skip: true,
+  },
+  {
+    name: 'Int16',
+    query: `
+      value type MyType = Int, SignedInt[16]
+      def v = ^MyType[1, int[16, -123]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Int16',
+            },
+          ],
+          value: [':MyType', 1n, -123],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, -123]],
+    displayValues: ['(:MyType, 1, -123)'],
+    skip: true,
+  },
+  {
+    name: 'Int32',
+    query: `
+      value type MyType = Int, SignedInt[32]
+      def v = ^MyType[1, int[32, -1234]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Int32',
+            },
+          ],
+          value: [':MyType', 1n, -1234],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, -1234]],
+    displayValues: ['(:MyType, 1, -1234)'],
+    skip: true,
+  },
+  {
+    name: 'Int64',
+    query: `
+      value type MyType = Int, SignedInt[64]
+      def v = ^MyType[1, int[64, -12345]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Int64',
+            },
+          ],
+          value: [':MyType', 1n, -12345n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, -12345n]],
+    displayValues: ['(:MyType, 1, -12345)'],
+    skip: true,
+  },
+  {
+    name: 'Int128',
+    query: `
+      value type MyType = Int, SignedInt[128]
+      def v = ^MyType[1, int[128, 123456789101112131415]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Int128',
+            },
+          ],
+          value: [':MyType', 1n, 123456789101112131415n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 123456789101112131415n]],
+    displayValues: ['(:MyType, 1, 123456789101112131415)'],
+    skip: true,
+  },
+  {
+    name: 'UInt8',
+    query: `
+      value type MyType = Int, UnsignedInt[8]
+      def v = ^MyType[1, uint[8, 12]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'UInt8',
+            },
+          ],
+          value: [':MyType', 1n, 12],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 12]],
+    displayValues: ['(:MyType, 1, 12)'],
+    skip: true,
+  },
+  {
+    name: 'UInt16',
+    query: `
+      value type MyType = Int, UnsignedInt[16]
+      def v = ^MyType[1, uint[16, 123]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'UInt16',
+            },
+          ],
+          value: [':MyType', 1n, 123],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 123]],
+    displayValues: ['(:MyType, 1, 123)'],
+    skip: true,
+  },
+  {
+    name: 'UInt32',
+    query: `
+      value type MyType = Int, UnsignedInt[32]
+      def v = ^MyType[1, uint[32, 1234]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'UInt32',
+            },
+          ],
+          value: [':MyType', 1n, 1234],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 1234]],
+    displayValues: ['(:MyType, 1, 1234)'],
+    skip: true,
+  },
+  {
+    name: 'UInt64',
+    query: `
+      value type MyType = Int, UnsignedInt[64]
+      def v = ^MyType[1, uint[64, 12345]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'UInt64',
+            },
+          ],
+          value: [':MyType', 1n, 12345n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 12345n]],
+    displayValues: ['(:MyType, 1, 12345)'],
+    skip: true,
+  },
+  {
+    name: 'UInt128',
+    query: `
+      value type MyType = Int, UnsignedInt[128]
+      def v = ^MyType[1, uint[128, 123456789101112131415]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'UInt128',
+            },
+          ],
+          value: [':MyType', 1n, 123456789101112131415n],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 123456789101112131415n]],
+    displayValues: ['(:MyType, 1, 123456789101112131415)'],
+    skip: true,
+  },
+  {
+    name: 'Float16',
+    query: `
+      value type MyType = Int, Floating[16]
+      def v = ^MyType[1, float[16, 42.5]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Float16',
+            },
+          ],
+          value: [':MyType', 1n, 42.5],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 42.5]],
+    displayValues: ['(:MyType, 1, 42.5)'],
+    skip: true,
+  },
+  {
+    name: 'Float32',
+    query: `
+      value type MyType = Int, Floating[32]
+      def v = ^MyType[1, float[32, 42.5]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Float32',
+            },
+          ],
+          value: [':MyType', 1n, 42.5],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 42.5]],
+    displayValues: ['(:MyType, 1, 42.5)'],
+    skip: true,
+  },
+  {
+    name: 'Float64',
+    query: `
+      value type MyType = Int, Floating[64]
+      def v = ^MyType[1, float[64, 42.5]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Float64',
+            },
+          ],
+          value: [':MyType', 1n, 42.5],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, 42.5]],
+    displayValues: ['(:MyType, 1, 42.5)'],
+    skip: true,
+  },
+  {
+    name: 'Decimal16',
+    query: `
+      value type MyType = Int, FixedDecimal[16, 2]
+      def v = ^MyType[1, parse_decimal[16, 2, "12.34"]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Decimal16',
+              places: 2,
+            },
+          ],
+          value: [':MyType', 1n, new Decimal('12.34')],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:MyType, 1, 12.34)'],
+    skip: true,
+  },
+  {
+    name: 'Decimal32',
+    query: `
+      value type MyType = Int, FixedDecimal[32, 2]
+      def v = ^MyType[1, parse_decimal[32, 2, "12.34"]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Decimal32',
+              places: 2,
+            },
+          ],
+          value: [':MyType', 1n, new Decimal('12.34')],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:MyType, 1, 12.34)'],
+    skip: true,
+  },
+  {
+    name: 'Decimal64',
+    query: `
+      value type MyType = Int, FixedDecimal[64, 2]
+      def v = ^MyType[1, parse_decimal[64, 2, "12.34"]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Decimal64',
+              places: 2,
+            },
+          ],
+          value: [':MyType', 1n, new Decimal('12.34')],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:MyType, 1, 12.34)'],
+    skip: true,
+  },
+  {
+    name: 'Decimal128',
+    query: `
+      value type MyType = Int, FixedDecimal[128, 2]
+      def v = ^MyType[1, parse_decimal[128, 2, "12345678901011121314.34"]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Decimal128',
+              places: 2,
+            },
+          ],
+          value: [':MyType', 1n, new Decimal('12345678901011121314.34')],
+        },
+      },
+    ],
+    values: [[':MyType', 1n, new Decimal('12345678901011121314.34')]],
+    displayValues: ['(:MyType, 1, 12345678901011121314.34)'],
+    skip: true,
+  },
+  {
+    name: 'Rational8',
+    query: `
+      value type MyType = Int, Rational[8]
+      def v = ^MyType[1, rational[8, 1, 2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Rational8',
+            },
+          ],
+          value: [
+            ':MyType',
+            1n,
+            {
+              numerator: 1,
+              denominator: 2,
+            },
+          ],
+        },
+      },
+    ],
+    values: [
+      [
+        ':MyType',
+        1n,
+        {
+          numerator: 1,
+          denominator: 2,
+        },
+      ],
+    ],
+    displayValues: ['(:MyType, 1, 1/2)'],
+    skip: true,
+  },
+  {
+    name: 'Rational16',
+    query: `
+      value type MyType = Int, Rational[16]
+      def v = ^MyType[1, rational[16, 1, 2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Rational16',
+            },
+          ],
+          value: [
+            ':MyType',
+            1n,
+            {
+              numerator: 1,
+              denominator: 2,
+            },
+          ],
+        },
+      },
+    ],
+    values: [
+      [
+        ':MyType',
+        1n,
+        {
+          numerator: 1,
+          denominator: 2,
+        },
+      ],
+    ],
+    displayValues: ['(:MyType, 1, 1/2)'],
+    skip: true,
+  },
+  {
+    name: 'Rational32',
+    query: `
+      value type MyType = Int, Rational[32]
+      def v = ^MyType[1, rational[32, 1, 2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Rational32',
+            },
+          ],
+          value: [
+            ':MyType',
+            1n,
+            {
+              numerator: 1,
+              denominator: 2,
+            },
+          ],
+        },
+      },
+    ],
+    values: [
+      [
+        ':MyType',
+        1n,
+        {
+          numerator: 1,
+          denominator: 2,
+        },
+      ],
+    ],
+    displayValues: ['(:MyType, 1, 1/2)'],
+    skip: true,
+  },
+  {
+    name: 'Rational64',
+    query: `
+      value type MyType = Int, Rational[64]
+      def v = ^MyType[1, rational[64, 1, 2]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Rational64',
+            },
+          ],
+          value: [
+            ':MyType',
+            1n,
+            {
+              numerator: 1n,
+              denominator: 2n,
+            },
+          ],
+        },
+      },
+    ],
+    values: [
+      [
+        ':MyType',
+        1n,
+        {
+          numerator: 1n,
+          denominator: 2n,
+        },
+      ],
+    ],
+    displayValues: ['(:MyType, 1, 1/2)'],
+    skip: true,
+  },
+  {
+    name: 'Rational128',
+    query: `
+      value type MyType = Int, Rational[128]
+      def v = ^MyType[1, rational[128, 123456789101112313, 9123456789101112313]]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Rational128',
+            },
+          ],
+          value: [
+            ':MyType',
+            1n,
+            {
+              numerator: 123456789101112313n,
+              denominator: 9123456789101112313n,
+            },
+          ],
+        },
+      },
+    ],
+    values: [
+      [
+        ':MyType',
+        1n,
+        {
+          numerator: 123456789101112313n,
+          denominator: 9123456789101112313n,
+        },
+      ],
+    ],
+    displayValues: ['(:MyType, 1, 123456789101112313/9123456789101112313)'],
     skip: true,
   },
 ];

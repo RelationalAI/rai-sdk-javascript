@@ -703,13 +703,27 @@ function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
   const res: NestedPrimitiveValue[] = [];
 
   const walk = (typeDef: RelTypeDef, result: any[]) => {
-    if (typeDef.type === 'ValueType') {
-      const r: any[] = [];
-      result.push(r);
+    switch (typeDef.type) {
+      case 'ValueType': {
+        const r: any[] = [];
+        result.push(r);
 
-      typeDef.typeDefs.forEach(td => walk(td, r));
-    } else if (typeDef.type !== 'Constant') {
-      result.push(values.splice(0, 1)[0]);
+        typeDef.typeDefs.forEach(td => walk(td, r));
+        break;
+      }
+      case 'Rational8':
+      case 'Rational16':
+      case 'Rational32':
+      case 'Rational64':
+      case 'Rational128':
+        // Rationals take 2 values
+        result.push(values.splice(0, 2));
+        break;
+      default: {
+        if (typeDef.type !== 'Constant') {
+          result.push(values.splice(0, 1)[0]);
+        }
+      }
     }
   };
 
