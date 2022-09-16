@@ -93,7 +93,10 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     await new Promise<void>((resolve, reject) => {
       const checkState = () => {
         setTimeout(async () => {
-          transaction = await this.getTransaction(txnId);
+          try {
+            transaction = await this.getTransaction(txnId);
+            // eslint-disable-next-line no-empty
+          } catch {}
 
           if (isTransactionDone(transaction.state)) {
             resolve();
