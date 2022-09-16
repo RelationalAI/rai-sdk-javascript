@@ -38,7 +38,7 @@ async function run(
 
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.installModels(database, engine, [model], true);
+  const result = await client.installModels(database, engine, [model]);
 
   show(result);
 }
