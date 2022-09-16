@@ -17,7 +17,7 @@
 import { Command } from 'commander';
 
 import { Client, readConfig } from '../index.node';
-import { show } from './show';
+import { showTransactionResult } from './show';
 
 async function run(
   database: string,
@@ -29,7 +29,7 @@ async function run(
   const client = new Client(config);
   const result = await client.deleteModel(database, engine, name);
 
-  show(result);
+  showTransactionResult(result);
 }
 
 (async () => {
