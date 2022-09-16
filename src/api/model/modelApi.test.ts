@@ -51,7 +51,7 @@ describe('ModelApi', () => {
         tags: [],
       })
       .reply(200, response);
-    const result = await api.installModels(database, engine, models, true);
+    const result = await api.installModelsAsync(database, engine, models);
 
     scope.done();
 
@@ -73,7 +73,7 @@ describe('ModelApi', () => {
         tags: [],
       })
       .reply(200, response);
-    const result = await api.deleteModel(database, engine, 'test1', true);
+    const result = await api.deleteModelAsync(database, engine, 'test1');
 
     scope.done();
 

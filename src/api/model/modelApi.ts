@@ -17,68 +17,67 @@
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
-  async installModels(
-    database: string,
-    engine: string,
-    models: Model[],
-    async = false,
-  ) {
+  async installModels(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
       return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
     });
 
-    const rsp = async
-      ? await this.execAsync(database, engine, queries.join('\n'), [], false)
-      : await this.exec(database, engine, queries.join('\n'), [], false);
+    return await this.exec(database, engine, queries.join('\n'), [], false);
+  }
 
-    return rsp;
+  async installModelsAsync(database: string, engine: string, models: Model[]) {
+    const queries = models.map(model => {
+      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
+    });
+
+    return this.execAsync(database, engine, queries.join('\n'), [], false);
   }
 
   async listModels(database: string, engine: string) {
-    const rsp = await this.exec(
+    let rsp = await this.exec(
       database,
       engine,
-      'def output = rel:catalog:model',
+      'def output:__models__ = rel:catalog:model',
     );
 
-    return rsp.results.map(result => {
-      return result.table.toArray().map(model => {
-        return { modelName: model.v1, src: model.v2 };
+    const models = rsp.results.map(result => {
+      return result.table.toArray().map(col => {
+        return { name: col.v1, value: col.v2 } as Model;
       });
-    });
+    })[0];
+
+    // dummy query to get problems
+    rsp = await this.exec(database, engine, 'def output = 1');
+    return { models: models, diagnostics: rsp.problems };
   }
 
   async getModel(database: string, engine: string, name: string) {
     const rsp = await this.exec(
       database,
       engine,
-      `def output = rel:catalog:model["${name}"]`,
+      `def output:__model__ = rel:catalog:model["${name}"]`,
     );
 
-    const src = rsp.results.map(result => {
-      return result.table.toArray().map(model => {
-        return model.v1;
+    const value = rsp.results.map(result => {
+      return result.table.toArray().map(col => {
+        return col.v1;
       });
     });
 
-    if (src.length == 0) {
+    if (value.length == 0) {
       throw new Error(`Model '${name}' not found`);
     }
 
-    return { modelName: name, src: src[0][0] };
+    return { name: name, value: value[0][0] } as Model;
   }
 
-  async deleteModel(
-    database: string,
-    engine: string,
-    name: string,
-    async = false,
-  ) {
+  async deleteModel(database: string, engine: string, name: string) {
     const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`;
-    const rsp = async
-      ? await this.execAsync(database, engine, query, [], false)
-      : await this.exec(database, engine, query, [], false);
+    return await this.exec(database, engine, query, [], false);
+  }
 
-    return rsp;
+  async deleteModelAsync(database: string, engine: string, name: string) {
+    const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`;
+    return this.execAsync(database, engine, query, [], false);
   }
 }
