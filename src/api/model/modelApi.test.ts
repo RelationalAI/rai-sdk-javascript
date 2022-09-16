@@ -35,44 +35,48 @@ describe('ModelApi', () => {
   afterAll(() => nock.restore());
 
   it('should insert models', async () => {
-    const response = mockTransaction.transaction;
+    const queries = [
+      'def insert:rel:catalog:model["test1"] = """def foo = :bar"""',
+    ];
     const models = [{ name: 'test1', value: 'def foo = :bar', type: 'rel' }];
-    const payload = {
-      dbname: database,
-      engine_name: engine,
-      query: 'def insert:rel:catalog:model["test1"] = "def foo = :bar"',
-      nowait_durable: false,
-      readonly: true,
-      v1_inputs: [],
-      tags: [],
-    };
-
-    const scope = nock(baseUrl).post(path, payload).reply(200, response);
-    const result = api.installModels(database, engine, models, true);
+    const response = mockTransaction.transaction;
+    const scope = nock(baseUrl)
+      .post(path, {
+        dbname: database,
+        engine_name: engine,
+        query: queries.join('\n'),
+        nowait_durable: false,
+        readonly: false,
+        v1_inputs: [],
+        tags: [],
+      })
+      .reply(200, response);
+    const result = await api.installModels(database, engine, models, true);
 
     scope.done();
 
-    expect(result).toEqual(response);
+    expect(result).toEqual(mockTransaction);
   });
 
   it('should delete model', async () => {
+    const query =
+      'def delete:rel:catalog:model["test1"] = rel:catalog:model["test1"]';
     const response = mockTransaction.transaction;
-    const payload = {
-      dbname: database,
-      engine_name: engine,
-      query:
-        'def delete:rel:catalog:model["test1"] = rel:catalog:model["test1"]',
-      nowait_durable: false,
-      readonly: true,
-      v1_inputs: [],
-      tags: [],
-    };
-
-    const scope = nock(baseUrl).post(path, payload).reply(200, response);
-    const result = api.deleteModel(database, engine, 'test1', true);
+    const scope = nock(baseUrl)
+      .post(path, {
+        dbname: database,
+        engine_name: engine,
+        query: query,
+        nowait_durable: false,
+        readonly: false,
+        v1_inputs: [],
+        tags: [],
+      })
+      .reply(200, response);
+    const result = await api.deleteModel(database, engine, 'test1', true);
 
     scope.done();
 
-    expect(result).toEqual(response);
+    expect(result).toEqual(mockTransaction);
   });
 });

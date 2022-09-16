@@ -31,7 +31,7 @@ export class ModelApi extends ExecAsyncApi {
       ? await this.execAsync(database, engine, queries.join('\n'), [], false)
       : await this.exec(database, engine, queries.join('\n'), [], false);
 
-    return rsp.transaction;
+    return rsp;
   }
 
   async listModels(database: string, engine: string) {
@@ -79,6 +79,6 @@ export class ModelApi extends ExecAsyncApi {
       ? await this.execAsync(database, engine, query, [], false)
       : await this.exec(database, engine, query, [], false);
 
-    return rsp.transaction;
+    return rsp;
   }
 }
