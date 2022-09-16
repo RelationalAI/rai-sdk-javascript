@@ -17,18 +17,19 @@
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
-  async installModels(database: string, engine: string, models: Model[]) {
+  async installModels(
+    database: string,
+    engine: string,
+    models: Model[],
+    async = false,
+  ) {
     const queries = models.map(model => {
       return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
     });
 
-    const rsp = await this.exec(
-      database,
-      engine,
-      queries.join('\n'),
-      [],
-      false,
-    );
+    const rsp = async
+      ? await this.execAsync(database, engine, queries.join('\n'), [], false)
+      : await this.exec(database, engine, queries.join('\n'), [], false);
 
     return rsp.transaction;
   }
@@ -67,14 +68,16 @@ export class ModelApi extends ExecAsyncApi {
     return { modelName: name, src: src[0][0] };
   }
 
-  async deleteModel(database: string, engine: string, name: string) {
-    const rsp = await this.exec(
-      database,
-      engine,
-      `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
-      [],
-      false,
-    );
+  async deleteModel(
+    database: string,
+    engine: string,
+    name: string,
+    async = false,
+  ) {
+    const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`
+    const rsp = async
+      ? await this.execAsync(database, engine, query, [], false)
+      : await this.exec(database, engine, query, [], false);
 
     return rsp.transaction;
   }

@@ -16,131 +16,63 @@
 
 import nock from 'nock';
 
-import {
-  getMockConfig,
-  makeTransactionResult,
-  nockTransaction,
-} from '../../testUtils';
+import { baseUrl, getMockConfig } from '../../testUtils';
+import { TransactionAsyncState } from '../transaction/types';
 import { ModelApi } from './modelApi';
+
+const path = '/transactions';
 
 describe('ModelApi', () => {
   const api = new ModelApi(getMockConfig());
-  const mockModels = [
-    { name: 'model1', value: 'value1', type: '' },
-    { name: 'model2', value: 'value2', type: '' },
-  ];
+  const mockTransaction = {
+    transaction: { id: 'id1', state: TransactionAsyncState.COMPLETED },
+  };
+
   const database = 'test-db';
   const engine = 'test-engine';
 
   afterEach(() => nock.cleanAll());
   afterAll(() => nock.restore());
 
-  it('should install model', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'InstallAction',
-          sources: mockModels,
-        },
-      ],
-      [
-        {
-          type: 'InstallActionResult',
-        },
-      ],
-      database,
-      engine,
-      false,
-    );
-    const result = await api.installModels(database, engine, mockModels);
+  it('should insert models', async () => {
+    const response = mockTransaction.transaction;
+    const models = [{ name: 'test1', value: 'def foo = :bar', type: 'rel' }];
+    const payload = {
+      dbname: database,
+      engine_name: engine,
+      query: 'def insert:rel:catalog:model["test1"] = "def foo = :bar"',
+      nowait_durable: false,
+      readonly: true,
+      v1_inputs: [],
+      tags: [],
+    };
+
+    const scope = nock(baseUrl).post(path, payload).reply(200, response);
+    const result = api.installModels(database, engine, models, true);
 
     scope.done();
 
-    expect(result).toEqual(
-      makeTransactionResult([
-        {
-          type: 'InstallActionResult',
-        },
-      ]),
-    );
-  });
-
-  it('should list models', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ListSourceAction',
-        },
-      ],
-      [
-        {
-          type: 'ListSourceActionResult',
-          sources: mockModels,
-        },
-      ],
-      database,
-      engine,
-    );
-    const result = await api.listModels(database, engine);
-
-    scope.done();
-
-    expect(result).toEqual(
-      makeTransactionResult([
-        {
-          type: 'ListSourceActionResult',
-          sources: mockModels,
-        },
-      ]),
-    );
-  });
-
-  it('should get model', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ListSourceAction',
-        },
-      ],
-      [
-        {
-          type: 'ListSourceActionResult',
-          sources: mockModels,
-        },
-      ],
-      database,
-      engine,
-    );
-    const result = await api.getModel(database, engine, 'model2');
-
-    scope.done();
-
-    expect(result).toEqual(mockModels[1]);
+    expect(result).toEqual(response);
   });
 
   it('should delete model', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ModifyWorkspaceAction',
-          delete_source: ['model1'],
-        },
-      ],
-      [
-        {
-          type: 'ModifyWorkspaceActionResult',
-        },
-      ],
-      database,
-      engine,
-      false,
-    );
-    const result = await api.deleteModel(database, engine, 'model1');
+    const response = mockTransaction.transaction;
+    const payload = {
+      dbname: database,
+      engine_name: engine,
+      query:
+        'def delete:rel:catalog:model["test1"] = rel:catalog:model["test1"]',
+      nowait_durable: false,
+      readonly: true,
+      v1_inputs: [],
+      tags: [],
+    };
+
+    const scope = nock(baseUrl).post(path, payload).reply(200, response);
+    const result = api.deleteModel(database, engine, 'test1', true);
 
     scope.done();
 
-    expect(result).toEqual({
-      type: 'ModifyWorkspaceActionResult',
-    });
+    expect(result).toEqual(response);
   });
 });
