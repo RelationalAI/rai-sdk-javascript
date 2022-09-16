@@ -74,7 +74,7 @@ export class ModelApi extends ExecAsyncApi {
     name: string,
     async = false,
   ) {
-    const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`
+    const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`;
     const rsp = async
       ? await this.execAsync(database, engine, query, [], false)
       : await this.exec(database, engine, query, [], false);
