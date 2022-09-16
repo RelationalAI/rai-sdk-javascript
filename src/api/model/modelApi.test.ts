@@ -17,7 +17,7 @@
 import nock from 'nock';
 
 import { baseUrl, getMockConfig } from '../../testUtils';
-import { TransactionAsyncState } from '../transaction/types';
+import { Model, TransactionAsyncState } from '../transaction/types';
 import { ModelApi } from './modelApi';
 
 const path = '/transactions';
@@ -38,7 +38,7 @@ describe('ModelApi', () => {
     const queries = [
       'def insert:rel:catalog:model["test1"] = """def foo = :bar"""',
     ];
-    const models = [{ name: 'test1', value: 'def foo = :bar', type: 'rel' }];
+    const models = [{ name: 'test1', value: 'def foo = :bar' }] as Model[];
     const response = mockTransaction.transaction;
     const scope = nock(baseUrl)
       .post(path, {
