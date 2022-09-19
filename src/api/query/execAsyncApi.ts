@@ -88,7 +88,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
   ) {
     const startedAt = Date.now();
 
-    let transaction: TransactionAsyncCompact;
+    let transaction: TransactionAsyncCompact | undefined;
 
     await new Promise<void>((resolve, reject) => {
       const checkState = () => {
@@ -98,7 +98,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
             // eslint-disable-next-line no-empty
           } catch {}
 
-          if (isTransactionDone(transaction.state)) {
+          if (transaction && isTransactionDone(transaction.state)) {
             resolve();
           } else {
             if (Date.now() - startedAt > timeout) {
