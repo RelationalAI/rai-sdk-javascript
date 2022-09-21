@@ -19,7 +19,7 @@ import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
   async installModels(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
-      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
+      return `def insert:rel:catalog:model["${model.name}"] = """ ${model.value} """`;
     });
 
     return await this.exec(database, engine, queries.join('\n'), [], false);
@@ -27,7 +27,7 @@ export class ModelApi extends ExecAsyncApi {
 
   async installModelsAsync(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
-      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
+      return `def insert:rel:catalog:model["${model.name}"] = """ ${model.value} """`;
     });
 
     return this.execAsync(database, engine, queries.join('\n'), [], false);
@@ -37,13 +37,15 @@ export class ModelApi extends ExecAsyncApi {
     let rsp = await this.exec(
       database,
       engine,
-      'def output:__models__ = rel:catalog:model',
+      'def output:models = rel:catalog:model',
     );
 
     const models = rsp.results.map(result => {
-      return result.table.toArray().map(col => {
-        return { name: col.v1, value: col.v2 } as Model;
-      });
+      if (result.relationId.includes('/:output/:models')) {
+        return result.table.toArray().map(col => {
+          return { name: col.v1, value: col.v2 } as Model;
+        });
+      }
     })[0];
 
     // dummy query to get problems
@@ -55,16 +57,18 @@ export class ModelApi extends ExecAsyncApi {
     const rsp = await this.exec(
       database,
       engine,
-      `def output:__model__ = rel:catalog:model["${name}"]`,
+      `def output:model = rel:catalog:model["${name}"]`,
     );
 
     const value = rsp.results.map(result => {
-      return result.table.toArray().map(col => {
-        return col.v1;
-      });
+      if (result.relationId.includes('/:output/:model')) {
+        return result.table.toArray().map(col => {
+          return col.v1;
+        });
+      }
     });
 
-    if (value.length == 0) {
+    if (value.length == 0 || value[0] == undefined) {
       throw new Error(`Model '${name}' not found`);
     }
 
