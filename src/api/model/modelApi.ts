@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import _, { flatMap } from 'lodash';
+import _ from 'lodash';
 
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { Model } from '../transaction/types';
