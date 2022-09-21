@@ -73,7 +73,7 @@ describe('ModelApi', () => {
         tags: [],
       })
       .reply(200, response);
-    const result = await api.deleteModelAsync(database, engine, 'test1');
+    const result = await api.deleteModelsAsync(database, engine, ['test1']);
 
     scope.done();
 

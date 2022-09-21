@@ -27,7 +27,7 @@ async function run(
 ) {
   const config = await readConfig(profile);
   const client = new Client(config);
-  const result = await client.deleteModel(database, engine, name);
+  const result = await client.deleteModels(database, engine, [name]);
 
   showTransactionResult(result);
 }

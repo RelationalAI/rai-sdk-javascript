@@ -14,6 +14,8 @@
  * under the License.
  */
 
+import _ from 'lodash';
+
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
@@ -22,7 +24,33 @@ export class ModelApi extends ExecAsyncApi {
       return `def insert:rel:catalog:model["${model.name}"] = """ ${model.value} """`;
     });
 
-    return await this.exec(database, engine, queries.join('\n'), [], false);
+    const resp = await this.exec(
+      database,
+      engine,
+      queries.join('\n'),
+      [],
+      false,
+    );
+
+    const diagnostics = resp.results.map(result => {
+      const relationId = result.relationId;
+      if (relationId.includes('/:rel/:catalog/:diagnostic')) {
+        const value = result.table.toArray()[0].v2;
+        if (relationId.includes('/:code')) return { code: value };
+        if (relationId.includes('/:message')) return { message: value };
+        if (relationId.includes('/:model')) return { model: value };
+        if (relationId.includes('/:report')) return { report: value };
+        if (relationId.includes('/:start/:line'))
+          return { line: { start: value } };
+        if (relationId.includes('/:end/:line')) return { line: { end: value } };
+        if (relationId.includes('/:start/:character'))
+          return { character: { start: value } };
+        if (relationId.includes('/:end/:character'))
+          return { character: { end: value } };
+      }
+    });
+
+    return _.merge({}, ...diagnostics);
   }
 
   async installModelsAsync(database: string, engine: string, models: Model[]) {
@@ -34,23 +62,21 @@ export class ModelApi extends ExecAsyncApi {
   }
 
   async listModels(database: string, engine: string) {
-    let rsp = await this.exec(
+    const rsp = await this.exec(
       database,
       engine,
-      'def output:models = rel:catalog:model',
+      'def output:models[name] = rel:catalog:model(name, _)',
     );
 
     const models = rsp.results.map(result => {
       if (result.relationId.includes('/:output/:models')) {
         return result.table.toArray().map(col => {
-          return { name: col.v1, value: col.v2 } as Model;
+          return col.v1;
         });
       }
     })[0];
 
-    // dummy query to get problems
-    rsp = await this.exec(database, engine, 'def output = 1');
-    return { models: models, diagnostics: rsp.problems };
+    return models;
   }
 
   async getModel(database: string, engine: string, name: string) {
@@ -75,13 +101,19 @@ export class ModelApi extends ExecAsyncApi {
     return { name: name, value: value[0][0] } as Model;
   }
 
-  async deleteModel(database: string, engine: string, name: string) {
-    const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`;
-    return await this.exec(database, engine, query, [], false);
+  async deleteModels(database: string, engine: string, names: string[]) {
+    const queries = names.map(
+      name =>
+        `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
+    );
+    return await this.exec(database, engine, queries.join('\n'), [], false);
   }
 
-  async deleteModelAsync(database: string, engine: string, name: string) {
-    const query = `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`;
-    return this.execAsync(database, engine, query, [], false);
+  async deleteModelsAsync(database: string, engine: string, names: string[]) {
+    const queries = names.map(
+      name =>
+        `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
+    );
+    return await this.exec(database, engine, queries.join('\n'), [], false);
   }
 }
