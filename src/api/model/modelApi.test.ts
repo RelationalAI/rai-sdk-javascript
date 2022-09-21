@@ -59,8 +59,9 @@ describe('ModelApi', () => {
   });
 
   it('should delete model', async () => {
-    const query =
-      'def delete:rel:catalog:model["test1"] = rel:catalog:model["test1"]';
+    const query = [
+      'def delete:rel:catalog:model["test1"] = rel:catalog:model["test1"]',
+    ].join('\n');
     const response = mockTransaction.transaction;
     const scope = nock(baseUrl)
       .post(path, {
@@ -73,6 +74,7 @@ describe('ModelApi', () => {
         tags: [],
       })
       .reply(200, response);
+
     const result = await api.deleteModelsAsync(database, engine, ['test1']);
 
     scope.done();

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import _ from 'lodash';
+import _, { flatMap } from 'lodash';
 
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { Model } from '../transaction/types';
@@ -114,6 +114,13 @@ export class ModelApi extends ExecAsyncApi {
       name =>
         `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
     );
-    return await this.exec(database, engine, queries.join('\n'), [], false);
+
+    return await this.execAsync(
+      database,
+      engine,
+      queries.join('\n'),
+      [],
+      false,
+    );
   }
 }
