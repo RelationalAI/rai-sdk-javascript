@@ -24,40 +24,7 @@ export class ModelApi extends ExecAsyncApi {
       return `def insert:rel:catalog:model["${model.name}"] = """ ${model.value} """`;
     });
 
-    const resp = await this.exec(
-      database,
-      engine,
-      queries.join('\n'),
-      [],
-      false,
-    );
-
-    const diagnostics = resp.results.map(result => {
-      const relationId = result.relationId;
-
-      if (
-        relationId.includes('/:rel/:catalog/:diagnostic') ||
-        relationId.includes('/:rel/:catalog/:ic_violation')
-      ) {
-        return result.table.toArray().map(item => {
-          const value = item.v2;
-          if (relationId.includes('/:code')) return { code: value };
-          if (relationId.includes('/:message')) return { message: value };
-          if (relationId.includes('/:model')) return { model: value };
-          if (relationId.includes('/:report')) return { report: value };
-          if (relationId.includes('/:start/:line'))
-            return { line: { start: value } };
-          if (relationId.includes('/:end/:line'))
-            return { line: { end: value } };
-          if (relationId.includes('/:start/:character'))
-            return { character: { start: value } };
-          if (relationId.includes('/:end/:character'))
-            return { character: { end: value } };
-        });
-      }
-    });
-
-    return _.merge({}, ...diagnostics);
+    return await this.exec(database, engine, queries.join('\n'), [], false);
   }
 
   async installModelsAsync(database: string, engine: string, models: Model[]) {
