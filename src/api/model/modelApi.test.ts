@@ -36,7 +36,7 @@ describe('ModelApi', () => {
 
   it('should insert models', async () => {
     const queries = [
-      'def insert:rel:catalog:model["test1"] = """ def foo = :bar """',
+      'def insert:rel:catalog:model["test1"] = """def foo = :bar"""',
     ];
     const models = [{ name: 'test1', value: 'def foo = :bar' }] as Model[];
     const response = mockTransaction.transaction;
