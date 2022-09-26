@@ -36,10 +36,12 @@ export class ModelApi extends ExecAsyncApi {
   }
 
   async listModels(database: string, engine: string) {
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const outName = `models${randInt}`;
     const rsp = await this.exec(
       database,
       engine,
-      'def output:models[name] = rel:catalog:model(name, _)',
+      `def output:${outName}[name] = rel:catalog:model(name, _)`,
     );
 
     const models = rsp.results.map(result => {
@@ -54,14 +56,16 @@ export class ModelApi extends ExecAsyncApi {
   }
 
   async getModel(database: string, engine: string, name: string) {
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const outName = `model${randInt}`;
     const rsp = await this.exec(
       database,
       engine,
-      `def output:model = rel:catalog:model["${name}"]`,
+      `def output:${outName} = rel:catalog:model["${name}"]`,
     );
 
     const value = rsp.results.map(result => {
-      if (result.relationId.includes('/:output/:model')) {
+      if (result.relationId.includes(`/:output/:${outName}`)) {
         return result.table.toArray().map(col => {
           return col.v1;
         });
