@@ -21,7 +21,7 @@ import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
   async installModels(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
-      return `def insert:rel:catalog:model["${model.name}"] = """ ${model.value} """`;
+      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
     });
 
     return await this.exec(database, engine, queries.join('\n'), [], false);
@@ -29,7 +29,7 @@ export class ModelApi extends ExecAsyncApi {
 
   async installModelsAsync(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
-      return `def insert:rel:catalog:model["${model.name}"] = """ ${model.value} """`;
+      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
     });
 
     return this.execAsync(database, engine, queries.join('\n'), [], false);
@@ -44,14 +44,18 @@ export class ModelApi extends ExecAsyncApi {
       `def output:${outName}[name] = rel:catalog:model(name, _)`,
     );
 
-    const models = rsp.results.map(result => {
-      if (result.relationId.includes('/:output/:models')) {
-        return result.table.toArray().map(col => {
-          return col.v1;
-        });
+    const result = rsp.results.find(r => {
+      const val =
+        r.metadata.arguments[1].constantType?.value?.arguments[0].value;
+      if (val?.oneofKind === 'stringVal') {
+        const stringVal = new TextDecoder().decode(val.stringVal);
+        if (stringVal.includes(outName)) {
+          return true;
+        }
       }
-    })[0];
+    });
 
+    const models = result?.table.toArray().map(c => c.v1);
     return models;
   }
 
@@ -64,19 +68,25 @@ export class ModelApi extends ExecAsyncApi {
       `def output:${outName} = rel:catalog:model["${name}"]`,
     );
 
-    const value = rsp.results.map(result => {
-      if (result.relationId.includes(`/:output/:${outName}`)) {
-        return result.table.toArray().map(col => {
-          return col.v1;
-        });
+    const result = rsp.results.find(r => {
+      const val =
+        r.metadata.arguments[1].constantType?.value?.arguments[0].value;
+      if (val?.oneofKind === 'stringVal') {
+        const stringVal = new TextDecoder().decode(val.stringVal);
+        if (stringVal.includes(outName)) {
+          return true;
+        }
       }
     });
 
-    if (value.length == 0 || value[0] == undefined) {
+    const value = result?.table.get(0)?.toArray()[0];
+
+    if (value === undefined) {
       throw new Error(`Model '${name}' not found`);
     }
 
-    return { name: name, value: value[0][0] } as Model;
+    const model: Model = { name: name, value: value };
+    return model;
   }
 
   async deleteModels(database: string, engine: string, names: string[]) {
