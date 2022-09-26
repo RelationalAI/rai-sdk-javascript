@@ -41,26 +41,42 @@ describe('Integration', () => {
     await client.deleteDatabase(databaseName);
   });
 
-  describe('Models actions', async () => {
-    let models = await client.listModels(databaseName, engineName);
-    expect(models?.length).toBeGreaterThan(0);
+  describe('Models actions', () => {
+    it('should list all models', async () => {
+      const models = await client.listModels(databaseName, engineName);
+      expect(models?.length).toBeGreaterThan(0);
+    });
 
-    const testModels: Model[] = [
-      { name: 'test_model', value: 'def foo = :bar' },
-    ];
-    let resp = await client.installModels(databaseName, engineName, testModels);
-    expect(resp.transaction.state).toEqual('COMPLETED');
+    it('should install model', async () => {
+      const testModels: Model[] = [
+        { name: 'test_model', value: 'def foo = :bar' },
+      ];
+      const resp = await client.installModels(
+        databaseName,
+        engineName,
+        testModels,
+      );
+      expect(resp.transaction.state).toEqual('COMPLETED');
 
-    const value = await client.getModel(databaseName, engineName, 'test_model');
-    expect(value).toEqual(testModels[0].value);
+      const value = await client.getModel(
+        databaseName,
+        engineName,
+        'test_model',
+      );
+      expect(value).toEqual(testModels[0].value);
 
-    models = await client.listModels(databaseName, engineName);
-    expect(models).toContain('test_model');
+      const models = await client.listModels(databaseName, engineName);
+      expect(models).toContain('test_model');
+    });
 
-    resp = await client.deleteModels(databaseName, engineName, ['test_model']);
-    expect(resp.transaction.state).toEqual('COMPLETED');
+    it('should delete model', async () => {
+      const resp = await client.deleteModels(databaseName, engineName, [
+        'test_model',
+      ]);
+      expect(resp.transaction.state).toEqual('COMPLETED');
 
-    models = await client.listModels(databaseName, engineName);
-    expect(models).not.toContain('test_model');
+      const models = await client.listModels(databaseName, engineName);
+      expect(models).not.toContain('test_model');
+    });
   });
 });
