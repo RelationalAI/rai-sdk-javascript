@@ -19,6 +19,7 @@ import { promises } from 'fs';
 import path from 'path';
 
 import { Client, readConfig } from '../index.node';
+import { showTransactionResult } from './show';
 
 async function run(
   database: string,
@@ -39,7 +40,7 @@ async function run(
   const client = new Client(config);
   const result = await client.installModels(database, engine, [model]);
 
-  console.log(result);
+  showTransactionResult(result);
 }
 
 (async () => {
