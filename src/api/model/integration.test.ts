@@ -58,12 +58,13 @@ describe('Integration', () => {
       );
       expect(resp.transaction.state).toEqual('COMPLETED');
 
-      const value = await client.getModel(
+      const model = await client.getModel(
         databaseName,
         engineName,
         'test_model',
       );
-      expect(value).toEqual(testModels[0].value);
+      expect(model.name).toEqual('test_model');
+      expect(model.value).toEqual(testModels[0].value);
 
       const models = await client.listModels(databaseName, engineName);
       expect(models).toContain('test_model');
