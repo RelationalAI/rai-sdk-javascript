@@ -17,28 +17,49 @@
 import _ from 'lodash';
 
 import { ExecAsyncApi } from '../query/execAsyncApi';
+import { QueryInput } from '../query/types';
 import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
   async installModels(database: string, engine: string, models: Model[]) {
-    const queries = models.map(model => {
-      return `
-        def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
-        def insert:rel:catalog:model["${model.name}"] = """${model.value}"""
-      `;
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const queries: string[] = [];
+    const queryInputs: QueryInput[] = [];
+
+    models.map(model => {
+      const inputName = `${model.name}_input_${randInt}`;
+      queryInputs.push({ name: inputName, value: model.value });
+      queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
+        def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
     });
 
-    return await this.exec(database, engine, queries.join('\n'), [], false);
+    return await this.exec(
+      database,
+      engine,
+      queries.join('\n'),
+      queryInputs,
+      false,
+    );
   }
 
   async installModelsAsync(database: string, engine: string, models: Model[]) {
-    const queries = models.map(model => {
-      return `
-        def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
-        def insert:rel:catalog:model["${model.name}"] = """${model.value}"""
-      `;
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const queries: string[] = [];
+    const queryInputs: QueryInput[] = [];
+
+    models.map(model => {
+      const inputName = `${model.name}_input_${randInt}`;
+      queryInputs.push({ name: inputName, value: model.value });
+      queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
+        def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
     });
 
-    return this.execAsync(database, engine, queries.join('\n'), [], false);
+    return await this.execAsync(
+      database,
+      engine,
+      queries.join('\n'),
+      queryInputs,
+      false,
+    );
   }
 
   async listModels(database: string, engine: string) {
