@@ -49,7 +49,7 @@ describe('Integration', () => {
 
     it('should installModel', async () => {
       const testModels: Model[] = [
-        { name: 'test_model', value: 'def foo = :bar' },
+        { name: 'test_model_1', value: 'def foo = :bar' },
       ];
       const resp = await client.installModels(
         databaseName,
@@ -61,23 +61,32 @@ describe('Integration', () => {
       const model = await client.getModel(
         databaseName,
         engineName,
-        'test_model',
+        'test_model_1',
       );
-      expect(model.name).toEqual('test_model');
+      expect(model.name).toEqual('test_model_1');
       expect(model.value).toEqual(testModels[0].value);
 
       const models = await client.listModels(databaseName, engineName);
-      expect(models).toContain('test_model');
+      expect(models).toContain('test_model_1');
     });
 
     it('should deleteModel', async () => {
-      const resp = await client.deleteModels(databaseName, engineName, [
-        'test_model',
+      const testModels: Model[] = [
+        { name: 'test_model_2', value: 'def foo = :bar' },
+      ];
+      let resp = await client.installModels(
+        databaseName,
+        engineName,
+        testModels,
+      );
+      expect(resp.transaction.state).toEqual('COMPLETED');
+      resp = await client.deleteModels(databaseName, engineName, [
+        'test_model_2',
       ]);
       expect(resp.transaction.state).toEqual('COMPLETED');
 
       const models = await client.listModels(databaseName, engineName);
-      expect(models).not.toContain('test_model');
+      expect(models).not.toContain('test_model_2');
     });
   });
 });
