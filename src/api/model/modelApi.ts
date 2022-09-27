@@ -21,7 +21,10 @@ import { Model } from '../transaction/types';
 export class ModelApi extends ExecAsyncApi {
   async installModels(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
-      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
+      return `
+        def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
+        def insert:rel:catalog:model["${model.name}"] = """${model.value}"""
+      `;
     });
 
     return await this.exec(database, engine, queries.join('\n'), [], false);
@@ -29,7 +32,10 @@ export class ModelApi extends ExecAsyncApi {
 
   async installModelsAsync(database: string, engine: string, models: Model[]) {
     const queries = models.map(model => {
-      return `def insert:rel:catalog:model["${model.name}"] = """${model.value}"""`;
+      return `
+        def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
+        def insert:rel:catalog:model["${model.name}"] = """${model.value}"""
+      `;
     });
 
     return this.execAsync(database, engine, queries.join('\n'), [], false);
