@@ -24,8 +24,8 @@ export class ModelApi extends ExecAsyncApi {
     const queries: string[] = [];
     const queryInputs: QueryInput[] = [];
 
-    models.map(model => {
-      const inputName = `input_${randInt}_${model.name}`;
+    models.map((model, index) => {
+      const inputName = `input_${randInt}_${index}`;
       queryInputs.push({ name: inputName, value: model.value });
       queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
         def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
@@ -45,8 +45,8 @@ export class ModelApi extends ExecAsyncApi {
     const queries: string[] = [];
     const queryInputs: QueryInput[] = [];
 
-    models.map(model => {
-      const inputName = `input_${randInt}_${model.name}`;
+    models.map((model, index) => {
+      const inputName = `input_${randInt}_${index}`;
       queryInputs.push({ name: inputName, value: model.value });
       queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
         def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
