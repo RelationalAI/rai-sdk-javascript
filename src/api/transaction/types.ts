@@ -36,8 +36,6 @@ export type Relation = {
 export type Model = {
   name: string;
   value: string;
-  type?: string;
-  path?: string;
 };
 
 export type IntegrityConstraintViolation = {

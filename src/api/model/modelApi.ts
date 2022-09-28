@@ -14,11 +14,10 @@
  * under the License.
  */
 
-import _ from 'lodash';
-
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { QueryInput } from '../query/types';
 import { Model } from '../transaction/types';
+import { getModelOutputFromProto } from './modelUtils';
 export class ModelApi extends ExecAsyncApi {
   async installModels(database: string, engine: string, models: Model[]) {
     const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -26,7 +25,7 @@ export class ModelApi extends ExecAsyncApi {
     const queryInputs: QueryInput[] = [];
 
     models.map(model => {
-      const inputName = `${model.name}_input_${randInt}`;
+      const inputName = `${randInt}_input_${model.name}`;
       queryInputs.push({ name: inputName, value: model.value });
       queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
         def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
@@ -47,7 +46,7 @@ export class ModelApi extends ExecAsyncApi {
     const queryInputs: QueryInput[] = [];
 
     models.map(model => {
-      const inputName = `${model.name}_input_${randInt}`;
+      const inputName = `${randInt}_input_${model.name}`;
       queryInputs.push({ name: inputName, value: model.value });
       queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
         def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
@@ -62,7 +61,7 @@ export class ModelApi extends ExecAsyncApi {
     );
   }
 
-  async listModels(database: string, engine: string) {
+  async listModels(database: string, engine: string): Promise<string[]> {
     const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     const outName = `models${randInt}`;
     const rsp = await this.exec(
@@ -71,18 +70,13 @@ export class ModelApi extends ExecAsyncApi {
       `def output:${outName}[name] = rel:catalog:model(name, _)`,
     );
 
-    const result = rsp.results.find(r => {
-      const val =
-        r.metadata.arguments[1].constantType?.value?.arguments[0].value;
-      if (val?.oneofKind === 'stringVal') {
-        const stringVal = new TextDecoder().decode(val.stringVal);
-        if (stringVal.includes(outName)) {
-          return true;
-        }
-      }
-    });
+    const result = rsp.results.find(
+      r => getModelOutputFromProto(r.metadata) === outName,
+    );
 
-    const models = result?.table.toArray().map(c => c.v1);
+    const models: string[] = [];
+    result?.table.toArray().map(c => models.push(c.toArray()[0]));
+
     return models;
   }
 
@@ -95,16 +89,9 @@ export class ModelApi extends ExecAsyncApi {
       `def output:${outName} = rel:catalog:model["${name}"]`,
     );
 
-    const result = rsp.results.find(r => {
-      const val =
-        r.metadata.arguments[1].constantType?.value?.arguments[0].value;
-      if (val?.oneofKind === 'stringVal') {
-        const stringVal = new TextDecoder().decode(val.stringVal);
-        if (stringVal.includes(outName)) {
-          return true;
-        }
-      }
-    });
+    const result = rsp.results.find(
+      r => getModelOutputFromProto(r.metadata) === outName,
+    );
 
     const value = result?.table.get(0)?.toArray()[0];
 
