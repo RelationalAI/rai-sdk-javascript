@@ -30,8 +30,6 @@ async function run(
   const file = await promises.readFile(filePath, 'utf-8');
   const name = path.parse(filePath).name;
   const model = {
-    type: 'Source',
-    path: name,
     name: name,
     value: file,
   };
