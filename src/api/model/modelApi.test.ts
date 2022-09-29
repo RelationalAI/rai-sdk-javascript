@@ -14,133 +14,79 @@
  * under the License.
  */
 
-import nock from 'nock';
-
 import {
-  getMockConfig,
-  makeTransactionResult,
-  nockTransaction,
+  createDatabaseIfNotExists,
+  createEngineIfNotExists,
+  getClient,
 } from '../../testUtils';
-import { ModelApi } from './modelApi';
+import Client from '../client';
+import { Model } from '../transaction/types';
 
-describe('ModelApi', () => {
-  const api = new ModelApi(getMockConfig());
-  const mockModels = [
-    { name: 'model1', value: 'value1', type: '' },
-    { name: 'model2', value: 'value2', type: '' },
-  ];
-  const database = 'test-db';
-  const engine = 'test-engine';
+describe('Integration', () => {
+  const databaseName = `js-sdk-tests-${Date.now()}`;
+  const engineName = `js-sdk-tests-${Date.now()}`;
+  let client: Client;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  jest.setTimeout(1000 * 60 * 10);
 
-  it('should install model', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'InstallAction',
-          sources: mockModels,
-        },
-      ],
-      [
-        {
-          type: 'InstallActionResult',
-        },
-      ],
-      database,
-      engine,
-      false,
-    );
-    const result = await api.installModels(database, engine, mockModels);
+  beforeAll(async () => {
+    client = await getClient();
 
-    scope.done();
-
-    expect(result).toEqual(
-      makeTransactionResult([
-        {
-          type: 'InstallActionResult',
-        },
-      ]),
-    );
+    await createEngineIfNotExists(client, engineName);
+    await createDatabaseIfNotExists(client, databaseName);
   });
 
-  it('should list models', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ListSourceAction',
-        },
-      ],
-      [
-        {
-          type: 'ListSourceActionResult',
-          sources: mockModels,
-        },
-      ],
-      database,
-      engine,
-    );
-    const result = await api.listModels(database, engine);
-
-    scope.done();
-
-    expect(result).toEqual(
-      makeTransactionResult([
-        {
-          type: 'ListSourceActionResult',
-          sources: mockModels,
-        },
-      ]),
-    );
+  afterAll(async () => {
+    await client.deleteEngine(engineName);
+    await client.deleteDatabase(databaseName);
   });
 
-  it('should get model', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ListSourceAction',
-        },
-      ],
-      [
-        {
-          type: 'ListSourceActionResult',
-          sources: mockModels,
-        },
-      ],
-      database,
-      engine,
-    );
-    const result = await api.getModel(database, engine, 'model2');
+  describe('Models actions', () => {
+    it('should listModels', async () => {
+      const models = await client.listModels(databaseName, engineName);
+      expect(models?.length).toBeGreaterThan(0);
+    });
 
-    scope.done();
+    it('should installModel', async () => {
+      const testModels: Model[] = [
+        { name: 'test_model_1', value: 'def foo = :bar' },
+      ];
+      const resp = await client.installModels(
+        databaseName,
+        engineName,
+        testModels,
+      );
+      expect(resp.transaction.state).toEqual('COMPLETED');
 
-    expect(result).toEqual(mockModels[1]);
-  });
+      const model = await client.getModel(
+        databaseName,
+        engineName,
+        'test_model_1',
+      );
+      expect(model.name).toEqual('test_model_1');
+      expect(model.value).toEqual(testModels[0].value);
 
-  it('should delete model', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ModifyWorkspaceAction',
-          delete_source: ['model1'],
-        },
-      ],
-      [
-        {
-          type: 'ModifyWorkspaceActionResult',
-        },
-      ],
-      database,
-      engine,
-      false,
-    );
-    const result = await api.deleteModel(database, engine, 'model1');
+      const models = await client.listModels(databaseName, engineName);
+      expect(models).toContain('test_model_1');
+    });
 
-    scope.done();
+    it('should deleteModel', async () => {
+      const testModels: Model[] = [
+        { name: 'test_model_2', value: 'def foo = :bar' },
+      ];
+      let resp = await client.installModels(
+        databaseName,
+        engineName,
+        testModels,
+      );
+      expect(resp.transaction.state).toEqual('COMPLETED');
+      resp = await client.deleteModels(databaseName, engineName, [
+        'test_model_2',
+      ]);
+      expect(resp.transaction.state).toEqual('COMPLETED');
 
-    expect(result).toEqual({
-      type: 'ModifyWorkspaceActionResult',
+      const models = await client.listModels(databaseName, engineName);
+      expect(models).not.toContain('test_model_2');
     });
   });
 });

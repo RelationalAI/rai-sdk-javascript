@@ -14,15 +14,27 @@
  * under the License.
  */
 
+import { RelationId } from '../../proto/generated/schema';
 import { Model } from '../transaction/types';
 
-export function makeModel(name: string, value: string, path = name) {
+export function makeModel(name: string, value: string) {
   const model: Model = {
-    type: 'Source',
     name,
     value,
-    path,
   };
 
   return model;
+}
+
+// gets the model output name from protobuf
+export function getModelOutputFromProto(relationId: RelationId) {
+  if (relationId.arguments.length > 1) {
+    const val = relationId.arguments[1].constantType?.value?.arguments[0].value;
+
+    if (val !== undefined && val.oneofKind === 'stringVal') {
+      return new TextDecoder().decode(val.stringVal);
+    }
+  }
+
+  return undefined;
 }

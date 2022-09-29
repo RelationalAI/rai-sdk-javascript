@@ -14,57 +14,115 @@
  * under the License.
  */
 
-import { TransactionApi } from '../transaction/transactionApi';
-import {
-  InstallAction,
-  ListSourceAction,
-  Model,
-  ModifyWorkspaceAction,
-} from '../transaction/types';
-
-export class ModelApi extends TransactionApi {
+import { ExecAsyncApi } from '../query/execAsyncApi';
+import { QueryInput } from '../query/types';
+import { Model } from '../transaction/types';
+import { getModelOutputFromProto } from './modelUtils';
+export class ModelApi extends ExecAsyncApi {
   async installModels(database: string, engine: string, models: Model[]) {
-    const action: InstallAction = {
-      type: 'InstallAction',
-      sources: models,
-    };
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const queries: string[] = [];
+    const queryInputs: QueryInput[] = [];
 
-    return await this.runActions(database, engine, [action], false);
+    models.map((model, index) => {
+      const inputName = `input_${randInt}_${index}`;
+      queryInputs.push({ name: inputName, value: model.value });
+      queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
+        def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
+    });
+
+    return await this.exec(
+      database,
+      engine,
+      queries.join('\n'),
+      queryInputs,
+      false,
+    );
   }
 
-  async listModels(database: string, engine: string) {
-    const action: ListSourceAction = {
-      type: 'ListSourceAction',
-    };
+  async installModelsAsync(database: string, engine: string, models: Model[]) {
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const queries: string[] = [];
+    const queryInputs: QueryInput[] = [];
 
-    return await this.runActions(database, engine, [action]);
+    models.map((model, index) => {
+      const inputName = `input_${randInt}_${index}`;
+      queryInputs.push({ name: inputName, value: model.value });
+      queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
+        def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
+    });
+
+    return await this.execAsync(
+      database,
+      engine,
+      queries.join('\n'),
+      queryInputs,
+      false,
+    );
+  }
+
+  async listModels(database: string, engine: string): Promise<string[]> {
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const outName = `models${randInt}`;
+    const rsp = await this.exec(
+      database,
+      engine,
+      `def output:${outName}[name] = rel:catalog:model(name, _)`,
+    );
+
+    const result = rsp.results.find(
+      r => getModelOutputFromProto(r.metadata) === outName,
+    );
+
+    const models: string[] = [];
+    result?.table.toArray().map(c => models.push(c.toArray()[0]));
+
+    return models;
   }
 
   async getModel(database: string, engine: string, name: string) {
-    const result = await this.listModels(database, engine);
+    const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    const outName = `model${randInt}`;
+    const rsp = await this.exec(
+      database,
+      engine,
+      `def output:${outName} = rel:catalog:model["${name}"]`,
+    );
 
-    if (result.actions[0]?.result?.type === 'ListSourceActionResult') {
-      const model = result.actions[0].result.sources.find(m => m.name === name);
+    const result = rsp.results.find(
+      r => getModelOutputFromProto(r.metadata) === outName,
+    );
 
-      if (model) {
-        return model;
-      }
+    const value = result?.table.get(0)?.toArray()[0];
+
+    if (value === undefined) {
+      throw new Error(`Model '${name}' not found`);
     }
 
-    throw new Error(`Model '${name}' not found`);
+    const model: Model = { name: name, value: value };
+    return model;
   }
 
-  async deleteModel(database: string, engine: string, name: string) {
-    const action: ModifyWorkspaceAction = {
-      type: 'ModifyWorkspaceAction',
-      delete_source: [name],
-    };
-    const result = await this.runActions(database, engine, [action], false);
+  async deleteModels(database: string, engine: string, names: string[]) {
+    const queries = names.map(
+      name =>
+        `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
+    );
+    return await this.exec(database, engine, queries.join('\n'), [], false);
+  }
 
-    if (result.actions[0]?.result?.type === 'ModifyWorkspaceActionResult') {
-      return result.actions[0].result;
-    }
+  async deleteModelsAsync(database: string, engine: string, names: string[]) {
+    const queries = names.map(
+      name =>
+        `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
+    );
 
-    throw new Error('ModifyWorkspaceActionResult is missing');
+    return await this.execAsync(
+      database,
+      engine,
+      queries.join('\n'),
+      [],
+      false,
+    );
   }
 }
