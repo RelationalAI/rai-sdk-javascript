@@ -48,7 +48,12 @@
       { "varsIgnorePattern": "^_$", "argsIgnorePattern": "^_+$" }
     ],
     "license-header/header": [ "error", "./license.ts" ],
-    "prettier/prettier": "error",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",
     "import/no-named-as-default": "off",
