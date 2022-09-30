@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        fail-fast: false
+      fail-fast: false
 
     steps:
       - name: Checkout
