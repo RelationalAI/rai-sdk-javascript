@@ -14,7 +14,6 @@
  * under the License.
  */
 
-import { makeModel } from '../model/modelUtils';
 import { QueryAction, Relation, RelValue } from '../transaction/types';
 import { QueryInput } from './types';
 
@@ -26,7 +25,11 @@ export function makeQueryAction(
     type: 'QueryAction',
     outputs: [],
     persist: [],
-    source: makeModel('query', queryString),
+    source: {
+      type: 'Source',
+      name: 'query',
+      value: queryString,
+    },
     inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
   };
 
