@@ -38,6 +38,13 @@ export type Model = {
   value: string;
 };
 
+export type ModelV1 = {
+  name: string;
+  value: string;
+  type: 'Source';
+  path?: string;
+};
+
 export type IntegrityConstraintViolation = {
   type: 'IntegrityConstraintViolation';
   sources: {
@@ -86,7 +93,7 @@ export type QueryAction = {
   inputs: Relation[];
   outputs: string[];
   persist: string[];
-  source: Model;
+  source: ModelV1;
 };
 
 export type QueryActionResult = {
@@ -107,7 +114,7 @@ export type ModifyWorkspaceActionResult = {
 
 export type InstallAction = {
   type: 'InstallAction';
-  sources: Model[];
+  sources: ModelV1[];
 };
 
 export type InstallActionResult = {
@@ -120,7 +127,7 @@ export type ListSourceAction = {
 
 export type ListSourceActionResult = {
   type: 'ListSourceActionResult';
-  sources: Model[];
+  sources: ModelV1[];
 };
 
 export type ListEdbAction = {

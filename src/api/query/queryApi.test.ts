@@ -66,6 +66,7 @@ describe('QueryApi', () => {
           source: {
             value: 'def output = 123',
             name: 'query',
+            type: 'Source',
           },
         },
       ],
@@ -119,6 +120,7 @@ describe('QueryApi', () => {
           source: {
             value: 'def output = 123',
             name: 'query',
+            type: 'Source',
           },
         },
       ],
@@ -171,6 +173,7 @@ describe('QueryApi', () => {
             },
           ],
           source: {
+            type: 'Source',
             value: [
               'def config:data = data',
               'def insert:test_relation = load_json[config]',
@@ -229,6 +232,7 @@ describe('QueryApi', () => {
             },
           ],
           source: {
+            type: 'Source',
             value: [
               'def config:data = data',
               'def insert:test_relation = load_csv[config]',
@@ -285,6 +289,7 @@ describe('QueryApi', () => {
             },
           ],
           source: {
+            type: 'Source',
             value: [
               'def config:data = data',
               'def config:syntax:header = (1, "foo"); (2, "bar")',
@@ -355,6 +360,7 @@ describe('QueryApi', () => {
             },
           ],
           source: {
+            type: 'Source',
             value: [
               'def config:data = data',
               'def config:schema:foo = "int"',

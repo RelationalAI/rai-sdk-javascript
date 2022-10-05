@@ -15,16 +15,6 @@
  */
 
 import { RelationId } from '../../proto/generated/schema';
-import { Model } from '../transaction/types';
-
-export function makeModel(name: string, value: string) {
-  const model: Model = {
-    name,
-    value,
-  };
-
-  return model;
-}
 
 // gets the model output name from protobuf
 export function getModelOutputFromProto(relationId: RelationId) {
