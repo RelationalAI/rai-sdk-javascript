@@ -42,7 +42,7 @@ export type ModelV1 = {
   name: string;
   value: string;
   type: 'Source';
-  path?: string;
+  path: string;
 };
 
 export type IntegrityConstraintViolation = {

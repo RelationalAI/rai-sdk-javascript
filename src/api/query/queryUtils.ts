@@ -29,6 +29,7 @@ export function makeQueryAction(
       type: 'Source',
       name: 'query',
       value: queryString,
+      path: '',
     },
     inputs: inputs.map(input => makeQueryInput(input.name, input.value)),
   };
