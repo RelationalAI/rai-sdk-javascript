@@ -65,20 +65,22 @@ function readClientCredentials(configParser: ConfigIniParser, profile: string) {
     }
   }
 
+  const client_id = configParser.get(profile, 'client_id', '');
+
   const config: Config = {
     host: configParser.get(profile, 'host', ''),
     port: configParser.get(profile, 'port', DEFAULT_PORT),
     scheme: configParser.get(profile, 'scheme', DEFAULT_SCHEME),
     credentials: new ClientCredentials(
-      configParser.get(profile, 'client_id', ''),
+      client_id,
       configParser.get(profile, 'client_secret', ''),
       configParser.get(
         profile,
         'client_credentials_url',
         DEFAULT_CLIENT_CREDENTIALS_URL,
       ),
-      async () => await readTokenCache(profile),
-      async cache => await writeTokenCache(cache, profile),
+      async () => await readTokenCache(profile, client_id),
+      async cache => await writeTokenCache(cache, profile, client_id),
     ),
   };
 
@@ -97,12 +99,12 @@ function resolveHome(path: string) {
   return path;
 }
 
-function makeTokenCachePath(profile: string) {
-  return resolveHome(`~/.rai/${profile}_cache.json`);
+function makeTokenCachePath(profile: string, client_id: string) {
+  return resolveHome(`~/.rai/${profile}_${client_id}_cache.json`);
 }
 
-async function readTokenCache(profile = 'default') {
-  const cachePath = makeTokenCachePath(profile);
+async function readTokenCache(profile = 'default', client_id = '') {
+  const cachePath = makeTokenCachePath(profile, client_id);
 
   try {
     const cachedStr = await readFile(cachePath, 'utf-8');
@@ -115,8 +117,12 @@ async function readTokenCache(profile = 'default') {
   } catch {}
 }
 
-async function writeTokenCache(token: AccessTokenCache, profile = 'default') {
-  const cachePath = makeTokenCachePath(profile);
+async function writeTokenCache(
+  token: AccessTokenCache,
+  profile = 'default',
+  client_id = '',
+) {
+  const cachePath = makeTokenCachePath(profile, client_id);
   const cacheStr = JSON.stringify(token, null, 2);
 
   await writeFile(cachePath, cacheStr, 'utf-8');
