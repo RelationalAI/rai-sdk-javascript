@@ -17,8 +17,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { TransactionApi } from '../transaction/transactionApi';
-import { makeQueryAction } from './queryUtils';
-import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
+import { QueryInput } from './types';
+import { makeQueryAction } from './utils';
 
 export class QueryApi extends TransactionApi {
   async query(
@@ -32,106 +32,4 @@ export class QueryApi extends TransactionApi {
 
     return await this.runActions(database, engine, [action], readonly);
   }
-
-  async loadJson(
-    database: string,
-    engine: string,
-    relation: string,
-    json: any,
-  ) {
-    const qs = [
-      `def config:data = data`,
-      `def insert:${relation} = load_json[config]`,
-    ];
-    const inputs: QueryInput[] = [
-      {
-        name: 'data',
-        value: JSON.stringify(json),
-      },
-    ];
-
-    return this.query(database, engine, qs.join('\n'), inputs, false);
-  }
-
-  async loadCsv(
-    database: string,
-    engine: string,
-    relation: string,
-    csv: string,
-    syntax?: CsvConfigSyntax,
-    schema?: CsvConfigSchema,
-  ) {
-    const qs = [`def config:data = data`];
-    const inputs: QueryInput[] = [
-      {
-        name: 'data',
-        value: csv,
-      },
-    ];
-
-    if (syntax) {
-      qs.push(...syntaxToRel(syntax));
-    }
-
-    if (schema) {
-      qs.push(...schemaToRel(schema));
-    }
-
-    qs.push(`def insert:${relation} = load_csv[config]`);
-
-    return this.query(database, engine, qs.join('\n'), inputs, false);
-  }
-}
-
-function toRelLiteral(value: any) {
-  if (typeof value === 'string') {
-    if (value.length === 1) {
-      const escapedValue = value.replace(/'/g, "\\'");
-
-      return `'${escapedValue}'`;
-    }
-
-    const escapedValue = value.replace(/"/g, '\\"');
-
-    return `"${escapedValue}"`;
-  }
-
-  if (typeof value === 'number') {
-    return value;
-  }
-
-  if (typeof value === 'boolean') {
-    return value ? 'true' : 'false';
-  }
-}
-
-function syntaxToRel(syntax: CsvConfigSyntax) {
-  const qs: string[] = [];
-
-  Object.keys(syntax).forEach(k => {
-    const prop = k as keyof CsvConfigSyntax;
-
-    if (prop === 'header') {
-      const headerStr = Object.keys(syntax.header!)
-        .map(key => {
-          return `(${key}, ${toRelLiteral(syntax.header![key])})`;
-        })
-        .join('; ');
-      qs.push(`def config:syntax:header = ${headerStr}`);
-    } else {
-      qs.push(`def config:syntax:${prop} = ${toRelLiteral(syntax[prop])}`);
-    }
-  });
-
-  return qs;
-}
-
-function schemaToRel(schema: CsvConfigSchema) {
-  const qs: string[] = [];
-
-  Object.keys(schema).forEach(colName => {
-    qs.push(`def config:schema${colName} = ${toRelLiteral(schema[colName])}`);
-  });
-
-  return qs;
 }

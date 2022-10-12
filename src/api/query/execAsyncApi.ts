@@ -26,8 +26,8 @@ import {
   TransactionAsyncPayload,
   TransactionAsyncResult,
 } from '../transaction/types';
-import { makeQueryInput } from './queryUtils';
-import { QueryInput } from './types';
+import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
+import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
 
 export class ExecAsyncApi extends TransactionAsyncApi {
   async execAsync(
@@ -131,5 +131,54 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     };
 
     return res;
+  }
+
+  async loadJson(
+    database: string,
+    engine: string,
+    relation: string,
+    json: any,
+  ) {
+    const qs = [
+      `def config:data = data`,
+      `def insert:${relation} = load_json[config]`,
+    ];
+    const inputs: QueryInput[] = [
+      {
+        name: 'data',
+        value: JSON.stringify(json),
+      },
+    ];
+
+    return this.exec(database, engine, qs.join('\n'), inputs, false);
+  }
+
+  async loadCsv(
+    database: string,
+    engine: string,
+    relation: string,
+    csv: string,
+    syntax?: CsvConfigSyntax,
+    schema?: CsvConfigSchema,
+  ) {
+    const qs = [`def config:data = data`];
+    const inputs: QueryInput[] = [
+      {
+        name: 'data',
+        value: csv,
+      },
+    ];
+
+    if (syntax) {
+      qs.push(...syntaxToRel(syntax));
+    }
+
+    if (schema) {
+      qs.push(...schemaToRel(schema));
+    }
+
+    qs.push(`def insert:${relation} = load_csv[config]`);
+
+    return this.exec(database, engine, qs.join('\n'), inputs, false);
   }
 }

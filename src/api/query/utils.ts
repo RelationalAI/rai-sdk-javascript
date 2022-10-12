@@ -15,7 +15,7 @@
  */
 
 import { QueryAction, Relation, RelValue } from '../transaction/types';
-import { QueryInput } from './types';
+import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
 
 export function makeQueryAction(
   queryString: string,
@@ -51,3 +51,56 @@ export const makeQueryInput = (name: string, value: RelValue) => {
 
   return input;
 };
+
+function toRelLiteral(value: any) {
+  if (typeof value === 'string') {
+    if (value.length === 1) {
+      const escapedValue = value.replace(/'/g, "\\'");
+
+      return `'${escapedValue}'`;
+    }
+
+    const escapedValue = value.replace(/"/g, '\\"');
+
+    return `"${escapedValue}"`;
+  }
+
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+}
+
+export function syntaxToRel(syntax: CsvConfigSyntax) {
+  const qs: string[] = [];
+
+  Object.keys(syntax).forEach(k => {
+    const prop = k as keyof CsvConfigSyntax;
+
+    if (prop === 'header') {
+      const headerStr = Object.keys(syntax.header!)
+        .map(key => {
+          return `(${key}, :${toRelLiteral(syntax.header![key])})`;
+        })
+        .join('; ');
+      qs.push(`def config:syntax:header = ${headerStr}`);
+    } else {
+      qs.push(`def config:syntax:${prop} = ${toRelLiteral(syntax[prop])}`);
+    }
+  });
+
+  return qs;
+}
+
+export function schemaToRel(schema: CsvConfigSchema) {
+  const qs: string[] = [];
+
+  Object.keys(schema).forEach(colName => {
+    qs.push(`def config:schema${colName} = ${toRelLiteral(schema[colName])}`);
+  });
+
+  return qs;
+}
