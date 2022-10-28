@@ -3205,8 +3205,8 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Missing',
     query: `
-      value type MyType = Int, Missing, Int
-      def v = ^MyType[1, missing, 2]
+      value type MyType = Int, Missing
+      def v = ^MyType[1, missing]
       def output = #(v)
     `,
     typeDefs: [
