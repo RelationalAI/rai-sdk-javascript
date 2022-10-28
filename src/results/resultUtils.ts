@@ -734,6 +734,9 @@ function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
         typeDef.typeDefs.forEach(td => walk(td, r));
         break;
       }
+      case 'Missing':
+        result.push(null);
+        break;
       case 'Rational8':
       case 'Rational16':
       case 'Rational32':
