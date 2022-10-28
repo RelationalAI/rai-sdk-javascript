@@ -2630,9 +2630,42 @@ export const miscValueTypeTests: Test[] = [
     values: [[':Foo', ':Bar', ':MyType', 12n, 34n]],
     displayValues: ['(:Foo, :Bar, :MyType, 12, 34)'],
   },
+  {
+    name: 'Missing',
+    query: `
+      value type MyType = Int, Missing, Int
+      def v = ^MyType[1, missing, 2]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Int64',
+            },
+            {
+              type: 'Missing',
+            },
+            {
+              type: 'Int64',
+            },
+          ],
+          value: [1n, null, 2n],
+        },
+      },
+    ],
+    // TODO this should be [":MyType", 1n, null, 2n] really
+    // move this down to valueTypeSpecializationTests when specialization is fixed
+    values: [[1n, null, 2n]],
+    displayValues: ['(1, missing, 2)'],
+  },
 ];
 
 // TODO uncomment this when specialization on value types isfixed
+// TODO and flip the values like: TYPE, Int instead of Int, TYPE
 export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'String(symbol)',
@@ -3172,8 +3205,8 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Missing',
     query: `
-      value type MyType = Int, Missing
-      def v = ^MyType[1, missing]
+      value type MyType = Int, Missing, Int
+      def v = ^MyType[1, missing, 2]
       def output = #(v)
     `,
     typeDefs: [
