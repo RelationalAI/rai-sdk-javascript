@@ -47,6 +47,7 @@ export abstract class Base {
     if (token) {
       opts.headers = {
         ...{ authorization: `Bearer ${token}` },
+        ...readCustomHeaders(),
         ...opts.headers,
       };
     }
@@ -85,4 +86,16 @@ export abstract class Base {
   ) {
     return this.request<T>(path, { ...options, method: 'DELETE' });
   }
+}
+
+function readCustomHeaders() {
+  if (process.env.CUSTOM_HEADERS) {
+    try {
+      return JSON.parse(process.env.CUSTOM_HEADERS) as Record<string, string>;
+    } catch {
+      return {};
+    }
+  }
+
+  return {};
 }

@@ -130,13 +130,11 @@ export async function getClient() {
       process.env.CLIENT_SECRET,
       process.env.CLIENT_CREDENTIALS_URL,
     );
-    let raiHost = 'azure.relationalai.com';
-    if (process.env.HOST) {
-      raiHost = process.env.HOST;
-    }
+    const host = process.env.HOST || 'azure.relationalai.com';
+
     config = {
       credentials,
-      host: raiHost,
+      host,
       scheme: 'https',
       port: '443',
     };
