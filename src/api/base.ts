@@ -22,6 +22,7 @@ type OnResponse = RequestOptions['onResponse'];
 export abstract class Base {
   baseUrl: string;
 
+  private customHeaders: Record<string, string> = {};
   private _onResponse?: OnResponse;
 
   constructor(public config: Config, public region = 'us-east') {
@@ -47,6 +48,7 @@ export abstract class Base {
     if (token) {
       opts.headers = {
         ...{ authorization: `Bearer ${token}` },
+        ...this.customHeaders,
         ...opts.headers,
       };
     }
