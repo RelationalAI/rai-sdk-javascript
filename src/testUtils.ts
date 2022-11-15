@@ -142,7 +142,23 @@ export async function getClient() {
     config = await readConfig();
   }
 
-  return new Client(config);
+  const client = new Client(config);
+
+  client['customHeaders'] = readCustomHeaders();
+
+  return client;
+}
+
+function readCustomHeaders() {
+  if (process.env.CUSTOM_HEADERS) {
+    try {
+      return JSON.parse(process.env.CUSTOM_HEADERS) as Record<string, string>;
+    } catch {
+      return {};
+    }
+  }
+
+  return {};
 }
 
 export async function createEngineIfNotExists(
