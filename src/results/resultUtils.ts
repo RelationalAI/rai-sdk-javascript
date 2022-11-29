@@ -277,6 +277,7 @@ export function convertValue<T extends RelTypedValue>(
 export function getDisplayValue(
   typeDef: RelTypeDef,
   value: RelTypedValue['value'],
+  quoteStrings = false,
 ): string {
   const val = {
     ...typeDef,
@@ -289,7 +290,9 @@ export function getDisplayValue(
 
   switch (val.type) {
     case 'String':
-      return JSON.stringify(val.value).slice(1, -1);
+      return quoteStrings
+        ? JSON.stringify(val.value)
+        : JSON.stringify(val.value).slice(1, -1);
     case 'Bool':
       return val.value ? 'true' : 'false';
     case 'Char':
