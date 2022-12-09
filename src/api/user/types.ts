@@ -29,5 +29,6 @@ export enum UserStatus {
 
 export enum UserRole {
   USER = 'user',
+  USER_READ_ONLY = 'user-read-only',
   ADMIN = 'admin',
 }
