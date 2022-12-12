@@ -38,7 +38,7 @@ export interface AccessTokenCache {
   created_on: number;
 }
 
-export type ResponseInfo = Pick<
+export type ApiResponse = Pick<
   Response,
   'status' | 'statusText' | 'ok' | 'headers' | 'redirected'
 > & {

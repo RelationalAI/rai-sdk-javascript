@@ -15,14 +15,14 @@
  */
 
 import { TransactionResult } from './api/transaction/types';
-import { ResponseInfo } from './types';
+import { ApiResponse } from './types';
 
 export class ApiError extends Error {
   constructor(
     public message: string,
     public status = '',
     public details = '',
-    public response: ResponseInfo,
+    public response: ApiResponse,
   ) {
     super(message);
 
@@ -37,9 +37,9 @@ export class ApiError extends Error {
 export class TransactionError extends Error {
   message: string;
   result: TransactionResult;
-  response: ResponseInfo;
+  response: ApiResponse;
 
-  constructor(result: TransactionResult, response: ResponseInfo) {
+  constructor(result: TransactionResult, response: ApiResponse) {
     const msg = 'Transaction error. See transaction result';
 
     super(msg);
@@ -55,7 +55,7 @@ export class TransactionError extends Error {
   }
 }
 
-export function makeError(body: any, response: ResponseInfo) {
+export function makeError(body: any, response: ApiResponse) {
   if (body?.type === 'TransactionResult') {
     return new TransactionError(body, response);
   }

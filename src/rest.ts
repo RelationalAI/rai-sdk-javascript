@@ -18,7 +18,7 @@ import nodeFetch, { Response } from 'node-fetch';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
-import { ResponseInfo, VERSION } from './types';
+import { ApiResponse, VERSION } from './types';
 
 const isNode =
   typeof process !== 'undefined' &&
@@ -30,7 +30,7 @@ export type RequestOptions = {
   headers?: Record<string, string>;
   body?: any;
   query?: Record<string, any>;
-  onResponse?: (r: ResponseInfo) => void;
+  onResponse?: (r: ApiResponse) => void;
 };
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
@@ -137,7 +137,7 @@ async function parseMultipart(response: Response) {
 }
 
 function responseToInfo(response: Response, body: any) {
-  const info: ResponseInfo = {
+  const info: ApiResponse = {
     status: response.status,
     statusText: response.statusText,
     ok: response.ok,
