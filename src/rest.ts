@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import nodeFetch from 'node-fetch';
+import nodeFetch, { Response as NodeResponse } from 'node-fetch';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
@@ -57,6 +57,8 @@ export function makeUrl(scheme: string, host: string, port: string) {
   return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
+const isBrowser = typeof window !== 'undefined' || typeof self !== 'undefined';
+
 export async function request<T>(url: string, options: RequestOptions = {}) {
   const opts = {
     method: options.method || 'GET',
@@ -69,9 +71,9 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
-  const fetch = globalThis.fetch || nodeFetch;
+  const fetch = isBrowser ? globalThis.fetch : nodeFetch;
 
-  let response: Response;
+  let response;
 
   try {
     response = await fetch(fullUrl, opts);
@@ -124,7 +126,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   throw makeError(responseBody, responseToInfo(response, responseBody));
 }
 
-async function parseMultipart(response: Response) {
+async function parseMultipart(response: Response | NodeResponse) {
   const formData = await response.formData();
   const files = [];
 
@@ -138,7 +140,7 @@ async function parseMultipart(response: Response) {
   return files;
 }
 
-function responseToInfo(response: Response, body: any) {
+function responseToInfo(response: Response | NodeResponse, body: any) {
   const info: ResponseInfo = {
     status: response.status,
     statusText: response.statusText,
