@@ -14,67 +14,9 @@
  * under the License.
  */
 
-import {
-  convertValue,
-  getDisplayName,
-  getDisplayValue,
-  getTypeDef,
-} from './resultUtils';
-import { tests } from './testsJson';
+import { getDisplayName } from './resultUtils';
 
 describe('resultUtils', () => {
-  describe('getTypeDef', () => {
-    tests.forEach(test => {
-      const testFn = test.only ? it.only : it;
-
-      testFn(`should get type def for ${test.type} value`, async () => {
-        const typeDef = getTypeDef(test.relType);
-
-        expect(test).toEqual(expect.objectContaining(typeDef));
-      });
-    });
-  });
-
-  describe('convertValue', () => {
-    tests.forEach(test => {
-      const testFn = test.only ? it.only : it;
-
-      testFn(`should convert ${test.type} value`, async () => {
-        const values = test.arrowValues.map(val =>
-          convertValue(
-            {
-              type: test.type as any,
-              places: test.places,
-            },
-            val as any,
-          ),
-        );
-
-        expect(values).toEqual(test.values);
-      });
-    });
-  });
-
-  describe('getDisplayValue', () => {
-    tests.forEach(test => {
-      const testFn = test.only ? it.only : it;
-
-      testFn(`should display ${test.type} value`, async () => {
-        const displayValues = test.values.map(val =>
-          getDisplayValue(
-            {
-              type: test.type as any,
-              places: test.places,
-            },
-            val,
-          ),
-        );
-
-        expect(displayValues).toEqual(test.displayValues);
-      });
-    });
-  });
-
   describe('getDisplayName', () => {
     it('should get display name for Int64 type def', () => {
       expect(getDisplayName({ type: 'Int64' })).toEqual('Int64');

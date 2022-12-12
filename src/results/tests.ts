@@ -2633,6 +2633,7 @@ export const miscValueTypeTests: Test[] = [
 ];
 
 // TODO uncomment this when specialization on value types isfixed
+// TODO and flip the values like: TYPE, Int instead of Int, TYPE
 export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'String(symbol)',
