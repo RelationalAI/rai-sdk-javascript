@@ -19,7 +19,7 @@ import { promises } from 'fs';
 import path from 'path';
 
 import { Client, CsvConfigSyntax, readConfig } from '../index.node';
-import { show } from './show';
+import { showTransactionResult } from './show';
 
 async function run(
   database: string,
@@ -36,7 +36,7 @@ async function run(
   const client = new Client(config);
   const result = await client.loadCsv(database, engine, relation, csv, syntax);
 
-  show(result);
+  showTransactionResult(result);
 }
 
 (async () => {
