@@ -19,6 +19,7 @@ import { Engine, EngineOptions, EngineSize, EngineState } from './types';
 
 const ENDPOINT = 'compute';
 
+type EmptyResponse = {};
 type ListReponse = { computes: Engine[] };
 type SingleReponse = { compute: Engine };
 type DeleteResponse = {
@@ -60,5 +61,19 @@ export class EngineApi extends Base {
     });
 
     return result.status;
+  }
+
+  async suspendEngine(name: string) {
+      const result = await this.patch<EmptyResponse>(
+          `${ENDPOINT}/${name}`,
+          {body: {suspend: true}}
+      );
+      return result.status;
+  }
+  async resumeEngine(name: string) {
+      const result = await this.patch<EmptyResponse>(
+          `${ENDPOINT}/${name}`,
+          {body: {suspend: false}}
+      );
   }
 }
