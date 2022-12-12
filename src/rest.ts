@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import nodeFetch, { Response as NodeResponse } from 'node-fetch';
+import nodeFetch, { Response } from 'node-fetch';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
@@ -57,8 +57,6 @@ export function makeUrl(scheme: string, host: string, port: string) {
   return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
-const isBrowser = typeof window !== 'undefined' || typeof self !== 'undefined';
-
 export async function request<T>(url: string, options: RequestOptions = {}) {
   const opts = {
     method: options.method || 'GET',
@@ -71,12 +69,10 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
-  const fetch = isBrowser ? globalThis.fetch : nodeFetch;
-
   let response;
 
   try {
-    response = await fetch(fullUrl, opts);
+    response = await nodeFetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 
@@ -126,7 +122,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   throw makeError(responseBody, responseToInfo(response, responseBody));
 }
 
-async function parseMultipart(response: Response | NodeResponse) {
+async function parseMultipart(response: Response) {
   const formData = await response.formData();
   const files = [];
 
@@ -140,7 +136,7 @@ async function parseMultipart(response: Response | NodeResponse) {
   return files;
 }
 
-function responseToInfo(response: Response | NodeResponse, body: any) {
+function responseToInfo(response: Response, body: any) {
   const info: ResponseInfo = {
     status: response.status,
     statusText: response.statusText,
