@@ -14,11 +14,11 @@
  * under the License.
  */
 
-import nodeFetch from 'node-fetch';
+import nodeFetch, { Response } from 'node-fetch';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
-import { VERSION } from './types';
+import { ApiResponse, VERSION } from './types';
 
 const isNode =
   typeof process !== 'undefined' &&
@@ -30,7 +30,7 @@ export type RequestOptions = {
   headers?: Record<string, string>;
   body?: any;
   query?: Record<string, any>;
-  onResponse?: (r: Response) => void;
+  onResponse?: (r: ApiResponse) => void;
 };
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
@@ -64,22 +64,15 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     headers: addDefaultHeaders(options.headers, url),
   };
 
-  if (typeof window === 'undefined') {
-    // See: https://github.com/node-fetch/node-fetch#custom-highwatermark
-    (opts as any).highWaterMark = 1024 * 1024;
-  }
-
   const fullUrl =
     options.query && Object.keys(options.query).length > 0
       ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
-  const fetch = globalThis.fetch || nodeFetch;
-
-  let response: Response;
+  let response;
 
   try {
-    response = await fetch(fullUrl, opts);
+    response = await nodeFetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 
@@ -97,8 +90,6 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   const contentType = response.headers.get('content-type');
   let responseBody;
-
-  const responseClone = response.clone();
 
   try {
     if (contentType && contentType.includes('application/json')) {
@@ -119,7 +110,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   if (options.onResponse) {
     try {
-      options.onResponse(responseClone.clone());
+      options.onResponse(responseToInfo(response, responseBody));
       // eslint-disable-next-line no-empty
     } catch {}
   }
@@ -128,7 +119,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     return responseBody as T;
   }
 
-  throw makeError(responseBody, responseClone.clone());
+  throw makeError(responseBody, responseToInfo(response, responseBody));
 }
 
 async function parseMultipart(response: Response) {
@@ -143,4 +134,17 @@ async function parseMultipart(response: Response) {
   }
 
   return files;
+}
+
+function responseToInfo(response: Response, body: any) {
+  const info: ApiResponse = {
+    status: response.status,
+    statusText: response.statusText,
+    ok: response.ok,
+    headers: response.headers,
+    redirected: response.redirected,
+    body,
+  };
+
+  return info;
 }

@@ -14,5 +14,5 @@
  * under the License.
  */
 
-// This's just a mock to be included in the web version
-export default () => {};
+// Using browser's fetch in the browser env
+export default globalThis.fetch;
