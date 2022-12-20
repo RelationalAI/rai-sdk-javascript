@@ -29,7 +29,6 @@ export default async function () {
   const engineName = getEngineName();
   const client = await getClient();
 
-  console.log(`Creating engine ${engineName}`);
   await createEngineIfNotExists(client, engineName);
   console.log('');
 }

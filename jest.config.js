@@ -28,10 +28,8 @@ globalThis.__RAI_ENGINE__ = engineName;
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 const config = {
+  testTimeout: 120000,
   preset: 'ts-jest/presets/default-esm',
-  transformIgnorePatterns: [
-    'node_modules/(?!(fetch-blob|node-fetch|data-uri-to-buffer|formdata-polyfill)/)',
-  ],
   testEnvironment: 'node',
   globals: {
     // for the test files

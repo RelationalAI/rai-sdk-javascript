@@ -14,6 +14,8 @@
  * under the License.
  */
 
+/* eslint-disable no-console */
+
 import nock from 'nock';
 
 import Client from './api/client';
@@ -186,13 +188,19 @@ export async function createEngineIfNotExists(
     return !!engine;
   };
 
+  console.log(`Checking if ${engineName} engine exists`);
+
   if (await checkEngine()) {
+    console.log(`${engineName} engine exists`);
     return;
   }
 
+  console.log(`Creating ${engineName} engine`);
   await client.createEngine(engineName);
 
   const startedAt = Date.now();
+
+  console.log(`Waiting until ${engineName} gets provisioned`);
 
   return new Promise((resolve, reject) => {
     const poll = () => {

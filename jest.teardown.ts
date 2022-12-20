@@ -14,10 +14,22 @@
  * under the License.
  */
 
+/* eslint-disable no-console */
+
+import { getClient, getEngineName } from './src/testUtils';
+
 export default async function () {
-  console.log('teardown');
+  console.log('');
+  console.log('Jest global teardown');
 
-  await new Promise(res => setTimeout(res, 2000));
+  const engineName = getEngineName();
 
-  console.log('teardown after await');
+  if (process.env.GITHUB_ACTIONS) {
+    const client = await getClient();
+
+    console.log(`Deleting ${engineName} engine`);
+    await client.deleteEngine(engineName);
+  } else {
+    console.log(`Skiping removing ${engineName} engine`);
+  }
 }
