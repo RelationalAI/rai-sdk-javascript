@@ -18,19 +18,39 @@ import { readFileSync } from 'fs';
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
+const engineName = process.env.GITHUB_ACTIONS
+  ? `js-sdk-tests-${Date.now()}`
+  : `js-sdk-tests-engine-local`;
+
+// for global setup/teardown
+globalThis.__RAI_SDK_VERSION__ = pkg.version;
+globalThis.__RAI_ENGINE__ = engineName;
+
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-const exports = {
-  preset: 'ts-jest/presets/js-with-ts-esm',
+const config = {
+  preset: 'ts-jest/presets/default-esm',
   transformIgnorePatterns: [
     'node_modules/(?!(fetch-blob|node-fetch|data-uri-to-buffer|formdata-polyfill)/)',
   ],
   testEnvironment: 'node',
   globals: {
+    // for the test files
     __RAI_SDK_VERSION__: pkg.version,
+    __RAI_ENGINE__: engineName,
   },
   moduleNameMapper: {
-    '^lodash-es$': 'lodash',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  transform: {
+    '^.+\\.[tj]sx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
+  },
+  globalSetup: '<rootDir>/jest.setup.ts',
+  globalTeardown: '<rootDir>/jest.teardown.ts',
 };
 
-export default exports;
+export default config;

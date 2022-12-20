@@ -161,6 +161,16 @@ function readCustomHeaders() {
   return {};
 }
 
+export function getEngineName() {
+  const engineName = (globalThis as any).__RAI_ENGINE__;
+
+  if (typeof engineName === 'string') {
+    return engineName;
+  }
+
+  throw new Error('__RAI_ENGINE__ global variable is not set.');
+}
+
 export async function createEngineIfNotExists(
   client: Client,
   engineName: string,
