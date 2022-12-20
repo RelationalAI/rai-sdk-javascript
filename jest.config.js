@@ -38,17 +38,6 @@ const config = {
     __RAI_SDK_VERSION__: pkg.version,
     __RAI_ENGINE__: engineName,
   },
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
-  transform: {
-    '^.+\\.[tj]sx?$': [
-      'ts-jest',
-      {
-        useESM: true,
-      },
-    ],
-  },
   globalSetup: '<rootDir>/jest.setup.ts',
   globalTeardown: '<rootDir>/jest.teardown.ts',
 };
