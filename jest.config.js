@@ -28,8 +28,7 @@ globalThis.__RAI_ENGINE__ = engineName;
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 const config = {
-  testTimeout: 120000,
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest/presets/js-with-ts-esm',
   testEnvironment: 'node',
   globals: {
     // for the test files
@@ -38,6 +37,7 @@ const config = {
   },
   globalSetup: '<rootDir>/jest.setup.ts',
   globalTeardown: '<rootDir>/jest.teardown.ts',
+  testTimeout: 120000,
 };
 
 export default config;
