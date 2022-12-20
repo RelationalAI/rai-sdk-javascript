@@ -74,6 +74,8 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     );
     const txnId = result.transaction.id;
 
+    console.log(`txnId: ${txnId}`);
+
     if ('results' in result) {
       return result;
     }
