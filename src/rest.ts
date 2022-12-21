@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import nodeFetch, { Response } from 'node-fetch';
+import nodeFetch, { Response } from 'node-fetch-commonjs';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';

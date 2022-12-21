@@ -16,29 +16,25 @@
 
 import {
   createDatabaseIfNotExists,
-  createEngineIfNotExists,
   getClient,
+  getEngineName,
 } from '../../testUtils';
 import Client from '../client';
 
 describe('Load data integration tests', () => {
   const databaseName = `js-sdk-tests-${Date.now()}`;
-  const engineName = `js-sdk-tests-${Date.now()}`;
+  const engineName = getEngineName();
 
   let client: Client;
-
-  jest.setTimeout(1000 * 60 * 10);
 
   beforeAll(async () => {
     client = await getClient();
 
-    await createEngineIfNotExists(client, engineName);
     await createDatabaseIfNotExists(client, databaseName);
   });
 
   afterAll(async () => {
     await client.deleteDatabase(databaseName);
-    await client.deleteEngine(engineName);
   });
 
   describe('Load Json', () => {
