@@ -22,7 +22,11 @@ import {
 import Client from '../client';
 import { Model } from '../transaction/types';
 
+<<<<<<< HEAD
 describe.skip('Integration', () => {
+=======
+describe('ModelApi', () => {
+>>>>>>> main
   const databaseName = `js-sdk-tests-${Date.now()}`;
   const engineName = getEngineName();
   let client: Client;
