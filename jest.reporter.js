@@ -46,6 +46,8 @@ export default class TestReporter extends VerboseReporter {
 
     const logs = this.logsPerTest[testCaseResult.fullName] || [];
 
+    log('log test', logs.length);
+
     if (logs.length) {
       const indentation = '  '.repeat(indentLevel + 1);
       logs.forEach(msg => {
