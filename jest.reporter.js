@@ -34,6 +34,8 @@ export default class TestReporter extends VerboseReporter {
   onTestCaseResult(test, testCaseResult) {
     super.onTestCaseResult(test, testCaseResult);
 
+    log(`${testCaseResult.fullName} finished`, this.logsBuffer.length);
+
     // stashing away logs for the test that just finished
     this.logsPerTest[testCaseResult.fullName] = this.logsBuffer;
     this.logsBuffer = [];
@@ -50,5 +52,11 @@ export default class TestReporter extends VerboseReporter {
         log(indentation, msg);
       });
     }
+  }
+
+  onRunComplete(testContexts, results) {
+    log('RUN COMPLETE');
+    log(JSON.stringify(this.logsPerTest));
+    super.onRunComplete(testContexts, results);
   }
 }
