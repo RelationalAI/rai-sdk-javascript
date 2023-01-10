@@ -98,8 +98,6 @@ describe('Integration', () => {
           getDisplayValue(typeDefs[i], v),
         );
 
-        console.log('foo', Math.random());
-
         expect(typeDefs).toEqual(test.typeDefs);
         expect(values).toEqual(test.values);
         expect(displayValues).toEqual(test.displayValues);

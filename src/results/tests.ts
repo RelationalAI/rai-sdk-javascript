@@ -123,7 +123,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: [1n],
-    displayValues: ['1'],
+    displayValues: ['123'],
   },
   {
     name: 'Day',
