@@ -16,6 +16,7 @@
 
 /* eslint-disable no-console */
 
+import jwtDecode from 'jwt-decode';
 import nock from 'nock';
 
 import Client from './api/client';
@@ -236,6 +237,16 @@ export async function createDatabaseIfNotExists(
   }
 
   await client.createDatabase(databaseName);
+}
+
+export async function printEnvInfo(client: Client) {
+  const token = await client.config.credentials.getToken(client.baseUrl);
+  const decodedToken: any = jwtDecode(token);
+
+  console.log(`Env: ${decodedToken['aud']}`);
+  console.log(
+    `Account: ${decodedToken['https://relational.ai/claims/account']}`,
+  );
 }
 
 function logifyClient(client: Client) {
