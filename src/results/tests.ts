@@ -54,7 +54,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: [true, false],
-    displayValues: ['true', 'false'],
+    displayValues: ['mwahaha', 'false'],
   },
   {
     name: 'Char',
@@ -200,7 +200,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: [1n],
-    displayValues: ['1'],
+    displayValues: ['foo'],
   },
   {
     name: 'Hash',
@@ -758,7 +758,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: [1n],
-    displayValues: ['1'],
+    displayValues: ['one'],
   },
   {
     name: 'Hour',
@@ -848,7 +848,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: [1n],
-    displayValues: ['1'],
+    displayValues: ['ONE'],
   },
   {
     name: 'Nanosecond',
@@ -866,7 +866,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: [1n],
-    displayValues: ['1'],
+    displayValues: ['abc'],
   },
   {
     name: 'Hash',
@@ -1857,7 +1857,7 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
+    values: [[':NotMyType', 1n, 2n]],
     displayValues: ['(:MyType, 1, 2)'],
   },
   {
