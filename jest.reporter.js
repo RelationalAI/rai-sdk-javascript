@@ -15,6 +15,7 @@
  */
 
 import { VerboseReporter } from '@jest/reporters';
+import { formatResultsErrors } from 'jest-message-util';
 
 export default class TestReporter extends VerboseReporter {
   constructor() {
@@ -49,5 +50,31 @@ export default class TestReporter extends VerboseReporter {
         this.log(indentation + msg);
       });
     }
+  }
+
+  printTestFileFailureMessage(testPath, config, result) {
+    result.testResults.forEach(testCaseResult => {
+      const failureMessage = formatResultsErrors(
+        [testCaseResult],
+        config,
+        {},
+        testPath,
+      );
+
+      if (failureMessage) {
+        this.log(failureMessage);
+
+        const logs = this.logsPerTest[testCaseResult.fullName] || [];
+
+        if (logs.length) {
+          const indentation = '    ';
+
+          this.log(indentation + 'Logs:');
+          this.log('');
+          logs.forEach(msg => this.log(indentation + msg));
+          this.log('');
+        }
+      }
+    });
   }
 }
