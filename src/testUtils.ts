@@ -265,6 +265,7 @@ function logifyClient(client: Client) {
   };
 
   const pollTransaction = client.pollTransaction.bind(client);
+  const timeout = (globalThis as any).__RAI_TIMEOUT__;
 
   client.pollTransaction = async (...args) => {
     testLog(`polling transaction ${args[0]}`);
@@ -272,7 +273,7 @@ function logifyClient(client: Client) {
     return await pollTransaction(
       args[0],
       args[1],
-      120000, // forcing 2 minutes timeout for all tests
+      timeout ? Number(timeout) : 120000,
     );
   };
 }
