@@ -269,7 +269,11 @@ function logifyClient(client: Client) {
   client.pollTransaction = async (...args) => {
     testLog(`polling transaction ${args[0]}`);
 
-    return await pollTransaction(...args);
+    return await pollTransaction(
+      args[0],
+      args[1],
+      120000, // forcing 2 minutes timeout for all tests
+    );
   };
 }
 
