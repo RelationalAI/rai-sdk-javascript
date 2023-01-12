@@ -18,10 +18,10 @@ import { readFileSync } from 'fs';
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
-const timeout = 120000;
 const engineName = process.env.GITHUB_ACTIONS
   ? `js-sdk-tests-${Date.now()}`
   : `js-sdk-tests-engine-local`;
+const timeout = 120000;
 
 // for global setup/teardown
 globalThis.__RAI_SDK_VERSION__ = pkg.version;
