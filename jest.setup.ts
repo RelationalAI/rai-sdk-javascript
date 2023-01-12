@@ -20,6 +20,7 @@ import {
   createEngineIfNotExists,
   getClient,
   getEngineName,
+  printEnvInfo,
 } from './src/testUtils';
 
 export default async function () {
@@ -29,6 +30,8 @@ export default async function () {
   const engineName = getEngineName();
   const client = await getClient();
 
+  await printEnvInfo(client);
   await createEngineIfNotExists(client, engineName);
+
   console.log('');
 }

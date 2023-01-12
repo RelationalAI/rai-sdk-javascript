@@ -16,6 +16,7 @@
 
 /* eslint-disable no-console */
 
+import jwtDecode from 'jwt-decode';
 import nock from 'nock';
 
 import Client from './api/client';
@@ -148,6 +149,8 @@ export async function getClient() {
 
   client['customHeaders'] = readCustomHeaders();
 
+  logifyClient(client);
+
   return client;
 }
 
@@ -234,4 +237,47 @@ export async function createDatabaseIfNotExists(
   }
 
   await client.createDatabase(databaseName);
+}
+
+export async function printEnvInfo(client: Client) {
+  const token = await client.config.credentials.getToken(client.baseUrl);
+  const decodedToken: any = jwtDecode(token);
+
+  console.log(`Env: ${decodedToken['aud']}`);
+  console.log(
+    `Account: ${decodedToken['https://relational.ai/claims/account']}`,
+  );
+}
+
+function logifyClient(client: Client) {
+  const execAsync = client.execAsync.bind(client);
+
+  client.execAsync = async (...args) => {
+    testLog(`execAsync database: ${args[0]} engine: ${args[1]}`);
+
+    const result = await execAsync(...args);
+
+    testLog(
+      `transaction: ${result.transaction.id} ${result.transaction.state}`,
+    );
+
+    return result;
+  };
+
+  const pollTransaction = client.pollTransaction.bind(client);
+
+  client.pollTransaction = async (...args) => {
+    testLog(`polling transaction ${args[0]}`);
+
+    return await pollTransaction(...args);
+  };
+}
+
+function testLog(msg: string) {
+  // defined in jest.reporter in order to catch logs per test
+  const log = (globalThis as any).testLog;
+
+  if (typeof log === 'function') {
+    log(msg);
+  }
 }
