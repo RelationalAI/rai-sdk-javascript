@@ -265,11 +265,16 @@ function logifyClient(client: Client) {
   };
 
   const pollTransaction = client.pollTransaction.bind(client);
+  const timeout = (globalThis as any).__RAI_TIMEOUT__;
 
   client.pollTransaction = async (...args) => {
     testLog(`polling transaction ${args[0]}`);
 
-    return await pollTransaction(...args);
+    return await pollTransaction(
+      args[0],
+      args[1],
+      timeout ? Number(timeout) : 120000,
+    );
   };
 }
 

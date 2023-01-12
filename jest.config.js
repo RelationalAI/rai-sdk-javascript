@@ -21,10 +21,12 @@ const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 const engineName = process.env.GITHUB_ACTIONS
   ? `js-sdk-tests-${Date.now()}`
   : `js-sdk-tests-engine-local`;
+const timeout = 120000;
 
 // for global setup/teardown
 globalThis.__RAI_SDK_VERSION__ = pkg.version;
 globalThis.__RAI_ENGINE__ = engineName;
+globalThis.__RAI_TIMEOUT__ = timeout;
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 const config = {
@@ -34,10 +36,11 @@ const config = {
     // for the test files
     __RAI_SDK_VERSION__: pkg.version,
     __RAI_ENGINE__: engineName,
+    __RAI_TIMEOUT__: timeout,
   },
   globalSetup: '<rootDir>/jest.setup.ts',
   globalTeardown: '<rootDir>/jest.teardown.ts',
-  testTimeout: 120000,
+  testTimeout: timeout,
   reporters: ['<rootDir>/jest.reporter.js'],
 };
 
