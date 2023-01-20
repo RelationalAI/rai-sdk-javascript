@@ -16,6 +16,7 @@
 
 import { tableFromIPC } from 'apache-arrow';
 
+import { MaxRelationSizeError } from '../../errors';
 import { MetadataInfo } from '../../proto/generated/message';
 import { RelationId } from '../../proto/generated/schema';
 import {
@@ -84,8 +85,10 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
       // See: https://github.com/apache/arrow/issues/33211
       // throwing the error here to avoid failures downstream
       if (file.file.size >= MAX_ARROW_SIZE) {
-        throw new Error(
-          `Maximum relation size of ${MAX_ARROW_SIZE} bytes exceeded. Relation: ${file.name}`,
+        throw new MaxRelationSizeError(
+          file.name,
+          file.file.size,
+          MAX_ARROW_SIZE,
         );
       }
 
