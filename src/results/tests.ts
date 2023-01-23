@@ -40,7 +40,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: ['test'],
-    displayValues: ['test'],
+    displayValues: ['"test"'],
   },
   {
     name: 'Bool',
@@ -68,7 +68,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: ['a', '👍'],
-    displayValues: ['a', '👍'],
+    displayValues: ["'a'", "'👍'"],
   },
   {
     name: 'DateTime',
@@ -648,7 +648,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: ['👍'],
-    displayValues: ['👍'],
+    displayValues: ["'👍'"],
   },
   {
     name: 'DateTime',
@@ -1408,7 +1408,7 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, 'abc']],
-    displayValues: ['(:MyType, 1, abc)'],
+    displayValues: ['(:MyType, 1, "abc")'],
   },
   {
     name: 'Bool',
@@ -1460,7 +1460,7 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, '👍']],
-    displayValues: ['(:MyType, 1, 👍)'],
+    displayValues: ["(:MyType, 1, '👍')"],
   },
   {
     name: 'DateTime',
@@ -2590,7 +2590,7 @@ export const miscValueTypeTests: Test[] = [
       },
     ],
     values: [[':OuterType', [':InnerType', 123n, 'inner'], 'outer']],
-    displayValues: ['(:OuterType, (:InnerType, 123, inner), outer)'],
+    displayValues: ['(:OuterType, (:InnerType, 123, "inner"), "outer")'],
   },
   {
     name: 'Module',
@@ -2686,7 +2686,7 @@ export const valueTypeSpecializationTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, 'abc']],
-    displayValues: ['(:MyType, 1, abc)'],
+    displayValues: ['(:MyType, 1, "abc")'],
     skip: true,
   },
   {
@@ -2750,7 +2750,7 @@ export const valueTypeSpecializationTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, '👍']],
-    displayValues: ['(:MyType, 1, 👍)'],
+    displayValues: ["(:MyType, 1, '👍')"],
     skip: true,
   },
   {
