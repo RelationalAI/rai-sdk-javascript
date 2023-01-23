@@ -33,14 +33,21 @@ type Test = {
 export const standardTypeTests: Test[] = [
   {
     name: 'String',
-    query: `def output = "test"`,
+    query: `
+      def s1 = "_\\"escape test1\\"_"
+      def s2 = "_\\\\escape test2\\\\_"
+      def output = s1, s2
+    `,
     typeDefs: [
       {
         type: 'String',
       },
+      {
+        type: 'String',
+      },
     ],
-    values: ['test'],
-    displayValues: ['"test"'],
+    values: ['_"escape test1"_', '_\\escape test2\\_'],
+    displayValues: ['"_\\"escape test1\\"_"', '"_\\\\escape test2\\\\_"'],
   },
   {
     name: 'Bool',
