@@ -325,8 +325,14 @@ export function getDisplayValue(
       return 'missing';
     case 'Float16':
     case 'Float32':
-    case 'Float64':
+    case 'Float64': {
+      if (Object.is(val.value, -0)) {
+        // Displaying negative zero properly
+        return '-0.0';
+      }
+
       return val.value % 1 === 0 ? val.value + '.0' : val.value.toString();
+    }
     case 'Decimal16':
     case 'Decimal32':
     case 'Decimal64':
