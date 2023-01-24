@@ -57,6 +57,15 @@ export function makeUrl(scheme: string, host: string, port: string) {
   return `${scheme}://${host}${port ? ':' + port : ''}`;
 }
 
+function testLog(msg: string) {
+  // defined in jest.reporter in order to catch logs per test
+  const log = (globalThis as any).testLog;
+
+  if (typeof log === 'function') {
+    log('    ' + msg);
+  }
+}
+
 export async function request<T>(url: string, options: RequestOptions = {}) {
   const opts = {
     method: options.method || 'GET',
@@ -71,8 +80,17 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   let response;
 
+  testLog(`before fetch: ${options.method} ${fullUrl}`);
+
   try {
     response = await nodeFetch(fullUrl, opts);
+
+    testLog(`after fetch status: ${response.status}`);
+    testLog(
+      `after fetch headers: ${JSON.stringify(
+        Array.from(response.headers.entries()),
+      )}`,
+    );
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 
@@ -91,6 +109,8 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   const contentType = response.headers.get('content-type');
   let responseBody;
 
+  testLog(`before reading response: ${fullUrl}`);
+
   try {
     if (contentType && contentType.includes('application/json')) {
       responseBody = await response.json();
@@ -107,6 +127,8 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
     throw err;
   }
+
+  testLog(`after reading response: ${fullUrl}`);
 
   if (options.onResponse) {
     try {
