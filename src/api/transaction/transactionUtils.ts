@@ -16,6 +16,7 @@
 
 import { tableFromIPC } from 'apache-arrow';
 
+import { MaxRelationSizeError } from '../../errors';
 import { MetadataInfo } from '../../proto/generated/message';
 import { RelationId } from '../../proto/generated/schema';
 import {
@@ -71,6 +72,8 @@ export async function readTransactionResult(files: TransactionAsyncFile[]) {
   return result;
 }
 
+const MAX_ARROW_SIZE = 2147483647;
+
 export async function readArrowFiles(files: TransactionAsyncFile[]) {
   const results: ArrowResult[] = [];
 
@@ -79,6 +82,16 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
       typeof file.file !== 'string' &&
       file.file.type === 'application/vnd.apache.arrow.stream'
     ) {
+      // See: https://github.com/apache/arrow/issues/33211
+      // throwing the error here to avoid failures downstream
+      if (file.file.size >= MAX_ARROW_SIZE) {
+        throw new MaxRelationSizeError(
+          file.name,
+          file.file.size,
+          MAX_ARROW_SIZE,
+        );
+      }
+
       const table = await tableFromIPC(file.file.stream());
 
       results.push({

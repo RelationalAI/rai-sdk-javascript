@@ -68,4 +68,22 @@ export function makeError(body: any, response: ApiResponse) {
   );
 }
 
-export type SdkError = ApiError | TransactionError | Error;
+export class MaxRelationSizeError extends Error {
+  constructor(
+    public relationId: string,
+    public relationSize: number,
+    public maxSize: number,
+  ) {
+    const message = `Maximum relation size of ${maxSize} bytes exceeded. Relation: ${relationId}`;
+
+    super(message);
+
+    this.name = 'MaxRelationSizeError';
+  }
+}
+
+export type SdkError =
+  | ApiError
+  | TransactionError
+  | MaxRelationSizeError
+  | Error;
