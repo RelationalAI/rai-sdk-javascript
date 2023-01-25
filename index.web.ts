@@ -23,7 +23,7 @@ export * from './src/api/transaction/types';
 export * from './src/api/user/types';
 export * from './src/credentials';
 export type { SdkError } from './src/errors';
-export { ApiError, TransactionError } from './src/errors';
+export { ApiError, MaxRelationSizeError, TransactionError } from './src/errors';
 export * from './src/proto/generated/message';
 export * from './src/proto/generated/schema';
 export * from './src/results/resultTable';
