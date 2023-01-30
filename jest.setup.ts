@@ -14,5 +14,24 @@
  * under the License.
  */
 
-// Using browser's fetch in the browser env
-export default globalThis.fetch;
+/* eslint-disable no-console */
+
+import {
+  createEngineIfNotExists,
+  getClient,
+  getEngineName,
+  printEnvInfo,
+} from './src/testUtils';
+
+export default async function () {
+  console.log('');
+  console.log('Jest global setup');
+
+  const engineName = getEngineName();
+  const client = await getClient();
+
+  await printEnvInfo(client);
+  await createEngineIfNotExists(client, engineName);
+
+  console.log('');
+}

@@ -37,3 +37,10 @@ export interface AccessTokenCache {
   expires_in: number;
   created_on: number;
 }
+
+export type ApiResponse = Pick<
+  Response,
+  'status' | 'statusText' | 'ok' | 'headers' | 'redirected'
+> & {
+  body: any;
+};

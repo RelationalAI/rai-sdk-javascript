@@ -284,16 +284,23 @@ export function getDisplayValue(
   } as RelTypedValue;
 
   if (typeDef.type === 'Constant') {
-    return getDisplayValue(typeDef.value, value);
+    const displayValue = getDisplayValue(typeDef.value, value);
+
+    if (typeDef.value.type === 'String') {
+      // Getting rid of double quotes for string constants
+      return displayValue.slice(1, -1);
+    }
+
+    return displayValue;
   }
 
   switch (val.type) {
     case 'String':
-      return JSON.stringify(val.value).slice(1, -1);
+      return JSON.stringify(val.value);
     case 'Bool':
       return val.value ? 'true' : 'false';
     case 'Char':
-      return val.value;
+      return `'${val.value}'`;
     case 'DateTime':
       return val.value.toISOString();
     case 'Date':
@@ -325,8 +332,14 @@ export function getDisplayValue(
       return 'missing';
     case 'Float16':
     case 'Float32':
-    case 'Float64':
+    case 'Float64': {
+      if (Object.is(val.value, -0)) {
+        // Displaying negative zero properly
+        return '-0.0';
+      }
+
       return val.value % 1 === 0 ? val.value + '.0' : val.value.toString();
+    }
     case 'Decimal16':
     case 'Decimal32':
     case 'Decimal64':
@@ -380,7 +393,7 @@ export function getDisplayName(typeDef: RelTypeDef): string {
     case 'Constant': {
       const name = getDisplayName(typeDef.value);
 
-      return `${name}(${getDisplayValue(typeDef.value, typeDef.value.value)})`;
+      return `${name}(${getDisplayValue(typeDef, typeDef.value.value)})`;
     }
     default:
       return typeDef.type;

@@ -33,14 +33,21 @@ type Test = {
 export const standardTypeTests: Test[] = [
   {
     name: 'String',
-    query: `def output = "test"`,
+    query: `
+      def s1 = "_\\"escape test1\\"_"
+      def s2 = "_\\\\escape test2\\\\_"
+      def output = s1, s2
+    `,
     typeDefs: [
       {
         type: 'String',
       },
+      {
+        type: 'String',
+      },
     ],
-    values: ['test'],
-    displayValues: ['test'],
+    values: ['_"escape test1"_', '_\\escape test2\\_'],
+    displayValues: ['"_\\"escape test1\\"_"', '"_\\\\escape test2\\\\_"'],
   },
   {
     name: 'Bool',
@@ -68,7 +75,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: ['a', '👍'],
-    displayValues: ['a', '👍'],
+    displayValues: ["'a'", "'👍'"],
   },
   {
     name: 'DateTime',
@@ -392,7 +399,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Float16',
-    query: `def output = float[16, 12], float[16, 42.5]`,
+    query: `def output = float[16, 12], float[16, 42.5], float[16, -0.0]`,
     typeDefs: [
       {
         type: 'Float16',
@@ -400,13 +407,16 @@ export const standardTypeTests: Test[] = [
       {
         type: 'Float16',
       },
+      {
+        type: 'Float16',
+      },
     ],
-    values: [12, 42.5],
-    displayValues: ['12.0', '42.5'],
+    values: [12, 42.5, -0],
+    displayValues: ['12.0', '42.5', '-0.0'],
   },
   {
     name: 'Float32',
-    query: `def output = float[32, 12], float[32, 42.5]`,
+    query: `def output = float[32, 12], float[32, 42.5], float[32, -0.0]`,
     typeDefs: [
       {
         type: 'Float32',
@@ -414,13 +424,16 @@ export const standardTypeTests: Test[] = [
       {
         type: 'Float32',
       },
+      {
+        type: 'Float32',
+      },
     ],
-    values: [12, 42.5],
-    displayValues: ['12.0', '42.5'],
+    values: [12, 42.5, -0],
+    displayValues: ['12.0', '42.5', '-0.0'],
   },
   {
     name: 'Float64',
-    query: `def output = float[64, 12], float[64, 42.5]`,
+    query: `def output = float[64, 12], float[64, 42.5], float[64, -0.0]`,
     typeDefs: [
       {
         type: 'Float64',
@@ -428,9 +441,12 @@ export const standardTypeTests: Test[] = [
       {
         type: 'Float64',
       },
+      {
+        type: 'Float64',
+      },
     ],
-    values: [12, 42.5],
-    displayValues: ['12.0', '42.5'],
+    values: [12, 42.5, -0],
+    displayValues: ['12.0', '42.5', '-0.0'],
   },
   {
     name: 'Decimal16',
@@ -648,7 +664,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: ['👍'],
-    displayValues: ['👍'],
+    displayValues: ["'👍'"],
   },
   {
     name: 'DateTime',
@@ -1408,7 +1424,7 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, 'abc']],
-    displayValues: ['(:MyType, 1, abc)'],
+    displayValues: ['(:MyType, 1, "abc")'],
   },
   {
     name: 'Bool',
@@ -1460,7 +1476,7 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, '👍']],
-    displayValues: ['(:MyType, 1, 👍)'],
+    displayValues: ["(:MyType, 1, '👍')"],
   },
   {
     name: 'DateTime',
@@ -2590,7 +2606,7 @@ export const miscValueTypeTests: Test[] = [
       },
     ],
     values: [[':OuterType', [':InnerType', 123n, 'inner'], 'outer']],
-    displayValues: ['(:OuterType, (:InnerType, 123, inner), outer)'],
+    displayValues: ['(:OuterType, (:InnerType, 123, "inner"), "outer")'],
   },
   {
     name: 'Module',
@@ -2686,7 +2702,7 @@ export const valueTypeSpecializationTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, 'abc']],
-    displayValues: ['(:MyType, 1, abc)'],
+    displayValues: ['(:MyType, 1, "abc")'],
     skip: true,
   },
   {
@@ -2750,7 +2766,7 @@ export const valueTypeSpecializationTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, '👍']],
-    displayValues: ['(:MyType, 1, 👍)'],
+    displayValues: ["(:MyType, 1, '👍')"],
     skip: true,
   },
   {

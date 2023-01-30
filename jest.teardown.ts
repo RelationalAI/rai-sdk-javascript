@@ -14,5 +14,22 @@
  * under the License.
  */
 
-// Using browser's fetch in the browser env
-export default globalThis.fetch;
+/* eslint-disable no-console */
+
+import { getClient, getEngineName } from './src/testUtils';
+
+export default async function () {
+  console.log('');
+  console.log('Jest global teardown');
+
+  const engineName = getEngineName();
+
+  if (process.env.GITHUB_ACTIONS) {
+    const client = await getClient();
+
+    console.log(`Deleting ${engineName} engine`);
+    await client.deleteEngine(engineName);
+  } else {
+    console.log(`Skiping removing ${engineName} engine`);
+  }
+}

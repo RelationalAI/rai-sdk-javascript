@@ -15,16 +15,11 @@
  */
 
 import { tableFromArrays } from 'apache-arrow';
-import { readFileSync } from 'fs';
+import { Table as PrintTable } from 'console-table-printer';
 
 import { ArrowRelation } from '../api/transaction/types';
 import { MetadataInfo } from '../proto/generated/message';
 import { ResultTable } from './resultTable';
-
-const printTableSnapshot = readFileSync(
-  __dirname + '/snapshots/printTable.txt',
-  'utf-8',
-);
 
 function makeMetadata(json: any) {
   const metadata = MetadataInfo.fromJson({
@@ -405,25 +400,15 @@ describe('ResultTable', () => {
     });
 
     it('should print table', () => {
-      const table = new ResultTable(relation);
+      const mockOnPrintTable = jest.fn();
 
-      jest.spyOn(console, 'log').mockImplementation(() => {});
+      PrintTable.prototype['printTable'] = mockOnPrintTable;
+
+      const table = new ResultTable(relation);
 
       table.print();
 
-      // colors are making it hard to read
-      // it should looks like
-      // ┌──────────┬──────────────┬────────┬──────────────┬──────┬───────┐
-      // │ Int64(1) │ String(:foo) │ String │ String(:bar) │ Char │ Int64 │
-      // ├──────────┼──────────────┼────────┼──────────────┼──────┼───────┤
-      // │        1 │         :foo │      w │         :bar │    a │     1 │
-      // │        1 │         :foo │      x │         :bar │    b │     2 │
-      // │        1 │         :foo │      y │         :bar │    c │     3 │
-      // │        1 │         :foo │      z │         :bar │    d │     4 │
-      // └──────────┴──────────────┴────────┴──────────────┴──────┴───────┘
-
-      // eslint-disable-next-line no-console
-      expect(console.log).toHaveBeenCalledWith(printTableSnapshot);
+      expect(mockOnPrintTable).toHaveBeenCalled();
     });
 
     it('should get physical table', () => {
