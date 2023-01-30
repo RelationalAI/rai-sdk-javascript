@@ -64,16 +64,16 @@ export class EngineApi extends Base {
   }
 
   async suspendEngine(name: string) {
-    const result = await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
+    await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
       body: { suspend: true },
     });
-    return result.status;
+    return;
   }
 
   async resumeEngine(name: string) {
-    const result = await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
+    await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
       body: { suspend: true },
     });
-    return result.status;
+    return;
   }
 }
