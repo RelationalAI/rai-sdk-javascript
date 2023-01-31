@@ -63,6 +63,11 @@ const webEsm = lodash.merge({}, baseConfig, {
     },
   },
   target: 'web',
+  resolve: {
+    alias: {
+      undici: path.resolve('fetch.ts'),
+    },
+  },
 });
 
 const webCjs = lodash.merge({}, baseConfig, {
@@ -75,6 +80,11 @@ const webCjs = lodash.merge({}, baseConfig, {
     },
   },
   target: 'web',
+  resolve: {
+    alias: {
+      undici: path.resolve('fetch.ts'),
+    },
+  },
 });
 
 const nodeEsm = lodash.merge({}, baseConfig, {

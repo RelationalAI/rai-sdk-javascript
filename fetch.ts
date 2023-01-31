@@ -15,4 +15,4 @@
  */
 
 // Using browser's fetch in the browser env
-export default globalThis.fetch;
+export const fetch = globalThis.fetch;
