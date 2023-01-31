@@ -104,7 +104,6 @@
     "config-ini-parser": "1.5.9",
     "console-table-printer": "2.11.0",
     "decimal.js": "10.3.1",
-    "node-fetch-commonjs": "3.2.4",
     "query-string": "7.1.0"
   }
 }

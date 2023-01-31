@@ -14,7 +14,6 @@
  * under the License.
  */
 
-import nodeFetch, { Response } from 'node-fetch-commonjs';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
@@ -72,7 +71,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   let response;
 
   try {
-    response = await nodeFetch(fullUrl, opts);
+    response = await fetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 
