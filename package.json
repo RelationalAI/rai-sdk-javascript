@@ -65,7 +65,7 @@
     "tscheck": "tsc --noEmit --pretty true",
     "lint": "eslint --cache . --ext js --ext ts --ext tsx",
     "fix": "eslint --cache --fix . --ext js --ext ts --ext tsx",
-    "test": "jest --verbose --runInBand",
+    "test": "jest --verbose --runInBand --testPathPattern integration",
     "test:debug": "npx --node-arg=--inspect jest --runInBand --testTimeout=60000 --verbose --watch",
     "test:bundle": "node ./dist-test/esm-test.mjs && node ./dist-test/cjs-test.cjs",
     "example": "node --es-module-specifier-resolution=node --loader ts-node/esm"
