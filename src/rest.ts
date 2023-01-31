@@ -15,6 +15,7 @@
  */
 
 import { stringify } from 'query-string';
+import { fetch as nodeFetch, Response } from 'undici';
 
 import { makeError } from './errors';
 import { ApiResponse, VERSION } from './types';
@@ -71,7 +72,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   let response;
 
   try {
-    response = await fetch(fullUrl, opts);
+    response = await nodeFetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 

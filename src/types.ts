@@ -14,6 +14,8 @@
  * under the License.
  */
 
+import { Response } from 'undici';
+
 import { Credentials } from './credentials';
 
 export const VERSION =
