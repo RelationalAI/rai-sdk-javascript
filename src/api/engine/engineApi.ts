@@ -67,13 +67,11 @@ export class EngineApi extends Base {
     await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
       body: { suspend: true },
     });
-    return;
   }
 
   async resumeEngine(name: string) {
     await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
-      body: { suspend: true },
+      body: { suspend: false },
     });
-    return;
   }
 }
