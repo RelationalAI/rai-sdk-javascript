@@ -45,7 +45,7 @@ describe('Integration', () => {
     await client.deleteDatabase(databaseName);
   });
 
-  describe.only('Rel to JS standard types', () => {
+  describe('Rel to JS standard types', () => {
     standardTypeTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
