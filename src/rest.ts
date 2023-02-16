@@ -102,15 +102,10 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
       responseBody = await response.text();
     }
   } catch (error: any) {
-    // eslint-disable-next-line no-console
-    console.log(error.message);
+    const err = new Error('Failed to read server response.');
+    (err as any).cause = error;
 
-    throw error;
-
-    // const err = new Error('Failed to read server response.');
-    // (err as any).cause = error;
-
-    // throw err;
+    throw err;
   }
 
   if (options.onResponse) {

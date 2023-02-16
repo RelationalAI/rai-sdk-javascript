@@ -14,9 +14,14 @@
  * under the License.
  */
 
-import nock from 'nock';
+import { MockAgent } from 'undici';
 
-import { baseUrl, getMockConfig } from '../../testUtils';
+import {
+  baseUrl,
+  createMockAgent,
+  getMockConfig,
+  mockResponseHeaders,
+} from '../../testUtils';
 import { EngineApi } from './engineApi';
 import { EngineSize, EngineState } from './types';
 
@@ -25,32 +30,42 @@ const path = '/compute';
 describe('EngineApi', () => {
   const api = new EngineApi(getMockConfig());
   const mockEngines = [{ name: 'engine-1' }, { name: 'engine-2' }];
+  let agent: MockAgent;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  beforeEach(() => {
+    agent = createMockAgent();
+  });
 
   it('should create engine', async () => {
     const response = { compute: mockEngines[0] };
-    const scope = nock(baseUrl)
-      .put(path, {
-        region: 'us-east',
-        size: EngineSize.S,
-        name: 'test-engine',
-      })
-      .reply(200, response);
-    const result = await api.createEngine('test-engine', EngineSize.S);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'PUT',
+        body: JSON.stringify({
+          region: 'us-east',
+          name: 'test-engine',
+          size: EngineSize.S,
+        }),
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.createEngine('test-engine', EngineSize.S);
 
     expect(result).toEqual(mockEngines[0]);
   });
 
   it('should list engines', async () => {
     const response = { computes: mockEngines };
-    const scope = nock(baseUrl).get(path).reply(200, response);
-    const result = await api.listEngines();
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({ path })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.listEngines();
 
     expect(result).toEqual(mockEngines);
   });
@@ -61,35 +76,46 @@ describe('EngineApi', () => {
       id: 'test-id',
       state: [EngineState.PROVISIONED, EngineState.PROVISIONING],
     };
-    const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await api.listEngines(query);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({ path, query })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.listEngines(query);
 
     expect(result).toEqual(mockEngines);
   });
 
   it('should get engine', async () => {
     const response = { computes: mockEngines };
-    const scope = nock(baseUrl)
-      .get(path)
-      .query({ name: 'test-engine' })
-      .reply(200, response);
-    const result = await api.getEngine('test-engine');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        query: { name: 'test-engine' },
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.getEngine('test-engine');
 
     expect(result).toEqual(mockEngines[0]);
   });
 
   it('should delete engine', async () => {
     const response = { status: { message: 'deleted' } };
-    const scope = nock(baseUrl)
-      .delete(path, { name: 'test-engine' })
-      .reply(200, response);
-    const result = await api.deleteEngine('test-engine');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'DELETE',
+        body: JSON.stringify({ name: 'test-engine' }),
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.deleteEngine('test-engine');
 
     expect(result).toEqual(response.status);
   });

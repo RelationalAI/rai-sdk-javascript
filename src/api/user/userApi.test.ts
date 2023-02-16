@@ -50,6 +50,7 @@ describe('UserApi', () => {
         }),
       })
       .reply(200, response, mockResponseHeaders);
+
     const result = await api.createUser('test1@test.com', [UserRole.ADMIN]);
 
     expect(result).toEqual(mockUsers[0]);
