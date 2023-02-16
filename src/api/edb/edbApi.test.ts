@@ -14,9 +14,16 @@
  * under the License.
  */
 
-import nock from 'nock';
+import { MockAgent } from 'undici';
 
-import { getMockConfig, nockTransaction } from '../../testUtils';
+import {
+  baseUrl,
+  createMockAgent,
+  getMockConfig,
+  makeTransactionRequest,
+  makeTransactionResult,
+  mockResponseHeaders,
+} from '../../testUtils';
 import { RelKey } from '../transaction/types';
 import { EdbApi } from './edbApi';
 
@@ -38,54 +45,77 @@ describe('EdbApi', () => {
   ];
   const database = 'test-db';
   const engine = 'test-engine';
+  const path = '/transaction';
+  const query = {
+    dbname: database,
+    open_mode: 'OPEN',
+    region: 'us-east',
+    compute_name: engine,
+  };
+  let agent: MockAgent;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  beforeEach(() => {
+    agent = createMockAgent();
+  });
 
   it('should list edbs', async () => {
-    const scope = nockTransaction(
-      [
-        {
-          type: 'ListEdbAction',
-        },
-      ],
-      [
-        {
-          type: 'ListEdbActionResult',
-          rels: mockEdbs,
-        },
-      ],
+    const request = makeTransactionRequest(
+      [{ type: 'ListEdbAction' }],
       database,
       engine,
     );
-    const result = await api.listEdbs(database, engine);
+    const response = makeTransactionResult([
+      {
+        type: 'ListEdbActionResult',
+        rels: mockEdbs,
+      },
+    ]);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'POST',
+        body: JSON.stringify(request),
+        query,
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.listEdbs(database, engine);
 
     expect(result).toEqual(mockEdbs);
   });
 
   it('should delete edb', async () => {
-    const scope = nockTransaction(
+    const request = makeTransactionRequest(
       [
         {
           type: 'ModifyWorkspaceAction',
           delete_edb: 'edb1',
         },
       ],
-      [
-        {
-          type: 'ModifyWorkspaceActionResult',
-          delete_edb_result: [mockEdbs[1]],
-        },
-      ],
       database,
       engine,
       false,
     );
-    const result = await api.deleteEdb(database, engine, 'edb1');
+    const response = makeTransactionResult([
+      {
+        type: 'ModifyWorkspaceActionResult',
+        delete_edb_result: [mockEdbs[1]],
+      },
+    ]);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'POST',
+        body: JSON.stringify(request),
+        query,
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.deleteEdb(database, engine, 'edb1');
 
     expect(result).toEqual([mockEdbs[1]]);
   });

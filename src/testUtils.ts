@@ -17,7 +17,6 @@
 /* eslint-disable no-console */
 
 import jwtDecode from 'jwt-decode';
-import nock from 'nock';
 import { MockAgent, setGlobalDispatcher } from 'undici';
 
 import Client from './api/client';
@@ -110,28 +109,6 @@ export function makeTransactionResult(
   };
 
   return result;
-}
-
-export function nockTransaction(
-  actions: LabeledAction['action'][],
-  actionResults: LabeledActionResult['result'][],
-  database: string,
-  engine?: string,
-  readonly = true,
-) {
-  const request = makeTransactionRequest(actions, database, engine, readonly);
-  const response = makeTransactionResult(actionResults);
-  const scope = nock(baseUrl)
-    .post('/transaction', request)
-    .query({
-      dbname: database,
-      open_mode: 'OPEN',
-      region: 'us-east',
-      compute_name: engine,
-    })
-    .reply(200, response);
-
-  return scope;
 }
 
 export async function getClient() {
