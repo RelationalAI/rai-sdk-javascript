@@ -15,9 +15,14 @@
  */
 
 import { readFileSync } from 'fs';
-import nock from 'nock';
+import { MockAgent } from 'undici';
 
-import { baseUrl, getMockConfig } from '../../testUtils';
+import {
+  baseUrl,
+  createMockAgent,
+  getMockConfig,
+  mockResponseHeaders,
+} from '../../testUtils';
 import { TransactionAsyncApi } from './transactionAsyncApi';
 import { TransactionAsyncState } from './types';
 
@@ -228,9 +233,11 @@ describe('TransactionAsyncApi', () => {
   ];
   const database = 'test-db';
   const engine = 'test-engine';
+  let agent: MockAgent;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  beforeEach(() => {
+    agent = createMockAgent();
+  });
 
   it('should run async transaction', async () => {
     const query = '1 + 2 ';
@@ -243,10 +250,17 @@ describe('TransactionAsyncApi', () => {
       readonly: true,
       v1_inputs: [],
     };
-    const scope = nock(baseUrl).post(path, payload).reply(200, response);
-    const result = await api.runTransactionAsync(payload);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.runTransactionAsync(payload);
 
     expect(result).toEqual({ transaction: mockTransactions[0] });
   });
@@ -261,12 +275,21 @@ describe('TransactionAsyncApi', () => {
       readonly: true,
       v1_inputs: [],
     };
-    const scope = nock(baseUrl).post(path, payload).reply(200, multipartMock, {
-      'Content-type': multipartContentType,
-    });
-    const result = await api.runTransactionAsync(payload);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      .reply(200, multipartMock, {
+        headers: {
+          'Content-type': multipartContentType,
+        },
+      });
+
+    const result = await api.runTransactionAsync(payload);
 
     expect(result).toEqual(expectedTransactionAsyncResult);
   });
@@ -275,10 +298,15 @@ describe('TransactionAsyncApi', () => {
     const response = {
       transactions: mockTransactions,
     };
-    const scope = nock(baseUrl).get(path).reply(200, response);
-    const result = await api.listTransactions();
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.listTransactions();
 
     expect(result).toEqual(mockTransactions);
   });
@@ -291,10 +319,16 @@ describe('TransactionAsyncApi', () => {
       engine_name: 'test_engine',
       tags: ['tag1', 'tag2'],
     };
-    const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await api.listTransactions(query);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        query,
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.listTransactions(query);
 
     expect(result).toEqual(mockTransactions);
   });
@@ -303,23 +337,30 @@ describe('TransactionAsyncApi', () => {
     const response = {
       transaction: mockTransactions[0],
     };
-    const scope = nock(baseUrl).get(`${path}/id1`).reply(200, response);
-    const result = await api.getTransaction('id1');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path: `${path}/id1`,
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.getTransaction('id1');
 
     expect(result).toEqual(mockTransactions[0]);
   });
 
   it('should get transaction results', async () => {
-    const scope = nock(baseUrl)
-      .get(`${path}/id1/results`)
+    agent
+      .get(baseUrl)
+      .intercept({
+        path: `${path}/id1/results`,
+      })
       .reply(200, multipartMock, {
-        'Content-type': multipartContentType,
+        headers: { 'Content-type': multipartContentType },
       });
-    const result = await api.getTransactionResults('id1');
 
-    scope.done();
+    const result = await api.getTransactionResults('id1');
 
     expect(result).toEqual(expectedArrow);
   });
@@ -389,14 +430,17 @@ describe('TransactionAsyncApi', () => {
         },
       ],
     };
-    const scope = nock(baseUrl)
-      .get(`${path}/id1/metadata`)
-      .reply(200, protobufMock, {
-        'Content-type': 'application/x-protobuf',
-      });
-    const result = await api.getTransactionMetadata('id1');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path: `${path}/id1/metadata`,
+      })
+      .reply(200, protobufMock, {
+        headers: { 'Content-type': 'application/x-protobuf' },
+      });
+
+    const result = await api.getTransactionMetadata('id1');
 
     expect(result).toEqual(metadata);
   });
@@ -408,22 +452,31 @@ describe('TransactionAsyncApi', () => {
         sources: [],
       },
     ];
-    const scope = nock(baseUrl)
-      .get(`${path}/id1/problems`)
-      .reply(200, response);
-    const result = await api.getTransactionProblems('id1');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path: `${path}/id1/problems`,
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.getTransactionProblems('id1');
 
     expect(result).toEqual(response);
   });
 
   it('should cancel transaction', async () => {
     const response = {};
-    const scope = nock(baseUrl).post(`${path}/id1/cancel`).reply(200, response);
-    const result = await api.cancelTransaction('id1');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path: `${path}/id1/cancel`,
+        method: 'POST',
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.cancelTransaction('id1');
 
     expect(result).toEqual(response);
   });
