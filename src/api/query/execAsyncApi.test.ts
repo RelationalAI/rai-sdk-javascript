@@ -14,42 +14,53 @@
  * under the License.
  */
 
-import nock from 'nock';
+import { MockAgent } from 'undici';
 
-import { baseUrl, getMockConfig } from '../../testUtils';
+import {
+  baseUrl,
+  createMockAgent,
+  getMockConfig,
+  mockResponseHeaders,
+} from '../../testUtils';
 import { TransactionAsyncState } from '../transaction/types';
 import { ExecAsyncApi } from './execAsyncApi';
 
-const path = '/transactions';
-
-describe('QueryAsyncApi', () => {
+describe('ExecAsyncApi', () => {
   const api = new ExecAsyncApi(getMockConfig());
   const mockTransaction = {
     transaction: { id: 'id1', state: TransactionAsyncState.COMPLETED },
   };
   const database = 'test-db';
   const engine = 'test-engine';
+  let agent: MockAgent;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  beforeEach(() => {
+    agent = createMockAgent();
+  });
 
   it('should exec query async', async () => {
     const query = '1 + 2 ';
     const response = mockTransaction.transaction;
-    const scope = nock(baseUrl)
-      .post(path, {
-        dbname: database,
-        engine_name: engine,
-        query: query,
-        nowait_durable: false,
-        readonly: true,
-        v1_inputs: [],
-        tags: [],
-      })
-      .reply(200, response);
-    const result = await api.execAsync(database, engine, query, [], true);
+    const payload = {
+      dbname: database,
+      query: query,
+      nowait_durable: false,
+      readonly: true,
+      v1_inputs: [],
+      tags: [],
+      engine_name: engine,
+    };
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path: '/transactions',
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.execAsync(database, engine, query, [], true);
 
     expect(result).toEqual(mockTransaction);
   });
