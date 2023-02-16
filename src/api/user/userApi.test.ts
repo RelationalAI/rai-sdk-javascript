@@ -28,9 +28,9 @@ import { UserApi } from './userApi';
 const path = '/users';
 
 describe('UserApi', () => {
-  let agent: MockAgent;
   const api = new UserApi(getMockConfig());
   const mockUsers = [{ email: 'test1@test.com' }, { name: 'test1@test.com' }];
+  let agent: MockAgent;
 
   beforeEach(() => {
     agent = createMockAgent();

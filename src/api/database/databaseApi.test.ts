@@ -14,9 +14,14 @@
  * under the License.
  */
 
-import nock from 'nock';
+import { MockAgent } from 'undici';
 
-import { baseUrl, getMockConfig } from '../../testUtils';
+import {
+  baseUrl,
+  createMockAgent,
+  getMockConfig,
+  mockResponseHeaders,
+} from '../../testUtils';
 import { DatabaseApi } from './databaseApi';
 import { DatabaseState } from './types';
 
@@ -25,30 +30,40 @@ const path = '/database';
 describe('DatabaseApi', () => {
   const api = new DatabaseApi(getMockConfig());
   const mockDatabases = [{ name: 'database-1' }, { name: 'database-2' }];
+  let agent: MockAgent;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  beforeEach(() => {
+    agent = createMockAgent();
+  });
 
   it('should create database', async () => {
     const response = { database: mockDatabases[0] };
-    const scope = nock(baseUrl)
-      .put(path, {
-        name: 'test-database',
-      })
-      .reply(200, response);
-    const result = await api.createDatabase('test-database');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'PUT',
+        body: JSON.stringify({
+          name: 'test-database',
+        }),
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.createDatabase('test-database');
 
     expect(result).toEqual(mockDatabases[0]);
   });
 
   it('should list databases', async () => {
     const response = { databases: mockDatabases };
-    const scope = nock(baseUrl).get(path).reply(200, response);
-    const result = await api.listDatabases();
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({ path })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.listDatabases();
 
     expect(result).toEqual(mockDatabases);
   });
@@ -59,35 +74,47 @@ describe('DatabaseApi', () => {
       name: ['n1', 'n2'],
       state: DatabaseState.CREATED,
     };
-    const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await api.listDatabases(query);
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        query,
+      })
+      .reply(200, response, mockResponseHeaders);
+    const result = await api.listDatabases(query);
 
     expect(result).toEqual(mockDatabases);
   });
 
   it('should get database', async () => {
     const response = { databases: mockDatabases };
-    const scope = nock(baseUrl)
-      .get(path)
-      .query({ name: 'test-database' })
-      .reply(200, response);
-    const result = await api.getDatabase('test-database');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        query: { name: 'test-database' },
+      })
+      .reply(200, response, mockResponseHeaders);
+
+    const result = await api.getDatabase('test-database');
 
     expect(result).toEqual(mockDatabases[0]);
   });
 
   it('should delete database', async () => {
     const response = { message: 'deleted' };
-    const scope = nock(baseUrl)
-      .delete(path, { name: 'test-database' })
-      .reply(200, response);
-    const result = await api.deleteDatabase('test-database');
 
-    scope.done();
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'DELETE',
+        body: JSON.stringify({ name: 'test-database' }),
+      })
+      .reply(200, response, mockResponseHeaders);
+    const result = await api.deleteDatabase('test-database');
 
     expect(result).toEqual(response);
   });
