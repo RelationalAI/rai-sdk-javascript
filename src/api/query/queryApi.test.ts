@@ -14,13 +14,15 @@
  * under the License.
  */
 
-import nock from 'nock';
+import { MockAgent } from 'undici';
 
 import {
   baseUrl,
+  createMockAgent,
   getMockConfig,
   makeTransactionRequest,
   makeTransactionResult,
+  mockResponseHeaders,
 } from '../../testUtils';
 import { Relation } from '../transaction/types';
 import { QueryApi } from './queryApi';
@@ -51,9 +53,18 @@ describe('QueryApi', () => {
   ];
   const database = 'test-db';
   const engine = 'test-engine';
+  const path = '/transaction';
+  const query = {
+    dbname: database,
+    open_mode: 'OPEN',
+    region: 'us-east',
+    compute_name: engine,
+  };
+  let agent: MockAgent;
 
-  afterEach(() => nock.cleanAll());
-  afterAll(() => nock.restore());
+  beforeEach(() => {
+    agent = createMockAgent();
+  });
 
   it('should query', async () => {
     const request = makeTransactionRequest(
@@ -62,13 +73,13 @@ describe('QueryApi', () => {
           type: 'QueryAction',
           outputs: [],
           persist: [],
-          inputs: [],
           source: {
-            value: 'def output = 123',
-            name: 'query',
             type: 'Source',
+            name: 'query',
+            value: 'def output = 123',
             path: '',
           },
+          inputs: [],
         },
       ],
       database,
@@ -82,19 +93,17 @@ describe('QueryApi', () => {
     ]);
     response.output = mockOutput;
 
-    const scope = nock(baseUrl)
-      .post('/transaction', request)
-      .query({
-        dbname: database,
-        open_mode: 'OPEN',
-        region: 'us-east',
-        compute_name: engine,
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'POST',
+        body: JSON.stringify(request),
+        query,
       })
-      .reply(200, response);
+      .reply(200, response, mockResponseHeaders);
 
     const result = await api.query(database, engine, 'def output = 123');
-
-    scope.done();
 
     expect(result).toEqual(response);
   });
@@ -106,6 +115,13 @@ describe('QueryApi', () => {
           type: 'QueryAction',
           outputs: [],
           persist: [],
+
+          source: {
+            type: 'Source',
+            name: 'query',
+            value: 'def output = 123',
+            path: '',
+          },
           inputs: [
             {
               rel_key: {
@@ -118,12 +134,6 @@ describe('QueryApi', () => {
               columns: [['value1']],
             },
           ],
-          source: {
-            value: 'def output = 123',
-            name: 'query',
-            type: 'Source',
-            path: '',
-          },
         },
       ],
       database,
@@ -137,20 +147,19 @@ describe('QueryApi', () => {
     ]);
     response.output = mockOutput;
 
-    const scope = nock(baseUrl)
-      .post('/transaction', request)
-      .query({
-        dbname: database,
-        open_mode: 'OPEN',
-        region: 'us-east',
-        compute_name: engine,
+    agent
+      .get(baseUrl)
+      .intercept({
+        path,
+        method: 'POST',
+        body: JSON.stringify(request),
+        query,
       })
-      .reply(200, response);
+      .reply(200, response, mockResponseHeaders);
+
     const result = await api.query(database, engine, 'def output = 123', [
       { name: 'input1', value: 'value1' },
     ]);
-
-    scope.done();
 
     expect(result).toEqual(response);
   });
