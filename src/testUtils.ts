@@ -18,6 +18,7 @@
 
 import jwtDecode from 'jwt-decode';
 import nock from 'nock';
+import { MockAgent, setGlobalDispatcher } from 'undici';
 
 import Client from './api/client';
 import { DatabaseState } from './api/database/types';
@@ -36,8 +37,21 @@ import { Config } from './types';
 
 export const host = 'example.com';
 export const scheme = 'https';
-export const port = '443';
+export const port = '444';
 export const baseUrl = makeUrl(scheme, host, port);
+
+export function createMockAgent() {
+  const agent = new MockAgent();
+  agent.disableNetConnect();
+
+  setGlobalDispatcher(agent);
+
+  return agent;
+}
+
+export const mockResponseHeaders = {
+  headers: { 'content-type': 'application/json' },
+};
 
 export function getMockConfig() {
   const credentials = new GetTokenCredentials(() =>

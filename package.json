@@ -65,7 +65,7 @@
     "tscheck": "tsc --noEmit --pretty true",
     "lint": "eslint --cache . --ext js --ext ts --ext tsx",
     "fix": "eslint --cache --fix . --ext js --ext ts --ext tsx",
-    "test": "jest --verbose --runInBand --testPathPattern integration",
+    "test": "jest --verbose --runInBand --testPathPattern userApi",
     "test:debug": "npx --node-arg=--inspect jest --runInBand --testTimeout=60000 --verbose --watch",
     "test:bundle": "node ./dist-test/esm-test.mjs && node ./dist-test/cjs-test.cjs",
     "example": "node --es-module-specifier-resolution=node --loader ts-node/esm"
@@ -105,6 +105,6 @@
     "console-table-printer": "2.11.0",
     "decimal.js": "10.3.1",
     "query-string": "7.1.0",
-    "undici": "^5.16.0"
+    "undici": "5.16.0"
   }
 }
