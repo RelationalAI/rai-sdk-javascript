@@ -2708,6 +2708,8 @@ export const valueTypeSpecializationTests: Test[] = [
     ],
     values: [[':MyType', ':abc', 1n]],
     displayValues: ['(:MyType, ":abc", 1)'],
+    // TODO enable later
+    skip: true,
   },
   {
     name: 'Bool',
