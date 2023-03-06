@@ -270,11 +270,10 @@ function logifyClient(client: Client) {
   client.pollTransaction = async (...args) => {
     testLog(`polling transaction ${args[0]}`);
 
-    return await pollTransaction(
-      args[0],
-      args[1],
-      timeout ? Number(timeout) : 120000,
-    );
+    return await pollTransaction(args[0], {
+      interval: args[1]?.interval,
+      timeout: timeout ? Number(timeout) : 120000,
+    });
   };
 }
 

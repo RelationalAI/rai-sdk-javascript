@@ -56,34 +56,38 @@ export abstract class Base {
     return await request<T>(url, opts);
   }
 
-  protected async get<T>(path: string, query: RequestOptions['query'] = {}) {
-    return this.request<T>(path, { query, method: 'GET' });
+  protected async get<T>(
+    path: string,
+    query: RequestOptions['query'] = {},
+    signal?: RequestOptions['signal'],
+  ) {
+    return this.request<T>(path, { query, signal, method: 'GET' });
   }
 
   protected async post<T>(
     path: string,
-    options: Pick<RequestOptions, 'query' | 'body'>,
+    options: Pick<RequestOptions, 'query' | 'body' | 'signal'>,
   ) {
     return this.request<T>(path, { method: 'POST', ...options });
   }
 
   protected async put<T>(
     path: string,
-    options: Pick<RequestOptions, 'query' | 'body'>,
+    options: Pick<RequestOptions, 'query' | 'body' | 'signal'>,
   ) {
     return this.request<T>(path, { method: 'PUT', ...options });
   }
 
   protected async patch<T>(
     path: string,
-    options: Pick<RequestOptions, 'query' | 'body'>,
+    options: Pick<RequestOptions, 'query' | 'body' | 'signal'>,
   ) {
     return this.request<T>(path, { method: 'PATCH', ...options });
   }
 
   protected async delete<T>(
     path: string,
-    options: Pick<RequestOptions, 'query' | 'body'>,
+    options: Pick<RequestOptions, 'query' | 'body' | 'signal'>,
   ) {
     return this.request<T>(path, { ...options, method: 'DELETE' });
   }

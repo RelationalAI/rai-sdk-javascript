@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { AbortError } from '../../errors';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -24,7 +25,7 @@ import {
 import {
   TransactionAsyncCompact,
   TransactionAsyncPayload,
-  TransactionAsyncResult,
+  TransactionPollOptions,
 } from '../transaction/types';
 import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
 import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
@@ -78,21 +79,21 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       return result;
     }
 
-    return await this.pollTransaction(txnId, interval, timeout);
+    return await this.pollTransaction(txnId, { interval, timeout });
   }
 
-  async pollTransaction(
-    txnId: string,
-    interval = 1000,
-    timeout = Number.POSITIVE_INFINITY,
-  ) {
+  async pollTransaction(txnId: string, options?: TransactionPollOptions) {
+    const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
+    const interval = options?.interval ?? 1000;
+    const abortSignal = options?.abortSignal;
     const startedAt = Date.now();
 
     let transaction: TransactionAsyncCompact | undefined;
+    let pollTimeout: any;
 
-    await new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const checkState = () => {
-        setTimeout(async () => {
+        pollTimeout = setTimeout(async () => {
           try {
             transaction = await this.getTransaction(txnId);
             // eslint-disable-next-line no-empty
@@ -114,23 +115,29 @@ export class ExecAsyncApi extends TransactionAsyncApi {
         }, interval);
       };
 
+      abortSignal?.addEventListener('abort', () => {
+        clearTimeout(pollTimeout);
+        reject(new AbortError());
+      });
+
       checkState();
-    });
-
-    const data = await Promise.all([
-      this.getTransactionMetadata(txnId),
-      this.getTransactionProblems(txnId),
-      this.getTransactionResults(txnId),
-    ]);
-    const results = await makeArrowRelations(data[2], data[0]);
-
-    const res: TransactionAsyncResult = {
-      transaction: transaction!,
-      problems: data[1],
-      results,
-    };
-
-    return res;
+    })
+      .then(() =>
+        Promise.all([
+          this.getTransactionMetadata(txnId),
+          this.getTransactionProblems(txnId),
+          this.getTransactionResults(txnId),
+        ]),
+      )
+      .then(async data => ({
+        results: await makeArrowRelations(data[2], data[0]),
+        problems: data[1],
+      }))
+      .then(({ results, problems }) => ({
+        transaction: transaction!,
+        problems,
+        results,
+      }));
   }
 
   async loadJson(

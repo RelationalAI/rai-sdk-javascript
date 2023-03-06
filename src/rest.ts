@@ -31,6 +31,7 @@ export type RequestOptions = {
   body?: any;
   query?: Record<string, any>;
   onResponse?: (r: ApiResponse) => void;
+  signal?: AbortSignal;
 };
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
@@ -62,6 +63,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     method: options.method || 'GET',
     body: JSON.stringify(options.body),
     headers: addDefaultHeaders(options.headers, url),
+    signal: options.signal,
   };
 
   const fullUrl =
@@ -75,6 +77,10 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     response = await nodeFetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
+
+    if (error.name === 'AbortError') {
+      throw error;
+    }
 
     if (
       errorMsg.includes('failed to fetch') || // Chrome
