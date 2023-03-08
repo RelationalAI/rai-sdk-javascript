@@ -38,14 +38,17 @@ export class DatabaseApi extends Base {
     return result.database;
   }
 
-  async listDatabases(options?: DatabaseOptions) {
-    const result = await this.get<ListReponse>(ENDPOINT, options);
+  async listDatabases(options?: DatabaseOptions, signal?: AbortSignal) {
+    const result = await this.get<ListReponse>(ENDPOINT, {
+      query: options,
+      signal,
+    });
 
     return result.databases;
   }
 
-  async getDatabase(name: string) {
-    const databases = await this.listDatabases({ name });
+  async getDatabase(name: string, signal?: AbortSignal) {
+    const databases = await this.listDatabases({ name }, signal);
 
     return databases[0];
   }

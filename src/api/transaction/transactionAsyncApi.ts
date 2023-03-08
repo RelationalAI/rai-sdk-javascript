@@ -54,43 +54,53 @@ export class TransactionAsyncApi extends Base {
     };
   }
 
-  async listTransactions(options?: TransactionListOptions) {
-    const result = await this.get<ListResponse>(ENDPOINT, options);
+  async listTransactions(
+    options?: TransactionListOptions,
+    signal?: AbortSignal,
+  ) {
+    const result = await this.get<ListResponse>(ENDPOINT, {
+      query: options,
+      signal,
+    });
 
     return result.transactions;
   }
 
-  async getTransaction(transactionId: string) {
+  async getTransaction(transactionId: string, signal?: AbortSignal) {
     const result = await this.get<SingleResponse>(
       `${ENDPOINT}/${transactionId}`,
+      { signal },
     );
 
     return result.transaction;
   }
 
-  async getTransactionResults(transactionId: string) {
+  async getTransactionResults(transactionId: string, signal?: AbortSignal) {
     const result = await this.get<TransactionAsyncFile[]>(
       `${ENDPOINT}/${transactionId}/results`,
+      { signal },
     );
 
     return await readArrowFiles(result);
   }
 
-  async getTransactionMetadata(transactionId: string) {
+  async getTransactionMetadata(transactionId: string, signal?: AbortSignal) {
     const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
       {
         method: 'GET',
         headers: { Accept: 'application/x-protobuf' },
+        signal,
       },
     );
 
     return readProtoMetadata(result);
   }
 
-  async getTransactionProblems(transactionId: string) {
+  async getTransactionProblems(transactionId: string, signal?: AbortSignal) {
     const result = await this.get<Problem[]>(
       `${ENDPOINT}/${transactionId}/problems`,
+      { signal },
     );
 
     return result;

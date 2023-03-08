@@ -38,14 +38,16 @@ export class UserApi extends Base {
     return result.user;
   }
 
-  async listUsers() {
-    const result = await this.get<ListReponse>(ENDPOINT);
+  async listUsers(signal?: AbortSignal) {
+    const result = await this.get<ListReponse>(ENDPOINT, { signal });
 
     return result.users;
   }
 
-  async getUser(userId: string) {
-    const result = await this.get<SingleReponse>(`${ENDPOINT}/${userId}`);
+  async getUser(userId: string, signal?: AbortSignal) {
+    const result = await this.get<SingleReponse>(`${ENDPOINT}/${userId}`, {
+      signal,
+    });
 
     return result.user;
   }

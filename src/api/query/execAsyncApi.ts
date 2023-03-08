@@ -16,7 +16,6 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { AbortError } from '../../errors';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -85,17 +84,16 @@ export class ExecAsyncApi extends TransactionAsyncApi {
   async pollTransaction(txnId: string, options?: TransactionPollOptions) {
     const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
     const interval = options?.interval ?? 1000;
-    const abortSignal = options?.abortSignal;
+    const signal = options?.signal;
     const startedAt = Date.now();
 
     let transaction: TransactionAsyncCompact | undefined;
-    let pollTimeout: any;
 
     return new Promise<void>((resolve, reject) => {
       const checkState = () => {
-        pollTimeout = setTimeout(async () => {
+        setTimeout(async () => {
           try {
-            transaction = await this.getTransaction(txnId);
+            transaction = await this.getTransaction(txnId, signal);
             // eslint-disable-next-line no-empty
           } catch {}
 
@@ -115,18 +113,13 @@ export class ExecAsyncApi extends TransactionAsyncApi {
         }, interval);
       };
 
-      abortSignal?.addEventListener('abort', () => {
-        clearTimeout(pollTimeout);
-        reject(new AbortError());
-      });
-
       checkState();
     })
       .then(() =>
         Promise.all([
-          this.getTransactionMetadata(txnId),
-          this.getTransactionProblems(txnId),
-          this.getTransactionResults(txnId),
+          this.getTransactionMetadata(txnId, signal),
+          this.getTransactionProblems(txnId, signal),
+          this.getTransactionResults(txnId, signal),
         ]),
       )
       .then(async data => ({

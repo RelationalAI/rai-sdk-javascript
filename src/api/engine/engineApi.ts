@@ -43,14 +43,17 @@ export class EngineApi extends Base {
     return result.compute;
   }
 
-  async listEngines(options?: EngineOptions) {
-    const result = await this.get<ListReponse>(ENDPOINT, options);
+  async listEngines(options?: EngineOptions, signal?: AbortSignal) {
+    const result = await this.get<ListReponse>(ENDPOINT, {
+      query: options,
+      signal,
+    });
 
     return result.computes;
   }
 
-  async getEngine(name: string) {
-    const engines = await this.listEngines({ name });
+  async getEngine(name: string, signal?: AbortSignal) {
+    const engines = await this.listEngines({ name }, signal);
 
     return engines[0];
   }

@@ -247,5 +247,5 @@ export type TransactionListOptions = {
 export type TransactionPollOptions = {
   interval?: number;
   timeout?: number;
-  abortSignal?: AbortSignal;
+  signal?: AbortSignal;
 };

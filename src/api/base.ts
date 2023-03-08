@@ -58,8 +58,7 @@ export abstract class Base {
 
   protected async get<T>(
     path: string,
-    query: RequestOptions['query'] = {},
-    signal?: RequestOptions['signal'],
+    { query, signal }: Pick<RequestOptions, 'query' | 'signal'> = {},
   ) {
     return this.request<T>(path, { query, signal, method: 'GET' });
   }

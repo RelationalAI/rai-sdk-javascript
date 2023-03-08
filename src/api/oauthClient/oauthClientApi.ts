@@ -46,14 +46,16 @@ export class OAuthClientApi extends Base {
     return result.client;
   }
 
-  async listOAuthClients() {
-    const result = await this.get<ListReponse>(ENDPOINT);
+  async listOAuthClients(signal?: AbortSignal) {
+    const result = await this.get<ListReponse>(ENDPOINT, { signal });
 
     return result.clients;
   }
 
-  async getOAuthClient(clientId: string) {
-    const result = await this.get<SingleReponse>(`${ENDPOINT}/${clientId}`);
+  async getOAuthClient(clientId: string, signal?: AbortSignal) {
+    const result = await this.get<SingleReponse>(`${ENDPOINT}/${clientId}`, {
+      signal,
+    });
 
     return result.client;
   }
@@ -98,8 +100,10 @@ export class OAuthClientApi extends Base {
     return result;
   }
 
-  async listPermissions() {
-    const result = await this.get<ListPermissionResponse>('permissions', {});
+  async listPermissions(signal?: AbortSignal) {
+    const result = await this.get<ListPermissionResponse>('permissions', {
+      signal,
+    });
 
     return result.permissions;
   }
