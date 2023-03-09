@@ -14,10 +14,10 @@
  * under the License.
  */
 
-import nodeFetch, { Response } from 'node-fetch-commonjs';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
+import { getFetch, Response } from './fetch.node';
 import { ApiResponse, VERSION } from './types';
 
 const isNode =
@@ -72,7 +72,9 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   let response;
 
   try {
-    response = await nodeFetch(fullUrl, opts);
+    const fetch = getFetch();
+
+    response = await fetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 
