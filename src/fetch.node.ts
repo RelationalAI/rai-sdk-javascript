@@ -14,5 +14,9 @@
  * under the License.
  */
 
-// Using browser's fetch in the browser env
-export default globalThis.fetch;
+import nodeFetch from 'node-fetch-commonjs';
+export type { Response } from 'node-fetch-commonjs';
+
+export function getFetch() {
+  return nodeFetch;
+}
