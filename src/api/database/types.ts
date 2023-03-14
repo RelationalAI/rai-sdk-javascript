@@ -14,6 +14,8 @@
  * under the License.
  */
 
+import { BaseOptions } from '../base';
+
 export type Database = {
   id: string;
   name: string;
@@ -24,7 +26,7 @@ export type Database = {
   created_on: string;
 };
 
-export type DatabaseOptions = {
+export type ListDatabaseOptions = BaseOptions & {
   id?: string | string[];
   name?: string | string[];
   state?: DatabaseState | DatabaseState[];

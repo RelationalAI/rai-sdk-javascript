@@ -14,12 +14,19 @@
  * under the License.
  */
 
+import { BaseOptions } from '../base';
 import { ExecAsyncApi } from '../query/execAsyncApi';
 import { QueryInput } from '../query/types';
 import { Model } from '../transaction/types';
 import { getModelOutputFromProto } from './modelUtils';
+
 export class ModelApi extends ExecAsyncApi {
-  async installModels(database: string, engine: string, models: Model[]) {
+  async installModels(
+    database: string,
+    engine: string,
+    models: Model[],
+    { signal }: BaseOptions = {},
+  ) {
     const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     const queries: string[] = [];
     const queryInputs: QueryInput[] = [];
@@ -37,10 +44,17 @@ export class ModelApi extends ExecAsyncApi {
       queries.join('\n'),
       queryInputs,
       false,
+      [],
+      { signal },
     );
   }
 
-  async installModelsAsync(database: string, engine: string, models: Model[]) {
+  async installModelsAsync(
+    database: string,
+    engine: string,
+    models: Model[],
+    { signal }: BaseOptions = {},
+  ) {
     const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     const queries: string[] = [];
     const queryInputs: QueryInput[] = [];
@@ -58,16 +72,26 @@ export class ModelApi extends ExecAsyncApi {
       queries.join('\n'),
       queryInputs,
       false,
+      [],
+      { signal },
     );
   }
 
-  async listModels(database: string, engine: string): Promise<string[]> {
+  async listModels(
+    database: string,
+    engine: string,
+    { signal }: BaseOptions = {},
+  ): Promise<string[]> {
     const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     const outName = `models${randInt}`;
     const rsp = await this.exec(
       database,
       engine,
       `def output:${outName}[name] = rel:catalog:model(name, _)`,
+      [],
+      true,
+      [],
+      { signal },
     );
 
     const result = rsp.results.find(
@@ -80,13 +104,22 @@ export class ModelApi extends ExecAsyncApi {
     return models;
   }
 
-  async getModel(database: string, engine: string, name: string) {
+  async getModel(
+    database: string,
+    engine: string,
+    name: string,
+    { signal }: BaseOptions = {},
+  ) {
     const randInt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     const outName = `model${randInt}`;
     const rsp = await this.exec(
       database,
       engine,
       `def output:${outName} = rel:catalog:model["${name}"]`,
+      [],
+      true,
+      [],
+      { signal },
     );
 
     const result = rsp.results.find(
@@ -103,15 +136,33 @@ export class ModelApi extends ExecAsyncApi {
     return model;
   }
 
-  async deleteModels(database: string, engine: string, names: string[]) {
+  async deleteModels(
+    database: string,
+    engine: string,
+    names: string[],
+    { signal }: BaseOptions = {},
+  ) {
     const queries = names.map(
       name =>
         `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
     );
-    return await this.exec(database, engine, queries.join('\n'), [], false);
+    return await this.exec(
+      database,
+      engine,
+      queries.join('\n'),
+      [],
+      false,
+      [],
+      { signal },
+    );
   }
 
-  async deleteModelsAsync(database: string, engine: string, names: string[]) {
+  async deleteModelsAsync(
+    database: string,
+    engine: string,
+    names: string[],
+    { signal }: BaseOptions = {},
+  ) {
     const queries = names.map(
       name =>
         `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
@@ -123,6 +174,8 @@ export class ModelApi extends ExecAsyncApi {
       queries.join('\n'),
       [],
       false,
+      [],
+      { signal },
     );
   }
 }

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base } from '../base';
+import { Base, BaseOptions } from '../base';
 import {
   CompactOAuthClient,
   OAuthClient,
@@ -35,24 +35,29 @@ type ListPermissionResponse = {
 };
 
 export class OAuthClientApi extends Base {
-  async createOAuthClient(name: string, permissions?: Permission[]) {
+  async createOAuthClient(
+    name: string,
+    permissions?: Permission[],
+    { signal }: BaseOptions = {},
+  ) {
     const result = await this.post<SingleReponse>(ENDPOINT, {
       body: {
         name,
         permissions,
       },
+      signal,
     });
 
     return result.client;
   }
 
-  async listOAuthClients(signal?: AbortSignal) {
+  async listOAuthClients({ signal }: BaseOptions = {}) {
     const result = await this.get<ListReponse>(ENDPOINT, { signal });
 
     return result.clients;
   }
 
-  async getOAuthClient(clientId: string, signal?: AbortSignal) {
+  async getOAuthClient(clientId: string, { signal }: BaseOptions = {}) {
     const result = await this.get<SingleReponse>(`${ENDPOINT}/${clientId}`, {
       signal,
     });
@@ -64,6 +69,7 @@ export class OAuthClientApi extends Base {
     clientId: string,
     name?: string,
     permissions?: Permission[],
+    { signal }: BaseOptions = {},
   ) {
     const body: any = {};
 
@@ -77,30 +83,34 @@ export class OAuthClientApi extends Base {
 
     const result = await this.patch<SingleReponse>(`${ENDPOINT}/${clientId}`, {
       body,
+      signal,
     });
 
     return result.client;
   }
 
-  async rotateOAuthClientSecret(clientId: string) {
+  async rotateOAuthClientSecret(
+    clientId: string,
+    { signal }: BaseOptions = {},
+  ) {
     const result = await this.post<SingleReponse>(
       `${ENDPOINT}/${clientId}/rotate-secret`,
-      {},
+      { signal },
     );
 
     return result.client;
   }
 
-  async deleteOAuthClient(clientId: string) {
+  async deleteOAuthClient(clientId: string, { signal }: BaseOptions = {}) {
     const result = await this.delete<DeleteResponse>(
       `${ENDPOINT}/${clientId}`,
-      {},
+      { signal },
     );
 
     return result;
   }
 
-  async listPermissions(signal?: AbortSignal) {
+  async listPermissions({ signal }: BaseOptions = {}) {
     const result = await this.get<ListPermissionResponse>('permissions', {
       signal,
     });

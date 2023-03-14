@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { BaseOptions } from '../base';
 import { TransactionApi } from '../transaction/transactionApi';
 import { QueryInput } from './types';
 import { makeQueryAction } from './utils';
@@ -27,9 +28,12 @@ export class QueryApi extends TransactionApi {
     queryString: string,
     inputs: QueryInput[] = [],
     readonly = true,
+    { signal }: BaseOptions = {},
   ) {
     const action = makeQueryAction(queryString, inputs);
 
-    return await this.runActions(database, engine, [action], readonly);
+    return await this.runActions(database, engine, [action], readonly, {
+      signal,
+    });
   }
 }

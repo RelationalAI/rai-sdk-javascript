@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { BaseOptions } from '../base';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -37,6 +38,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
+    { signal }: BaseOptions = {},
   ) {
     const transaction: TransactionAsyncPayload = {
       dbname: database,
@@ -51,7 +53,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       transaction.engine_name = engine;
     }
 
-    return await this.runTransactionAsync(transaction);
+    return await this.runTransactionAsync(transaction, { signal });
   }
 
   async exec(
@@ -61,8 +63,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    interval = 1000, // 1 second
-    timeout = Number.POSITIVE_INFINITY,
+    { interval, timeout, signal }: TransactionPollOptions = {},
   ) {
     const result = await this.execAsync(
       database,
@@ -71,6 +72,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       inputs,
       readonly,
       tags,
+      { signal },
     );
     const txnId = result.transaction.id;
 
@@ -78,13 +80,17 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       return result;
     }
 
-    return await this.pollTransaction(txnId, { interval, timeout });
+    return await this.pollTransaction(txnId, {
+      interval: interval ?? 1000,
+      timeout: timeout ?? Number.POSITIVE_INFINITY,
+      signal,
+    });
   }
 
-  async pollTransaction(txnId: string, options?: TransactionPollOptions) {
-    const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
-    const interval = options?.interval ?? 1000;
-    const signal = options?.signal;
+  async pollTransaction(txnId: string, options: TransactionPollOptions = {}) {
+    const timeout = options.timeout ?? Number.POSITIVE_INFINITY;
+    const interval = options.interval ?? 1000;
+    const signal = options.signal;
     const startedAt = Date.now();
 
     let transaction: TransactionAsyncCompact | undefined;
@@ -93,7 +99,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       const checkState = () => {
         setTimeout(async () => {
           try {
-            transaction = await this.getTransaction(txnId, signal);
+            transaction = await this.getTransaction(txnId, { signal });
             // eslint-disable-next-line no-empty
           } catch {}
 
@@ -117,9 +123,9 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     })
       .then(() =>
         Promise.all([
-          this.getTransactionMetadata(txnId, signal),
-          this.getTransactionProblems(txnId, signal),
-          this.getTransactionResults(txnId, signal),
+          this.getTransactionMetadata(txnId, { signal }),
+          this.getTransactionProblems(txnId, { signal }),
+          this.getTransactionResults(txnId, { signal }),
         ]),
       )
       .then(async data => ({
@@ -138,6 +144,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     engine: string,
     relation: string,
     json: any,
+    { signal }: BaseOptions = {},
   ) {
     const qs = [
       `def config:data = data`,
@@ -150,7 +157,9 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       },
     ];
 
-    return this.exec(database, engine, qs.join('\n'), inputs, false);
+    return this.exec(database, engine, qs.join('\n'), inputs, false, [], {
+      signal,
+    });
   }
 
   async loadCsv(
@@ -160,6 +169,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     csv: string,
     syntax?: CsvConfigSyntax,
     schema?: CsvConfigSchema,
+    { signal }: BaseOptions = {},
   ) {
     const qs = [`def config:data = data`];
     const inputs: QueryInput[] = [
@@ -179,6 +189,8 @@ export class ExecAsyncApi extends TransactionAsyncApi {
 
     qs.push(`def insert:${relation} = load_csv[config]`);
 
-    return this.exec(database, engine, qs.join('\n'), inputs, false);
+    return this.exec(database, engine, qs.join('\n'), inputs, false, [], {
+      signal,
+    });
   }
 }

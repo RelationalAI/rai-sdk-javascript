@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base } from '../base';
+import { Base, BaseOptions } from '../base';
 import {
   readArrowFiles,
   readProtoMetadata,
@@ -38,11 +38,15 @@ type CancelResponse = {
 };
 
 export class TransactionAsyncApi extends Base {
-  async runTransactionAsync(transaction: TransactionAsyncPayload) {
+  async runTransactionAsync(
+    transaction: TransactionAsyncPayload,
+    { signal }: BaseOptions = {},
+  ) {
     const result = await this.post<
       TransactionAsyncCompact | TransactionAsyncFile[]
     >(ENDPOINT, {
       body: transaction,
+      signal,
     });
 
     if (Array.isArray(result)) {
@@ -56,7 +60,7 @@ export class TransactionAsyncApi extends Base {
 
   async listTransactions(
     options?: TransactionListOptions,
-    signal?: AbortSignal,
+    { signal }: BaseOptions = {},
   ) {
     const result = await this.get<ListResponse>(ENDPOINT, {
       query: options,
@@ -66,7 +70,7 @@ export class TransactionAsyncApi extends Base {
     return result.transactions;
   }
 
-  async getTransaction(transactionId: string, signal?: AbortSignal) {
+  async getTransaction(transactionId: string, { signal }: BaseOptions = {}) {
     const result = await this.get<SingleResponse>(
       `${ENDPOINT}/${transactionId}`,
       { signal },
@@ -75,7 +79,10 @@ export class TransactionAsyncApi extends Base {
     return result.transaction;
   }
 
-  async getTransactionResults(transactionId: string, signal?: AbortSignal) {
+  async getTransactionResults(
+    transactionId: string,
+    { signal }: BaseOptions = {},
+  ) {
     const result = await this.get<TransactionAsyncFile[]>(
       `${ENDPOINT}/${transactionId}/results`,
       { signal },
@@ -84,7 +91,10 @@ export class TransactionAsyncApi extends Base {
     return await readArrowFiles(result);
   }
 
-  async getTransactionMetadata(transactionId: string, signal?: AbortSignal) {
+  async getTransactionMetadata(
+    transactionId: string,
+    { signal }: BaseOptions = {},
+  ) {
     const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
       {
@@ -97,7 +107,10 @@ export class TransactionAsyncApi extends Base {
     return readProtoMetadata(result);
   }
 
-  async getTransactionProblems(transactionId: string, signal?: AbortSignal) {
+  async getTransactionProblems(
+    transactionId: string,
+    { signal }: BaseOptions = {},
+  ) {
     const result = await this.get<Problem[]>(
       `${ENDPOINT}/${transactionId}/problems`,
       { signal },
@@ -106,10 +119,10 @@ export class TransactionAsyncApi extends Base {
     return result;
   }
 
-  async cancelTransaction(transactionId: string) {
+  async cancelTransaction(transactionId: string, { signal }: BaseOptions = {}) {
     const result = await this.post<CancelResponse>(
       `${ENDPOINT}/${transactionId}/cancel`,
-      {},
+      { signal },
     );
 
     return result || {};

@@ -14,15 +14,22 @@
  * under the License.
  */
 
+import { BaseOptions } from '../base';
 import { TransactionApi } from '../transaction/transactionApi';
 import { ListEdbAction, ModifyWorkspaceAction } from '../transaction/types';
 
 export class EdbApi extends TransactionApi {
-  async listEdbs(database: string, engine: string) {
+  async listEdbs(
+    database: string,
+    engine: string,
+    { signal }: BaseOptions = {},
+  ) {
     const action: ListEdbAction = {
       type: 'ListEdbAction',
     };
-    const result = await this.runActions(database, engine, [action]);
+    const result = await this.runActions(database, engine, [action], true, {
+      signal,
+    });
 
     if (result.actions[0]?.result?.type === 'ListEdbActionResult') {
       return result.actions[0].result.rels;
@@ -31,12 +38,19 @@ export class EdbApi extends TransactionApi {
     throw new Error('ListEdbActionResult is missing');
   }
 
-  async deleteEdb(database: string, engine: string, name: string) {
+  async deleteEdb(
+    database: string,
+    engine: string,
+    name: string,
+    { signal }: BaseOptions = {},
+  ) {
     const action: ModifyWorkspaceAction = {
       type: 'ModifyWorkspaceAction',
       delete_edb: name,
     };
-    const result = await this.runActions(database, engine, [action], false);
+    const result = await this.runActions(database, engine, [action], false, {
+      signal,
+    });
 
     if (result.actions[0]?.result?.type === 'ModifyWorkspaceActionResult') {
       return result.actions[0].result.delete_edb_result;
