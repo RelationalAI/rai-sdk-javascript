@@ -15,7 +15,7 @@
  */
 
 import { Base, BaseOptions } from '../base';
-import { Engine, EngineSize, EngineState, ListEngineOptions } from './types';
+import { Engine, EngineOptions, EngineSize, EngineState } from './types';
 
 const ENDPOINT = 'compute';
 
@@ -48,14 +48,9 @@ export class EngineApi extends Base {
     return result.compute;
   }
 
-  async listEngines({ id, name, size, state, signal }: ListEngineOptions = {}) {
+  async listEngines(options?: EngineOptions, { signal }: BaseOptions = {}) {
     const result = await this.get<ListReponse>(ENDPOINT, {
-      query: {
-        id,
-        name,
-        size,
-        state,
-      },
+      query: options,
       signal,
     });
 
@@ -63,7 +58,7 @@ export class EngineApi extends Base {
   }
 
   async getEngine(name: string, { signal }: BaseOptions = {}) {
-    const engines = await this.listEngines({ name, signal });
+    const engines = await this.listEngines({ name }, { signal });
 
     return engines[0];
   }

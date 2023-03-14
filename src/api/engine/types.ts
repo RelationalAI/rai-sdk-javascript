@@ -14,8 +14,6 @@
  * under the License.
  */
 
-import { BaseOptions } from '../base';
-
 export type Engine = {
   id: string;
   name: string;
@@ -29,7 +27,7 @@ export type Engine = {
   deleted_on: string;
 };
 
-export type ListEngineOptions = BaseOptions & {
+export type EngineOptions = {
   id?: string | string[];
   name?: string | string[];
   size?: string | string[];

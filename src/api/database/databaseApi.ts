@@ -15,7 +15,7 @@
  */
 
 import { Base, BaseOptions } from '../base';
-import { Database, ListDatabaseOptions } from './types';
+import { Database, DatabaseOptions } from './types';
 
 const ENDPOINT = 'database';
 
@@ -43,13 +43,9 @@ export class DatabaseApi extends Base {
     return result.database;
   }
 
-  async listDatabases({ id, name, state, signal }: ListDatabaseOptions = {}) {
+  async listDatabases(options?: DatabaseOptions, { signal }: BaseOptions = {}) {
     const result = await this.get<ListReponse>(ENDPOINT, {
-      query: {
-        id,
-        name,
-        state,
-      },
+      query: options,
       signal,
     });
 
@@ -57,7 +53,7 @@ export class DatabaseApi extends Base {
   }
 
   async getDatabase(name: string, { signal }: BaseOptions = {}) {
-    const databases = await this.listDatabases({ name, signal });
+    const databases = await this.listDatabases({ name }, { signal });
 
     return databases[0];
   }
