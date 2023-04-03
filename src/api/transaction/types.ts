@@ -200,9 +200,11 @@ export type TransactionAsync = {
   finished_at?: number;
   duration?: number;
   read_only: boolean;
-  last_requested_interval: string;
+  last_requested_interval: number;
   response_format_version: string;
   query: string;
+  query_size: number;
+  language: string;
   user_agent: string;
   abort_reason?: string;
   tags?: string[];

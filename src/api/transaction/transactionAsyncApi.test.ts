@@ -418,6 +418,16 @@ describe('TransactionAsyncApi', () => {
     expect(result).toEqual(response);
   });
 
+  it('should get transaction query', async () => {
+    const response = 'query-text';
+    const scope = nock(baseUrl).get(`${path}/id1/query`).reply(200, response);
+    const result = await api.getTransactionQuery('id1');
+
+    scope.done();
+
+    expect(result).toEqual(response);
+  });
+
   it('should cancel transaction', async () => {
     const response = {};
     const scope = nock(baseUrl).post(`${path}/id1/cancel`).reply(200, response);
