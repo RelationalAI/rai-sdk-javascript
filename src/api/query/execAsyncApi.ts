@@ -16,7 +16,6 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { PollingPromise } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -87,24 +86,37 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     timeout = Number.POSITIVE_INFINITY,
   ) {
     const startedAt = Date.now();
+    const maxInterval = 60000;
+    const overheadRate = 0.3;
 
     let transaction: TransactionAsyncCompact | undefined;
 
-    return await new PollingPromise(
-      async resolve => {
-        try {
-          transaction = await this.getTransaction(txnId);
-          // eslint-disable-next-line no-empty
-        } catch {}
+    return await new Promise<void>((resolve, reject) => {
+      const poll = (newInterval: number) => {
+        setTimeout(async () => {
+          try {
+            transaction = await this.getTransaction(txnId);
+            // eslint-disable-next-line no-empty
+          } catch {}
 
-        if (transaction && isTransactionDone(transaction.state)) {
-          resolve();
-        }
-      },
-      timeout,
-      interval,
-      startedAt,
-    )
+          if (transaction && isTransactionDone(transaction.state)) {
+            resolve();
+          } else {
+            const currentDelay = Date.now() - startedAt;
+            if (currentDelay > timeout) {
+              reject(
+                new Error(
+                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
+                ),
+              );
+            }
+            poll(Math.min(maxInterval, currentDelay * overheadRate));
+          }
+        }, newInterval);
+      };
+
+      poll(interval);
+    })
       .then(() =>
         Promise.all([
           this.getTransactionMetadata(txnId),
