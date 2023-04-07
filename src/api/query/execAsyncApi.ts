@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { PollingPromise } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -24,7 +25,6 @@ import {
 import {
   TransactionAsyncCompact,
   TransactionAsyncPayload,
-  TransactionAsyncResult,
 } from '../transaction/types';
 import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
 import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
@@ -90,47 +90,37 @@ export class ExecAsyncApi extends TransactionAsyncApi {
 
     let transaction: TransactionAsyncCompact | undefined;
 
-    await new Promise<void>((resolve, reject) => {
-      const checkState = () => {
-        setTimeout(async () => {
-          try {
-            transaction = await this.getTransaction(txnId);
-            // eslint-disable-next-line no-empty
-          } catch {}
+    return await new PollingPromise(
+      async resolve => {
+        try {
+          transaction = await this.getTransaction(txnId);
+          // eslint-disable-next-line no-empty
+        } catch {}
 
-          if (transaction && isTransactionDone(transaction.state)) {
-            resolve();
-          } else {
-            if (Date.now() - startedAt > timeout) {
-              reject(
-                new Error(
-                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
-                ),
-              );
-            }
-
-            checkState();
-          }
-        }, interval);
-      };
-
-      checkState();
-    });
-
-    const data = await Promise.all([
-      this.getTransactionMetadata(txnId),
-      this.getTransactionProblems(txnId),
-      this.getTransactionResults(txnId),
-    ]);
-    const results = await makeArrowRelations(data[2], data[0]);
-
-    const res: TransactionAsyncResult = {
-      transaction: transaction!,
-      problems: data[1],
-      results,
-    };
-
-    return res;
+        if (transaction && isTransactionDone(transaction.state)) {
+          resolve();
+        }
+      },
+      timeout,
+      interval,
+      startedAt,
+    )
+      .then(() =>
+        Promise.all([
+          this.getTransactionMetadata(txnId),
+          this.getTransactionProblems(txnId),
+          this.getTransactionResults(txnId),
+        ]),
+      )
+      .then(async data => ({
+        results: await makeArrowRelations(data[2], data[0]),
+        problems: data[1],
+      }))
+      .then(({ results, problems }) => ({
+        transaction: transaction!,
+        problems,
+        results,
+      }));
   }
 
   async loadJson(
