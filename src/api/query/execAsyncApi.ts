@@ -25,6 +25,7 @@ import {
 import {
   TransactionAsyncCompact,
   TransactionAsyncPayload,
+  TransactionAsyncResult,
 } from '../transaction/types';
 import {
   CsvConfigSchema,
@@ -91,7 +92,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
     let transaction: TransactionAsyncCompact | undefined;
 
-    return await pollWithOverhead(
+    await pollWithOverhead(
       async () => {
         transaction = await this.getTransaction(txnId);
 
@@ -101,23 +102,22 @@ export class ExecAsyncApi extends TransactionAsyncApi {
         startTime,
         timeout,
       },
-    )
-      .then(() =>
-        Promise.all([
-          this.getTransactionMetadata(txnId),
-          this.getTransactionProblems(txnId),
-          this.getTransactionResults(txnId),
-        ]),
-      )
-      .then(async data => ({
-        results: await makeArrowRelations(data[2], data[0]),
-        problems: data[1],
-      }))
-      .then(({ results, problems }) => ({
-        transaction: transaction!,
-        problems,
-        results,
-      }));
+    );
+
+    const data = await Promise.all([
+      this.getTransactionMetadata(txnId),
+      this.getTransactionProblems(txnId),
+      this.getTransactionResults(txnId),
+    ]);
+    const results = await makeArrowRelations(data[2], data[0]);
+
+    const res: TransactionAsyncResult = {
+      transaction: transaction!,
+      problems: data[1],
+      results,
+    };
+
+    return res;
   }
 
   async loadJson(
