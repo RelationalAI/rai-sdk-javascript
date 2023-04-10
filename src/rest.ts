@@ -169,7 +169,6 @@ export async function pollWithOverhead(
 ) {
   return new Promise<void>((resolve, reject) => {
     const poll = (delay: number) => {
-      console.log(delay);
       setTimeout(async () => {
         try {
           const done = await callback();
@@ -187,7 +186,6 @@ export async function pollWithOverhead(
             poll(Math.min(maxInterval, currentDelay * overheadRate));
           }
         } catch (error: any) {
-          console.error(error);
           reject(error);
         }
       }, delay);
