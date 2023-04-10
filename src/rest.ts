@@ -33,6 +33,13 @@ export type RequestOptions = {
   onResponse?: (r: ApiResponse) => void;
 };
 
+export type PollOptions = {
+  overheadRate?: number;
+  startTime?: number;
+  maxInterval?: number;
+  timeout?: number;
+};
+
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
   const sdkUserAgent = `rai-sdk-javascript/${VERSION}`;
   const defaultHeaders: RequestInit['headers'] = {
@@ -149,4 +156,43 @@ function responseToInfo(response: Response, body: any) {
   };
 
   return info;
+}
+
+export async function pollWithOverhead(
+  callback: () => boolean | PromiseLike<boolean>,
+  {
+    overheadRate = 0.1,
+    startTime = Date.now(),
+    maxInterval = 120000,
+    timeout = Number.POSITIVE_INFINITY,
+  }: PollOptions,
+) {
+  return new Promise<void>((resolve, reject) => {
+    const poll = (delay: number) => {
+      console.log(delay);
+      setTimeout(async () => {
+        try {
+          const done = await callback();
+          if (done) {
+            resolve();
+          } else {
+            const currentDelay = Date.now() - startTime;
+            if (currentDelay > timeout) {
+              reject(
+                new Error(
+                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
+                ),
+              );
+            }
+            poll(Math.min(maxInterval, currentDelay * overheadRate));
+          }
+        } catch (error: any) {
+          console.error(error);
+          reject(error);
+        }
+      }, delay);
+    };
+
+    poll(Math.min(maxInterval, Date.now() - startTime));
+  });
 }

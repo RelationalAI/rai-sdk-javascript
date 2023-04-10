@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { pollWithOverhead } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -25,7 +26,12 @@ import {
   TransactionAsyncCompact,
   TransactionAsyncPayload,
 } from '../transaction/types';
-import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
+import {
+  CsvConfigSchema,
+  CsvConfigSyntax,
+  PollTransactionOptions,
+  QueryInput,
+} from './types';
 import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
 
 export class ExecAsyncApi extends TransactionAsyncApi {
@@ -60,9 +66,9 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    interval = 1000, // 1 second
     timeout = Number.POSITIVE_INFINITY,
   ) {
+    const startTime = Date.now();
     const result = await this.execAsync(
       database,
       engine,
@@ -77,46 +83,25 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       return result;
     }
 
-    return await this.pollTransaction(txnId, interval, timeout);
+    return await this.pollTransaction(txnId, { timeout, startTime });
   }
 
-  async pollTransaction(
-    txnId: string,
-    interval = 1000,
-    timeout = Number.POSITIVE_INFINITY,
-  ) {
-    const startedAt = Date.now();
-    const maxInterval = 60000;
-    const overheadRate = 0.3;
-
+  async pollTransaction(txnId: string, options?: PollTransactionOptions) {
+    const startTime = options?.startTime ?? Date.now();
+    const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
     let transaction: TransactionAsyncCompact | undefined;
 
-    return await new Promise<void>((resolve, reject) => {
-      const poll = (newInterval: number) => {
-        setTimeout(async () => {
-          try {
-            transaction = await this.getTransaction(txnId);
-            // eslint-disable-next-line no-empty
-          } catch {}
+    return await pollWithOverhead(
+      async () => {
+        transaction = await this.getTransaction(txnId);
 
-          if (transaction && isTransactionDone(transaction.state)) {
-            resolve();
-          } else {
-            const currentDelay = Date.now() - startedAt;
-            if (currentDelay > timeout) {
-              reject(
-                new Error(
-                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
-                ),
-              );
-            }
-            poll(Math.min(maxInterval, currentDelay * overheadRate));
-          }
-        }, newInterval);
-      };
-
-      poll(interval);
-    })
+        return transaction && isTransactionDone(transaction.state);
+      },
+      {
+        startTime,
+        timeout,
+      },
+    )
       .then(() =>
         Promise.all([
           this.getTransactionMetadata(txnId),

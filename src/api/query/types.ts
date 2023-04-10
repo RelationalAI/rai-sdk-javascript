@@ -34,3 +34,8 @@ export type CsvConfigSyntax = {
 export type CsvConfigSchema = {
   [colName: string]: string;
 };
+
+export type PollTransactionOptions = {
+  timeout?: number;
+  startTime?: number;
+};
