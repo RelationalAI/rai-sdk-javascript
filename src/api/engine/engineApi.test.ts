@@ -79,7 +79,7 @@ describe('EngineApi', () => {
 
     scope.done();
 
-    expect(result).toEqual({});
+    expect(result).toEqual(mockEngines[0]);
   });
 
   it('should delete engine', async () => {
