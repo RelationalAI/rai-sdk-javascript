@@ -14,8 +14,6 @@
  * under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { PollOptions, pollWithOverhead } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
