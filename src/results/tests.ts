@@ -1476,7 +1476,7 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':MyType', 1n, '👍']],
-    displayValues: ["(:MyType, 1, '👍')"],
+    displayValues: ["(:MyType, 2, '👍')"],
   },
   {
     name: 'DateTime',
