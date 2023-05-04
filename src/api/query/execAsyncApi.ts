@@ -25,6 +25,7 @@ import {
 import {
   TransactionAsync,
   TransactionAsyncPayload,
+  TransactionAsyncResult,
 } from '../transaction/types';
 import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
 import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
@@ -81,7 +82,10 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     return await this.pollTransaction(txnId, { timeout, startTime });
   }
 
-  async pollTransaction(txnId: string, options?: PollOptions) {
+  async pollTransaction(
+    txnId: string,
+    options?: PollOptions,
+  ): Promise<TransactionAsyncResult> {
     const transaction = await pollWithOverhead<TransactionAsync>(async () => {
       try {
         const transaction = await this.getTransaction(txnId);
@@ -99,12 +103,14 @@ export class ExecAsyncApi extends TransactionAsyncApi {
 
     const data = await Promise.all([
       this.getTransactionMetadata(txnId),
+      this.getTransactionProblems(txnId),
       this.getTransactionResults(txnId),
     ]);
 
     return {
       transaction,
-      results: makeArrowRelations(data[1], data[0]),
+      problems: data[1],
+      results: makeArrowRelations(data[2], data[0]),
     };
   }
 

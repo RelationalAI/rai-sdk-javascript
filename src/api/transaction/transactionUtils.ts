@@ -26,7 +26,7 @@ import {
   TransactionAsyncFile,
   TransactionAsyncResult,
   TransactionAsyncState,
-} from '../transaction/types';
+} from './types';
 
 export function makeLabeledAction(
   name: string,
@@ -105,7 +105,7 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
   return results;
 }
 
-export async function makeArrowRelations(
+export function makeArrowRelations(
   results: ArrowResult[],
   metadata?: MetadataInfo,
 ) {
