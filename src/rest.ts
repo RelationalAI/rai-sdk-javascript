@@ -40,6 +40,15 @@ export type PollOptions = {
   timeout?: number;
 };
 
+export type PollingResult<T> =
+  | {
+      done: boolean;
+      result: T;
+    }
+  | {
+      done: false;
+    };
+
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
   const sdkUserAgent = `rai-sdk-javascript/${VERSION}`;
   const defaultHeaders: RequestInit['headers'] = {
@@ -158,29 +167,26 @@ function responseToInfo(response: Response, body: any) {
   return info;
 }
 
-export async function pollWithOverhead(
-  callback: () => boolean | PromiseLike<boolean>,
-  {
-    overheadRate = 0.1,
-    startTime = Date.now(),
-    maxInterval = 120000,
-    timeout = Number.POSITIVE_INFINITY,
-  }: PollOptions,
+export async function pollWithOverhead<T = void>(
+  callback: () => PollingResult<T> | PromiseLike<PollingResult<T>>,
+  options?: PollOptions,
 ) {
-  return new Promise<void>((resolve, reject) => {
+  const overheadRate = options?.overheadRate ?? 0.1;
+  const startTime = options?.startTime ?? Date.now();
+  const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
+  const maxInterval = options?.maxInterval ?? 120000;
+  return new Promise<T>((resolve, reject) => {
     const poll = (delay: number) => {
       setTimeout(async () => {
         try {
-          const done = await callback();
-          if (done) {
-            resolve();
+          const pollingResult = await callback();
+          if (pollingResult.done) {
+            resolve(pollingResult.result);
           } else {
             const currentDelay = Date.now() - startTime;
             if (currentDelay > timeout) {
               reject(
-                new Error(
-                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
-                ),
+                new Error(`Polling timeout of ${timeout}ms has been exceeded.`),
               );
             }
             poll(Math.min(maxInterval, currentDelay * overheadRate));
@@ -191,6 +197,6 @@ export async function pollWithOverhead(
       }, delay);
     };
 
-    poll(Math.min(maxInterval, Date.now() - startTime));
+    poll(Math.min(maxInterval, (Date.now() - startTime) * overheadRate));
   });
 }

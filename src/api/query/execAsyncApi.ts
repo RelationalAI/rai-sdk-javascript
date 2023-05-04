@@ -16,23 +16,17 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { pollWithOverhead } from '../../rest';
+import { PollOptions, pollWithOverhead } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
   makeArrowRelations,
 } from '../transaction/transactionUtils';
 import {
-  TransactionAsyncCompact,
+  TransactionAsync,
   TransactionAsyncPayload,
-  TransactionAsyncResult,
 } from '../transaction/types';
-import {
-  CsvConfigSchema,
-  CsvConfigSyntax,
-  PollTransactionOptions,
-  QueryInput,
-} from './types';
+import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
 import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
 
 export class ExecAsyncApi extends TransactionAsyncApi {
@@ -87,37 +81,31 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     return await this.pollTransaction(txnId, { timeout, startTime });
   }
 
-  async pollTransaction(txnId: string, options?: PollTransactionOptions) {
-    const startTime = options?.startTime ?? Date.now();
-    const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
-    let transaction: TransactionAsyncCompact | undefined;
+  async pollTransaction(txnId: string, options?: PollOptions) {
+    const transaction = await pollWithOverhead<TransactionAsync>(async () => {
+      try {
+        const transaction = await this.getTransaction(txnId);
+        return {
+          done: transaction && isTransactionDone(transaction.state),
+          result: transaction,
+        };
+        // eslint-disable-next-line no-empty
+      } catch {}
 
-    await pollWithOverhead(
-      async () => {
-        transaction = await this.getTransaction(txnId);
-
-        return transaction && isTransactionDone(transaction.state);
-      },
-      {
-        startTime,
-        timeout,
-      },
-    );
+      return {
+        done: false,
+      };
+    }, options);
 
     const data = await Promise.all([
       this.getTransactionMetadata(txnId),
-      this.getTransactionProblems(txnId),
       this.getTransactionResults(txnId),
     ]);
-    const results = await makeArrowRelations(data[2], data[0]);
 
-    const res: TransactionAsyncResult = {
-      transaction: transaction!,
-      problems: data[1],
-      results,
+    return {
+      transaction,
+      results: makeArrowRelations(data[1], data[0]),
     };
-
-    return res;
   }
 
   async loadJson(
