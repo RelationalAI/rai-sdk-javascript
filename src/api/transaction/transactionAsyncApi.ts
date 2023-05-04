@@ -96,6 +96,12 @@ export class TransactionAsyncApi extends Base {
     return result;
   }
 
+  async getTransactionQuery(transactionId: string) {
+    const result = await this.get<string>(`${ENDPOINT}/${transactionId}/query`);
+
+    return result;
+  }
+
   async cancelTransaction(transactionId: string) {
     const result = await this.post<CancelResponse>(
       `${ENDPOINT}/${transactionId}/cancel`,

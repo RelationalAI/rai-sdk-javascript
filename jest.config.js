@@ -41,7 +41,7 @@ const config = {
   globalSetup: '<rootDir>/jest.setup.ts',
   globalTeardown: '<rootDir>/jest.teardown.ts',
   testTimeout: timeout,
-  reporters: ['<rootDir>/jest.reporter.js'],
+  reporters: ['<rootDir>/jest.reporter.js', 'summary'],
 };
 
 export default config;
