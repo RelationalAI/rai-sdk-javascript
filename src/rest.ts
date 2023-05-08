@@ -38,16 +38,13 @@ export type PollOptions = {
   startTime?: number;
   maxInterval?: number;
   timeout?: number;
+  maxRetries?: number;
 };
 
-export type PollingResult<T> =
-  | {
-      done: boolean;
-      result: T;
-    }
-  | {
-      done: false;
-    };
+export type PollingResult<T> = {
+  done: boolean;
+  result?: T;
+};
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
   const sdkUserAgent = `rai-sdk-javascript/${VERSION}`;
@@ -175,25 +172,32 @@ export async function pollWithOverhead<T = void>(
   const startTime = options?.startTime ?? Date.now();
   const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
   const maxInterval = options?.maxInterval ?? 120000;
+  const maxRetry = options?.maxRetries ?? Number.POSITIVE_INFINITY;
   return new Promise<T>((resolve, reject) => {
+    let tryNumber = 0;
     const poll = (delay: number) => {
       setTimeout(async () => {
         try {
           const pollingResult = await callback();
-          if (pollingResult.done) {
+          if (pollingResult.done && pollingResult.result) {
             resolve(pollingResult.result);
-          } else {
-            const currentDelay = Date.now() - startTime;
-            if (currentDelay > timeout) {
-              reject(
-                new Error(`Polling timeout of ${timeout}ms has been exceeded.`),
-              );
-            }
-            poll(Math.min(maxInterval, currentDelay * overheadRate));
+            return;
           }
         } catch (error: any) {
-          reject(error);
+          if (++tryNumber >= maxRetry) {
+            reject(error);
+            return;
+          }
         }
+
+        const currentDelay = Date.now() - startTime;
+        if (currentDelay > timeout) {
+          reject(
+            new Error(`Polling timeout of ${timeout}ms has been exceeded.`),
+          );
+          return;
+        }
+        poll(Math.min(maxInterval, currentDelay * overheadRate));
       }, delay);
     };
 

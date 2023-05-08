@@ -14,6 +14,7 @@
  * under the License.
  */
 
+import { ApiError } from '../../errors';
 import { PollOptions, pollWithOverhead } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
@@ -91,8 +92,11 @@ export class ExecAsyncApi extends TransactionAsyncApi {
           done: transaction && isTransactionDone(transaction.state),
           result: transaction,
         };
-        // eslint-disable-next-line no-empty
-      } catch {}
+      } catch (error: any) {
+        if (error instanceof ApiError && error.response.status < 500) {
+          throw error;
+        }
+      }
 
       return {
         done: false,
