@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base, BaseOptions } from '../base';
+import { Base } from '../base';
 import {
   CompactOAuthClient,
   OAuthClient,
@@ -35,32 +35,25 @@ type ListPermissionResponse = {
 };
 
 export class OAuthClientApi extends Base {
-  async createOAuthClient(
-    name: string,
-    permissions?: Permission[],
-    { signal }: BaseOptions = {},
-  ) {
+  async createOAuthClient(name: string, permissions?: Permission[]) {
     const result = await this.post<SingleReponse>(ENDPOINT, {
       body: {
         name,
         permissions,
       },
-      signal,
     });
 
     return result.client;
   }
 
-  async listOAuthClients({ signal }: BaseOptions = {}) {
-    const result = await this.get<ListReponse>(ENDPOINT, { signal });
+  async listOAuthClients() {
+    const result = await this.get<ListReponse>(ENDPOINT);
 
     return result.clients;
   }
 
-  async getOAuthClient(clientId: string, { signal }: BaseOptions = {}) {
-    const result = await this.get<SingleReponse>(`${ENDPOINT}/${clientId}`, {
-      signal,
-    });
+  async getOAuthClient(clientId: string) {
+    const result = await this.get<SingleReponse>(`${ENDPOINT}/${clientId}`);
 
     return result.client;
   }
@@ -69,7 +62,6 @@ export class OAuthClientApi extends Base {
     clientId: string,
     name?: string,
     permissions?: Permission[],
-    { signal }: BaseOptions = {},
   ) {
     const body: any = {};
 
@@ -83,37 +75,31 @@ export class OAuthClientApi extends Base {
 
     const result = await this.patch<SingleReponse>(`${ENDPOINT}/${clientId}`, {
       body,
-      signal,
     });
 
     return result.client;
   }
 
-  async rotateOAuthClientSecret(
-    clientId: string,
-    { signal }: BaseOptions = {},
-  ) {
+  async rotateOAuthClientSecret(clientId: string) {
     const result = await this.post<SingleReponse>(
       `${ENDPOINT}/${clientId}/rotate-secret`,
-      { signal },
+      {},
     );
 
     return result.client;
   }
 
-  async deleteOAuthClient(clientId: string, { signal }: BaseOptions = {}) {
+  async deleteOAuthClient(clientId: string) {
     const result = await this.delete<DeleteResponse>(
       `${ENDPOINT}/${clientId}`,
-      { signal },
+      {},
     );
 
     return result;
   }
 
-  async listPermissions({ signal }: BaseOptions = {}) {
-    const result = await this.get<ListPermissionResponse>('permissions', {
-      signal,
-    });
+  async listPermissions() {
+    const result = await this.get<ListPermissionResponse>('permissions', {});
 
     return result.permissions;
   }

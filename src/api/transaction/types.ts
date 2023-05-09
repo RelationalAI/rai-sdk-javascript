@@ -243,9 +243,3 @@ export type TransactionListOptions = {
   state?: TransactionAsyncState | TransactionAsyncState[];
   tags?: string | string[];
 };
-
-export type TransactionPollOptions = {
-  interval?: number;
-  timeout?: number;
-  signal?: AbortSignal;
-};

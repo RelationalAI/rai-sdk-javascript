@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base, BaseOptions } from '../base';
+import { Base } from '../base';
 import { Database, DatabaseOptions } from './types';
 
 const ENDPOINT = 'database';
@@ -27,41 +27,32 @@ type DeleteResponse = {
 };
 
 export class DatabaseApi extends Base {
-  async createDatabase(
-    name: string,
-    cloneDatabase?: string,
-    { signal }: BaseOptions = {},
-  ) {
+  async createDatabase(name: string, cloneDatabase?: string) {
     const result = await this.put<SingleReponse>(ENDPOINT, {
       body: {
         name,
         source_name: cloneDatabase,
       },
-      signal,
     });
 
     return result.database;
   }
 
-  async listDatabases(options?: DatabaseOptions, { signal }: BaseOptions = {}) {
-    const result = await this.get<ListReponse>(ENDPOINT, {
-      query: options,
-      signal,
-    });
+  async listDatabases(options?: DatabaseOptions) {
+    const result = await this.get<ListReponse>(ENDPOINT, { query: options });
 
     return result.databases;
   }
 
-  async getDatabase(name: string, { signal }: BaseOptions = {}) {
-    const databases = await this.listDatabases({ name }, { signal });
+  async getDatabase(name: string) {
+    const databases = await this.listDatabases({ name });
 
     return databases[0];
   }
 
-  async deleteDatabase(name: string, { signal }: BaseOptions = {}) {
+  async deleteDatabase(name: string) {
     const result = await this.delete<DeleteResponse>(ENDPOINT, {
       body: { name },
-      signal,
     });
 
     return result;

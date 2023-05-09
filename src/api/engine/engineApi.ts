@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base, BaseOptions } from '../base';
+import { Base } from '../base';
 import { Engine, EngineOptions, EngineSize, EngineState } from './types';
 
 const ENDPOINT = 'compute';
@@ -31,58 +31,47 @@ type DeleteResponse = {
 };
 
 export class EngineApi extends Base {
-  async createEngine(
-    name: string,
-    size: EngineSize = EngineSize.XS,
-    { signal }: BaseOptions = {},
-  ) {
+  async createEngine(name: string, size: EngineSize = EngineSize.XS) {
     const result = await this.put<SingleReponse>(ENDPOINT, {
       body: {
         region: this.region,
         name,
         size,
       },
-      signal,
     });
 
     return result.compute;
   }
 
-  async listEngines(options?: EngineOptions, { signal }: BaseOptions = {}) {
-    const result = await this.get<ListReponse>(ENDPOINT, {
-      query: options,
-      signal,
-    });
+  async listEngines(options?: EngineOptions) {
+    const result = await this.get<ListReponse>(ENDPOINT, { query: options });
 
     return result.computes;
   }
 
-  async getEngine(name: string, { signal }: BaseOptions = {}) {
-    const engines = await this.listEngines({ name }, { signal });
+  async getEngine(name: string) {
+    const engines = await this.listEngines({ name });
 
     return engines[0];
   }
 
-  async deleteEngine(name: string, { signal }: BaseOptions = {}) {
+  async deleteEngine(name: string) {
     const result = await this.delete<DeleteResponse>(ENDPOINT, {
       body: { name },
-      signal,
     });
 
     return result.status;
   }
 
-  async suspendEngine(name: string, { signal }: BaseOptions = {}) {
+  async suspendEngine(name: string) {
     await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
       body: { suspend: true },
-      signal,
     });
   }
 
-  async resumeEngine(name: string, { signal }: BaseOptions = {}) {
+  async resumeEngine(name: string) {
     await this.patch<EmptyResponse>(`${ENDPOINT}/${name}`, {
       body: { suspend: false },
-      signal,
     });
   }
 }

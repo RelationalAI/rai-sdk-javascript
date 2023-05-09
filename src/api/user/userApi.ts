@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base, BaseOptions } from '../base';
+import { Base } from '../base';
 import { User, UserRole, UserStatus } from './types';
 
 const ENDPOINT = 'users';
@@ -27,42 +27,30 @@ type DeleteResponse = {
 };
 
 export class UserApi extends Base {
-  async createUser(
-    email: string,
-    roles: UserRole[],
-    { signal }: BaseOptions = {},
-  ) {
+  async createUser(email: string, roles: UserRole[]) {
     const result = await this.post<SingleReponse>(ENDPOINT, {
       body: {
         email,
         roles,
       },
-      signal,
     });
 
     return result.user;
   }
 
-  async listUsers({ signal }: BaseOptions = {}) {
-    const result = await this.get<ListReponse>(ENDPOINT, { signal });
+  async listUsers() {
+    const result = await this.get<ListReponse>(ENDPOINT);
 
     return result.users;
   }
 
-  async getUser(userId: string, { signal }: BaseOptions = {}) {
-    const result = await this.get<SingleReponse>(`${ENDPOINT}/${userId}`, {
-      signal,
-    });
+  async getUser(userId: string) {
+    const result = await this.get<SingleReponse>(`${ENDPOINT}/${userId}`);
 
     return result.user;
   }
 
-  async updateUser(
-    userId: string,
-    status?: UserStatus,
-    roles?: UserRole[],
-    { signal }: BaseOptions = {},
-  ) {
+  async updateUser(userId: string, status?: UserStatus, roles?: UserRole[]) {
     const body: any = {};
 
     if (status) {
@@ -75,24 +63,24 @@ export class UserApi extends Base {
 
     const result = await this.patch<SingleReponse>(`${ENDPOINT}/${userId}`, {
       body,
-      signal,
     });
 
     return result.user;
   }
 
-  async enableUser(userId: string, { signal }: BaseOptions = {}) {
-    return await this.updateUser(userId, UserStatus.ACTIVE, [], { signal });
+  async enableUser(userId: string) {
+    return await this.updateUser(userId, UserStatus.ACTIVE);
   }
 
-  async disableUser(userId: string, { signal }: BaseOptions = {}) {
-    return await this.updateUser(userId, UserStatus.INACTIVE, [], { signal });
+  async disableUser(userId: string) {
+    return await this.updateUser(userId, UserStatus.INACTIVE);
   }
 
-  async deleteUser(userId: string, { signal }: BaseOptions = {}) {
-    const result = await this.delete<DeleteResponse>(`${ENDPOINT}/${userId}`, {
-      signal,
-    });
+  async deleteUser(userId: string) {
+    const result = await this.delete<DeleteResponse>(
+      `${ENDPOINT}/${userId}`,
+      {},
+    );
 
     return result;
   }

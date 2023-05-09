@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { Base, BaseOptions } from '../base';
+import { Base } from '../base';
 import { makeLabeledAction } from './transactionUtils';
 import {
   LabeledAction,
@@ -31,7 +31,6 @@ export class TransactionApi extends Base {
     engine: string,
     transaction: Transaction,
     mode = TransactionMode.OPEN,
-    { signal }: BaseOptions = {},
   ) {
     const query = {
       dbname: database,
@@ -43,7 +42,6 @@ export class TransactionApi extends Base {
     return await this.post<TransactionResult>(ENDPOINT, {
       query,
       body: transaction,
-      signal,
     });
   }
 
@@ -52,7 +50,6 @@ export class TransactionApi extends Base {
     engine: string,
     actions: LabeledAction['action'][],
     readonly = true,
-    { signal }: BaseOptions = {},
   ) {
     const labeledActions = actions.map((action, i) =>
       makeLabeledAction(`action-${i}`, action),
@@ -63,18 +60,12 @@ export class TransactionApi extends Base {
       dbname: database,
       mode: TransactionMode.OPEN,
       nowait_durable: false,
-      readonly: readonly ?? true,
+      readonly,
       version: 0,
       actions: labeledActions,
       computeName: engine,
     };
 
-    return await this.runTransaction(
-      database,
-      engine,
-      transaction,
-      TransactionMode.OPEN,
-      { signal },
-    );
+    return await this.runTransaction(database, engine, transaction);
   }
 }

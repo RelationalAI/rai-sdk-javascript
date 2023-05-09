@@ -38,15 +38,11 @@ type CancelResponse = {
 };
 
 export class TransactionAsyncApi extends Base {
-  async runTransactionAsync(
-    transaction: TransactionAsyncPayload,
-    { signal }: BaseOptions = {},
-  ) {
+  async runTransactionAsync(transaction: TransactionAsyncPayload) {
     const result = await this.post<
       TransactionAsyncCompact | TransactionAsyncFile[]
     >(ENDPOINT, {
       body: transaction,
-      signal,
     });
 
     if (Array.isArray(result)) {
@@ -58,14 +54,8 @@ export class TransactionAsyncApi extends Base {
     };
   }
 
-  async listTransactions(
-    options?: TransactionListOptions,
-    { signal }: BaseOptions = {},
-  ) {
-    const result = await this.get<ListResponse>(ENDPOINT, {
-      query: options,
-      signal,
-    });
+  async listTransactions(options?: TransactionListOptions) {
+    const result = await this.get<ListResponse>(ENDPOINT, { query: options });
 
     return result.transactions;
   }
@@ -119,10 +109,16 @@ export class TransactionAsyncApi extends Base {
     return result;
   }
 
-  async cancelTransaction(transactionId: string, { signal }: BaseOptions = {}) {
+  async getTransactionQuery(transactionId: string) {
+    const result = await this.get<string>(`${ENDPOINT}/${transactionId}/query`);
+
+    return result;
+  }
+
+  async cancelTransaction(transactionId: string) {
     const result = await this.post<CancelResponse>(
       `${ENDPOINT}/${transactionId}/cancel`,
-      { signal },
+      {},
     );
 
     return result || {};

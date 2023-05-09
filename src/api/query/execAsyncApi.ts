@@ -16,7 +16,6 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { BaseOptions } from '../base';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
@@ -25,7 +24,7 @@ import {
 import {
   TransactionAsyncCompact,
   TransactionAsyncPayload,
-  TransactionPollOptions,
+  TransactionAsyncResult,
 } from '../transaction/types';
 import { CsvConfigSchema, CsvConfigSyntax, QueryInput } from './types';
 import { makeQueryInput, schemaToRel, syntaxToRel } from './utils';
@@ -38,7 +37,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    { signal }: BaseOptions = {},
   ) {
     const transaction: TransactionAsyncPayload = {
       dbname: database,
@@ -53,7 +51,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       transaction.engine_name = engine;
     }
 
-    return await this.runTransactionAsync(transaction, { signal });
+    return await this.runTransactionAsync(transaction);
   }
 
   async exec(
@@ -63,7 +61,8 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    { interval, timeout, signal }: TransactionPollOptions = {},
+    interval = 1000, // 1 second
+    timeout = Number.POSITIVE_INFINITY,
   ) {
     const result = await this.execAsync(
       database,
@@ -72,7 +71,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       inputs,
       readonly,
       tags,
-      { signal },
     );
     const txnId = result.transaction.id;
 
@@ -80,26 +78,23 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       return result;
     }
 
-    return await this.pollTransaction(txnId, {
-      interval: interval ?? 1000,
-      timeout: timeout ?? Number.POSITIVE_INFINITY,
-      signal,
-    });
+    return await this.pollTransaction(txnId, interval, timeout);
   }
 
-  async pollTransaction(txnId: string, options: TransactionPollOptions = {}) {
-    const timeout = options.timeout ?? Number.POSITIVE_INFINITY;
-    const interval = options.interval ?? 1000;
-    const signal = options.signal;
+  async pollTransaction(
+    txnId: string,
+    interval = 1000,
+    timeout = Number.POSITIVE_INFINITY,
+  ) {
     const startedAt = Date.now();
 
     let transaction: TransactionAsyncCompact | undefined;
 
-    return new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const checkState = () => {
         setTimeout(async () => {
           try {
-            transaction = await this.getTransaction(txnId, { signal });
+            transaction = await this.getTransaction(txnId);
             // eslint-disable-next-line no-empty
           } catch {}
 
@@ -120,23 +115,22 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       };
 
       checkState();
-    })
-      .then(() =>
-        Promise.all([
-          this.getTransactionMetadata(txnId, { signal }),
-          this.getTransactionProblems(txnId, { signal }),
-          this.getTransactionResults(txnId, { signal }),
-        ]),
-      )
-      .then(async data => ({
-        results: await makeArrowRelations(data[2], data[0]),
-        problems: data[1],
-      }))
-      .then(({ results, problems }) => ({
-        transaction: transaction!,
-        problems,
-        results,
-      }));
+    });
+
+    const data = await Promise.all([
+      this.getTransactionMetadata(txnId),
+      this.getTransactionProblems(txnId),
+      this.getTransactionResults(txnId),
+    ]);
+    const results = await makeArrowRelations(data[2], data[0]);
+
+    const res: TransactionAsyncResult = {
+      transaction: transaction!,
+      problems: data[1],
+      results,
+    };
+
+    return res;
   }
 
   async loadJson(
@@ -144,7 +138,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     engine: string,
     relation: string,
     json: any,
-    { signal }: BaseOptions = {},
   ) {
     const qs = [
       `def config:data = data`,
@@ -157,9 +150,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       },
     ];
 
-    return this.exec(database, engine, qs.join('\n'), inputs, false, [], {
-      signal,
-    });
+    return this.exec(database, engine, qs.join('\n'), inputs, false);
   }
 
   async loadCsv(
@@ -169,7 +160,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     csv: string,
     syntax?: CsvConfigSyntax,
     schema?: CsvConfigSchema,
-    { signal }: BaseOptions = {},
   ) {
     const qs = [`def config:data = data`];
     const inputs: QueryInput[] = [
@@ -189,8 +179,6 @@ export class ExecAsyncApi extends TransactionAsyncApi {
 
     qs.push(`def insert:${relation} = load_csv[config]`);
 
-    return this.exec(database, engine, qs.join('\n'), inputs, false, [], {
-      signal,
-    });
+    return this.exec(database, engine, qs.join('\n'), inputs, false);
   }
 }
