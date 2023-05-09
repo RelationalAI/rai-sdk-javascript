@@ -173,9 +173,14 @@ export async function pollWithOverhead<T = void>(
   return new Promise<T>((resolve, reject) => {
     const poll = (delay: number) => {
       setTimeout(async () => {
-        const pollingResult = await callback();
-        if (pollingResult.done && pollingResult.result) {
-          resolve(pollingResult.result);
+        try {
+          const pollingResult = await callback();
+          if (pollingResult.done && pollingResult.result) {
+            resolve(pollingResult.result);
+            return;
+          }
+        } catch (error: any) {
+          reject(error);
           return;
         }
 
