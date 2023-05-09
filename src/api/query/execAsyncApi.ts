@@ -14,7 +14,6 @@
  * under the License.
  */
 
-import { ApiError } from '../../errors';
 import { PollOptions, pollWithOverhead } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
@@ -86,16 +85,12 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     options?: PollOptions,
   ): Promise<TransactionAsyncResult> {
     const transaction = await pollWithOverhead<TransactionAsync>(async () => {
-      try {
-        const transaction = await this.getTransaction(txnId);
+      const transaction = await this.getTransaction(txnId);
+      if (isTransactionDone(transaction.state)) {
         return {
-          done: transaction && isTransactionDone(transaction.state),
+          done: true,
           result: transaction,
         };
-      } catch (error: any) {
-        if (error instanceof ApiError && error.response.status < 500) {
-          throw error;
-        }
       }
 
       return {

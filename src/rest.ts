@@ -38,7 +38,6 @@ export type PollOptions = {
   startTime?: number;
   maxInterval?: number;
   timeout?: number;
-  maxRetries?: number;
 };
 
 export type PollingResult<T> = {
@@ -172,22 +171,13 @@ export async function pollWithOverhead<T = void>(
   const startTime = options?.startTime ?? Date.now();
   const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
   const maxInterval = options?.maxInterval ?? 120000;
-  const maxRetry = options?.maxRetries ?? Number.POSITIVE_INFINITY;
   return new Promise<T>((resolve, reject) => {
-    let tryNumber = 0;
     const poll = (delay: number) => {
       setTimeout(async () => {
-        try {
-          const pollingResult = await callback();
-          if (pollingResult.done && pollingResult.result) {
-            resolve(pollingResult.result);
-            return;
-          }
-        } catch (error: any) {
-          if (++tryNumber >= maxRetry) {
-            reject(error);
-            return;
-          }
+        const pollingResult = await callback();
+        if (pollingResult.done && pollingResult.result) {
+          resolve(pollingResult.result);
+          return;
         }
 
         const currentDelay = Date.now() - startTime;
