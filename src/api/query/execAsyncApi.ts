@@ -60,9 +60,8 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    timeout = Number.POSITIVE_INFINITY,
+    options?: PollOptions,
   ) {
-    const startTime = Date.now();
     const result = await this.execAsync(
       database,
       engine,
@@ -77,7 +76,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       return result;
     }
 
-    return await this.pollTransaction(txnId, { timeout, startTime });
+    return await this.pollTransaction(txnId, options);
   }
 
   async pollTransaction(

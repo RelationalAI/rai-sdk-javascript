@@ -35,7 +35,6 @@ export type RequestOptions = {
 
 export type PollOptions = {
   overheadRate?: number;
-  startTime?: number;
   maxInterval?: number;
   timeout?: number;
 };
@@ -168,7 +167,7 @@ export async function pollWithOverhead<T = void>(
   options?: PollOptions,
 ) {
   const overheadRate = options?.overheadRate ?? 0.1;
-  const startTime = options?.startTime ?? Date.now();
+  const startTime = Date.now();
   const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
   const maxInterval = options?.maxInterval ?? 120000;
   return new Promise<T>((resolve, reject) => {
