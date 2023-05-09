@@ -19,8 +19,6 @@ import { Config } from '../types';
 
 type OnResponse = RequestOptions['onResponse'];
 
-export type BaseOptions = Pick<RequestOptions, 'signal'>;
-
 export abstract class Base {
   baseUrl: string;
 

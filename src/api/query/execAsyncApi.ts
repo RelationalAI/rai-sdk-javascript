@@ -84,7 +84,9 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     options?: PollOptions,
   ): Promise<TransactionAsyncResult> {
     const transaction = await pollWithOverhead<TransactionAsync>(async () => {
-      const transaction = await this.getTransaction(txnId);
+      const transaction = await this.getTransaction(txnId, {
+        signal: options?.signal,
+      });
       if (isTransactionDone(transaction.state)) {
         return {
           done: true,
@@ -98,9 +100,15 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     }, options);
 
     const data = await Promise.all([
-      this.getTransactionMetadata(txnId),
-      this.getTransactionProblems(txnId),
-      this.getTransactionResults(txnId),
+      this.getTransactionMetadata(txnId, {
+        signal: options?.signal,
+      }),
+      this.getTransactionProblems(txnId, {
+        signal: options?.signal,
+      }),
+      this.getTransactionResults(txnId, {
+        signal: options?.signal,
+      }),
     ]);
 
     return {

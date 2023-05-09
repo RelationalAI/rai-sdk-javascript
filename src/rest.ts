@@ -38,6 +38,7 @@ export type PollOptions = {
   overheadRate?: number;
   maxInterval?: number;
   timeout?: number;
+  signal?: AbortSignal;
 };
 
 export type PollingResult<T> = {

@@ -14,7 +14,8 @@
  * under the License.
  */
 
-import { Base, BaseOptions } from '../base';
+import { RequestOptions } from '../../rest';
+import { Base } from '../base';
 import {
   readArrowFiles,
   readProtoMetadata,
@@ -60,7 +61,10 @@ export class TransactionAsyncApi extends Base {
     return result.transactions;
   }
 
-  async getTransaction(transactionId: string, { signal }: BaseOptions = {}) {
+  async getTransaction(
+    transactionId: string,
+    { signal }: Pick<RequestOptions, 'signal'> = {},
+  ) {
     const result = await this.get<SingleResponse>(
       `${ENDPOINT}/${transactionId}`,
       { signal },
@@ -71,7 +75,7 @@ export class TransactionAsyncApi extends Base {
 
   async getTransactionResults(
     transactionId: string,
-    { signal }: BaseOptions = {},
+    { signal }: Pick<RequestOptions, 'signal'> = {},
   ) {
     const result = await this.get<TransactionAsyncFile[]>(
       `${ENDPOINT}/${transactionId}/results`,
@@ -83,7 +87,7 @@ export class TransactionAsyncApi extends Base {
 
   async getTransactionMetadata(
     transactionId: string,
-    { signal }: BaseOptions = {},
+    { signal }: Pick<RequestOptions, 'signal'> = {},
   ) {
     const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
@@ -99,7 +103,7 @@ export class TransactionAsyncApi extends Base {
 
   async getTransactionProblems(
     transactionId: string,
-    { signal }: BaseOptions = {},
+    { signal }: Pick<RequestOptions, 'signal'> = {},
   ) {
     const result = await this.get<Problem[]>(
       `${ENDPOINT}/${transactionId}/problems`,
