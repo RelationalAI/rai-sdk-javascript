@@ -14,15 +14,14 @@
  * under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
+import { PollOptions, pollWithOverhead } from '../../rest';
 import { TransactionAsyncApi } from '../transaction/transactionAsyncApi';
 import {
   isTransactionDone,
   makeArrowRelations,
 } from '../transaction/transactionUtils';
 import {
-  TransactionAsyncCompact,
+  TransactionAsync,
   TransactionAsyncPayload,
   TransactionAsyncResult,
 } from '../transaction/types';
@@ -61,8 +60,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     inputs: QueryInput[] = [],
     readonly = true,
     tags: string[] = [],
-    interval = 1000, // 1 second
-    timeout = Number.POSITIVE_INFINITY,
+    options?: PollOptions,
   ) {
     const result = await this.execAsync(
       database,
@@ -78,59 +76,38 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       return result;
     }
 
-    return await this.pollTransaction(txnId, interval, timeout);
+    return await this.pollTransaction(txnId, options);
   }
 
   async pollTransaction(
     txnId: string,
-    interval = 1000,
-    timeout = Number.POSITIVE_INFINITY,
-  ) {
-    const startedAt = Date.now();
+    options?: PollOptions,
+  ): Promise<TransactionAsyncResult> {
+    const transaction = await pollWithOverhead<TransactionAsync>(async () => {
+      const transaction = await this.getTransaction(txnId);
+      if (isTransactionDone(transaction.state)) {
+        return {
+          done: true,
+          result: transaction,
+        };
+      }
 
-    let transaction: TransactionAsyncCompact | undefined;
-
-    await new Promise<void>((resolve, reject) => {
-      const checkState = () => {
-        setTimeout(async () => {
-          try {
-            transaction = await this.getTransaction(txnId);
-            // eslint-disable-next-line no-empty
-          } catch {}
-
-          if (transaction && isTransactionDone(transaction.state)) {
-            resolve();
-          } else {
-            if (Date.now() - startedAt > timeout) {
-              reject(
-                new Error(
-                  `Polling transaction timeout of ${timeout}ms has been exceeded.`,
-                ),
-              );
-            }
-
-            checkState();
-          }
-        }, interval);
+      return {
+        done: false,
       };
-
-      checkState();
-    });
+    }, options);
 
     const data = await Promise.all([
       this.getTransactionMetadata(txnId),
       this.getTransactionProblems(txnId),
       this.getTransactionResults(txnId),
     ]);
-    const results = await makeArrowRelations(data[2], data[0]);
 
-    const res: TransactionAsyncResult = {
-      transaction: transaction!,
+    return {
+      transaction,
       problems: data[1],
-      results,
+      results: makeArrowRelations(data[2], data[0]),
     };
-
-    return res;
   }
 
   async loadJson(
