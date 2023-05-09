@@ -65,7 +65,7 @@ const webEsm = lodash.merge({}, baseConfig, {
   target: 'web',
   resolve: {
     alias: {
-      'node-fetch-commonjs': path.resolve('fetch.ts'),
+      [path.resolve('./src/fetch.node.ts')]: path.resolve('./src/fetch.web.ts'),
     },
   },
 });
@@ -82,7 +82,7 @@ const webCjs = lodash.merge({}, baseConfig, {
   target: 'web',
   resolve: {
     alias: {
-      'node-fetch-commonjs': path.resolve('fetch.ts'),
+      [path.resolve('./src/fetch.node.ts')]: path.resolve('./src/fetch.web.ts'),
     },
   },
 });

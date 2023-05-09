@@ -14,10 +14,10 @@
  * under the License.
  */
 
-import nodeFetch, { Response } from 'node-fetch-commonjs';
 import { stringify } from 'query-string';
 
 import { makeError } from './errors';
+import { getFetch, Response } from './fetch.node';
 import { ApiResponse, VERSION } from './types';
 
 const isNode =
@@ -32,6 +32,17 @@ export type RequestOptions = {
   query?: Record<string, any>;
   onResponse?: (r: ApiResponse) => void;
   signal?: AbortSignal;
+};
+
+export type PollOptions = {
+  overheadRate?: number;
+  maxInterval?: number;
+  timeout?: number;
+};
+
+export type PollingResult<T> = {
+  done: boolean;
+  result?: T;
 };
 
 function addDefaultHeaders(headers: RequestInit['headers'], url: string) {
@@ -74,7 +85,9 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
   let response;
 
   try {
-    response = await nodeFetch(fullUrl, opts);
+    const fetch = getFetch();
+
+    response = await fetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
 
@@ -153,4 +166,41 @@ function responseToInfo(response: Response, body: any) {
   };
 
   return info;
+}
+
+export async function pollWithOverhead<T = void>(
+  callback: () => PollingResult<T> | PromiseLike<PollingResult<T>>,
+  options?: PollOptions,
+) {
+  const overheadRate = options?.overheadRate ?? 0.1;
+  const startTime = Date.now();
+  const timeout = options?.timeout ?? Number.POSITIVE_INFINITY;
+  const maxInterval = options?.maxInterval ?? 120000;
+  return new Promise<T>((resolve, reject) => {
+    const poll = (delay: number) => {
+      setTimeout(async () => {
+        try {
+          const pollingResult = await callback();
+          if (pollingResult.done && pollingResult.result) {
+            resolve(pollingResult.result);
+            return;
+          }
+        } catch (error: any) {
+          reject(error);
+          return;
+        }
+
+        const currentDelay = Date.now() - startTime;
+        if (currentDelay > timeout) {
+          reject(
+            new Error(`Polling timeout of ${timeout}ms has been exceeded.`),
+          );
+          return;
+        }
+        poll(Math.min(maxInterval, currentDelay * overheadRate));
+      }, delay);
+    };
+
+    poll(Math.min(maxInterval, (Date.now() - startTime) * overheadRate));
+  });
 }
