@@ -14,7 +14,6 @@
  * under the License.
  */
 
-import { RequestOptions } from '../../rest';
 import { Base } from '../base';
 import {
   readArrowFiles,
@@ -56,58 +55,42 @@ export class TransactionAsyncApi extends Base {
   }
 
   async listTransactions(options?: TransactionListOptions) {
-    const result = await this.get<ListResponse>(ENDPOINT, { query: options });
+    const result = await this.get<ListResponse>(ENDPOINT, options);
 
     return result.transactions;
   }
 
-  async getTransaction(
-    transactionId: string,
-    { signal }: Pick<RequestOptions, 'signal'> = {},
-  ) {
+  async getTransaction(transactionId: string) {
     const result = await this.get<SingleResponse>(
       `${ENDPOINT}/${transactionId}`,
-      { signal },
     );
 
     return result.transaction;
   }
 
-  async getTransactionResults(
-    transactionId: string,
-    { signal }: Pick<RequestOptions, 'signal'> = {},
-  ) {
+  async getTransactionResults(transactionId: string) {
     const result = await this.get<TransactionAsyncFile[]>(
       `${ENDPOINT}/${transactionId}/results`,
-      { signal },
     );
 
     return await readArrowFiles(result);
   }
 
-  async getTransactionMetadata(
-    transactionId: string,
-    { signal }: Pick<RequestOptions, 'signal'> = {},
-  ) {
+  async getTransactionMetadata(transactionId: string) {
     const result = await this.request<Blob>(
       `${ENDPOINT}/${transactionId}/metadata`,
       {
         method: 'GET',
         headers: { Accept: 'application/x-protobuf' },
-        signal,
       },
     );
 
     return readProtoMetadata(result);
   }
 
-  async getTransactionProblems(
-    transactionId: string,
-    { signal }: Pick<RequestOptions, 'signal'> = {},
-  ) {
+  async getTransactionProblems(transactionId: string) {
     const result = await this.get<Problem[]>(
       `${ENDPOINT}/${transactionId}/problems`,
-      { signal },
     );
 
     return result;

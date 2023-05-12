@@ -16,7 +16,7 @@
 
 import { stringify } from 'query-string';
 
-import { makeError } from './errors';
+import { AbortError, makeError } from './errors';
 import { getFetch, Response } from './fetch.node';
 import { ApiResponse, VERSION } from './types';
 
@@ -31,7 +31,6 @@ export type RequestOptions = {
   body?: any;
   query?: Record<string, any>;
   onResponse?: (r: ApiResponse) => void;
-  signal?: AbortSignal;
 };
 
 export type PollOptions = {
@@ -75,7 +74,6 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     method: options.method || 'GET',
     body: JSON.stringify(options.body),
     headers: addDefaultHeaders(options.headers, url),
-    signal: options.signal,
   };
 
   const fullUrl =
@@ -91,10 +89,6 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
     response = await fetch(fullUrl, opts);
   } catch (error: any) {
     const errorMsg = error.message.toLowerCase();
-
-    if (error.name === 'AbortError') {
-      throw error;
-    }
 
     if (
       errorMsg.includes('failed to fetch') || // Chrome
@@ -180,6 +174,11 @@ export async function pollWithOverhead<T = void>(
   return new Promise<T>((resolve, reject) => {
     const poll = (delay: number) => {
       setTimeout(async () => {
+        if (options?.signal?.aborted) {
+          reject(new AbortError());
+          return;
+        }
+
         try {
           const pollingResult = await callback();
           if (pollingResult.done && pollingResult.result) {

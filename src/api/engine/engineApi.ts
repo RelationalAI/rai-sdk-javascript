@@ -44,7 +44,7 @@ export class EngineApi extends Base {
   }
 
   async listEngines(options?: EngineOptions) {
-    const result = await this.get<ListReponse>(ENDPOINT, { query: options });
+    const result = await this.get<ListReponse>(ENDPOINT, options);
 
     return result.computes;
   }
