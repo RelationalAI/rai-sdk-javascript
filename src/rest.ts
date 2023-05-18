@@ -16,7 +16,7 @@
 
 import { stringify } from 'query-string';
 
-import { makeError } from './errors';
+import { AbortError, makeError } from './errors';
 import { getFetch, Response } from './fetch.node';
 import { ApiResponse, VERSION } from './types';
 
@@ -37,6 +37,7 @@ export type PollOptions = {
   overheadRate?: number;
   maxInterval?: number;
   timeout?: number;
+  signal?: AbortSignal;
 };
 
 export type PollingResult<T> = {
@@ -173,6 +174,11 @@ export async function pollWithOverhead<T = void>(
   return new Promise<T>((resolve, reject) => {
     const poll = (delay: number) => {
       setTimeout(async () => {
+        if (options?.signal?.aborted) {
+          reject(new AbortError());
+          return;
+        }
+
         try {
           const pollingResult = await callback();
           if (pollingResult.done && pollingResult.result) {

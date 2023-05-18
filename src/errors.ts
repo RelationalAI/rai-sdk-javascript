@@ -82,7 +82,20 @@ export class MaxRelationSizeError extends Error {
   }
 }
 
+export class AbortError extends Error {
+  constructor(message?: string) {
+    super(message);
+
+    this.name = 'AbortError';
+  }
+
+  toString() {
+    return this.message ?? this.name;
+  }
+}
+
 export type SdkError =
+  | AbortError
   | ApiError
   | TransactionError
   | MaxRelationSizeError
