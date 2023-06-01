@@ -59,7 +59,8 @@ export type RelBaseTypedValue =
   | Rational16Value
   | Rational32Value
   | Rational64Value
-  | Rational128Value;
+  | Rational128Value
+  | AutoNumber;
 
 export type RelTypedValue = RelBaseTypedValue | ValueTypeValue | UnknownType;
 
@@ -104,6 +105,7 @@ export type RelTypeDef =
   | Omit<Rational32Value, 'value'>
   | Omit<Rational64Value, 'value'>
   | Omit<Rational128Value, 'value'>
+  | Omit<AutoNumber, 'value'>
   | ConstantValue
   | Omit<ValueTypeValue, 'value'>
   | Omit<UnknownType, 'value'>;
@@ -336,6 +338,11 @@ export type Rational128Value = {
     numerator: bigint;
     denominator: bigint;
   };
+};
+
+export type AutoNumber = {
+  type: 'AutoNumber';
+  value: bigint;
 };
 
 // TODO: should be removed with JSON based metadata implementation?
