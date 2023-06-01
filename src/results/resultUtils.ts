@@ -481,6 +481,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
     case 'FilePos':
     case 'Missing':
     case 'Hash':
+    case 'AutoNumber':
       return {
         type: standardValueType,
       };
@@ -542,12 +543,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
             return { type: 'Rational128' };
         }
       }
-      break;
     }
-    case 'AutoNumber':
-      return {
-        type: standardValueType,
-      };
   }
 
   return typeDef;
