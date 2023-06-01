@@ -272,6 +272,8 @@ export function convertValue<T extends RelTypedValue>(
     }
     case 'UUID':
       return toUuid(Array.from(value));
+    case 'SHA1':
+      return toSha1(Array.from(value));
     case 'Unknown':
       return value && value.toJSON ? value.toJSON() : value;
   }
@@ -300,6 +302,7 @@ export function getDisplayValue(
   switch (val.type) {
     case 'String':
     case 'UUID':
+    case 'SHA1':
       return JSON.stringify(val.value);
     case 'Bool':
       return val.value ? 'true' : 'false';
@@ -415,7 +418,6 @@ function uint128ToBigInt(tuple: bigint[]) {
 
 function toUuid(tuple: bigint[]) {
   const num = uint128ToBigInt(tuple);
-
   const str = num.toString(16).padStart(32, '0');
   const parts = [
     str.slice(0, 8),
@@ -426,6 +428,13 @@ function toUuid(tuple: bigint[]) {
   ];
 
   return parts.join('-');
+}
+
+function toSha1(tuple: bigint[]) {
+  return (
+    tuple[0].toString(16).padStart(32, '0') +
+    tuple[1].toString(16).padStart(8, '0')
+  );
 }
 
 function mapPrimitiveValue(val: PrimitiveValue) {
@@ -501,6 +510,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
     case 'Hash':
     case 'AutoNumber':
     case 'UUID':
+    case 'SHA1':
       return {
         type: standardValueType,
       };
