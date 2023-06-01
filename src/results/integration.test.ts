@@ -31,27 +31,21 @@ import {
 } from './tests';
 
 describe('Integration', () => {
+  const databaseName = `js-sdk-tests-${Date.now()}`;
   const engineName = getEngineName();
-  let databaseName: string;
   let client: Client;
 
-  function setup() {
-    beforeAll(async () => {
-      client = await getClient();
+  beforeAll(async () => {
+    client = await getClient();
 
-      databaseName = `js-sdk-tests-${Date.now()}`;
+    await createDatabaseIfNotExists(client, databaseName);
+  });
 
-      await createDatabaseIfNotExists(client, databaseName);
-    });
-
-    afterAll(async () => {
-      await client.deleteDatabase(databaseName);
-    });
-  }
+  afterAll(async () => {
+    await client.deleteDatabase(databaseName);
+  });
 
   describe('Rel to JS standard types', () => {
-    setup();
-
     standardTypeTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
@@ -72,8 +66,6 @@ describe('Integration', () => {
   });
 
   describe('Rel to JS specialization', () => {
-    setup();
-
     specializationTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
@@ -94,8 +86,6 @@ describe('Integration', () => {
   });
 
   describe('Rel to JS value types', () => {
-    setup();
-
     valueTypeTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
@@ -116,8 +106,6 @@ describe('Integration', () => {
   });
 
   describe('Rel to JS value types misc', () => {
-    setup();
-
     miscValueTypeTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 
@@ -138,8 +126,6 @@ describe('Integration', () => {
   });
 
   describe('Rel to JS value types specialization', () => {
-    setup();
-
     valueTypeSpecializationTests.forEach(test => {
       const testFn = test.skip ? it.skip : test.only ? it.only : it;
 

@@ -205,7 +205,6 @@ export function convertValue<T extends RelTypedValue>(
     case 'UInt16':
     case 'UInt32':
     case 'UInt64':
-    case 'AutoNumber':
       return value;
     case 'UInt128':
       return uint128ToBigInt(Array.from(value));
@@ -328,7 +327,6 @@ export function getDisplayValue(
     case 'UInt128':
     case 'FilePos':
     case 'Hash':
-    case 'AutoNumber':
       return val.value.toString();
     case 'Missing':
       return 'missing';
@@ -542,12 +540,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
             return { type: 'Rational128' };
         }
       }
-      break;
     }
-    case 'AutoNumber':
-      return {
-        type: standardValueType,
-      };
   }
 
   return typeDef;
