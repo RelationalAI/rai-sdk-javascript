@@ -500,6 +500,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
     case 'Missing':
     case 'Hash':
     case 'AutoNumber':
+    case 'UUID':
       return {
         type: standardValueType,
       };
