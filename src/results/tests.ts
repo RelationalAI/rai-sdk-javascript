@@ -591,7 +591,6 @@ export const standardTypeTests: Test[] = [
     displayValues: ['1'],
   },
   {
-    skip: true,
     name: 'UUID',
     query: `
       with rel:base use uuid_from_string
@@ -603,7 +602,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
-    displayValues: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
+    displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
   },
 ];
 
@@ -1422,7 +1421,6 @@ export const specializationTests: Test[] = [
     displayValues: ['1'],
   },
   {
-    skip: true,
     name: 'UUID',
     query: `
       with rel:base use uuid_from_string
@@ -1439,7 +1437,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
-    displayValues: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
+    displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
   },
 ];
 
@@ -2594,10 +2592,9 @@ export const valueTypeTests: Test[] = [
     displayValues: ['(:MyType, 1, 1)'],
   },
   {
-    skip: true,
     name: 'UUID',
     query: `
-      with rel:base use uuid_from_string
+      with rel:base use uuid_from_string, UUID
       def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
       value type MyType = Int, UUID
       def output = ^MyType[1, uuid]
@@ -4171,10 +4168,9 @@ export const valueTypeSpecializationTests: Test[] = [
     displayValues: ['(:MyType, 1, 1)'],
   },
   {
-    skip: true,
     name: 'UUID',
     query: `
-      with rel:base use uuid_from_string
+      with rel:base use uuid_from_string, UUID
       def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
       value type MyType = UUID, Int
       def v = ^MyType[uuid, 1]
