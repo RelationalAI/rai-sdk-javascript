@@ -272,8 +272,11 @@ export function convertValue<T extends RelTypedValue>(
     }
     case 'UUID':
       return toUuid(Array.from(value));
-    case 'SHA1':
-      return toSha1(Array.from(value));
+    case 'SHA1': {
+      const val = value.toArray ? value.toArray() : value;
+
+      return toSha1(Array.from(val[0]), val[1]);
+    }
     case 'Unknown':
       return value && value.toJSON ? value.toJSON() : value;
   }
@@ -430,10 +433,10 @@ function toUuid(tuple: bigint[]) {
   return parts.join('-');
 }
 
-function toSha1(tuple: bigint[]) {
+function toSha1(a: bigint[], b: Number) {
   return (
-    tuple[0].toString(16).padStart(32, '0') +
-    tuple[1].toString(16).padStart(8, '0')
+    uint128ToBigInt(a).toString(16).padStart(32, '0') +
+    b.toString(16).padStart(8, '0')
   );
 }
 
@@ -602,7 +605,8 @@ function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
       case 'Rational32':
       case 'Rational64':
       case 'Rational128':
-        // Rationals take 2 values
+      case 'SHA1':
+        // These types take 2 values
         result.push(values.splice(0, 2));
         break;
       default: {

@@ -605,7 +605,6 @@ export const standardTypeTests: Test[] = [
     displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
   },
   {
-    skip: true,
     name: 'SHA1',
     query: `
       with rel:base use ^SHA1
@@ -617,7 +616,7 @@ export const standardTypeTests: Test[] = [
       },
     ],
     values: ['0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
-    displayValues: ['0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
+    displayValues: ['"0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c"'],
   },
 ];
 
@@ -1455,7 +1454,6 @@ export const specializationTests: Test[] = [
     displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
   },
   {
-    skip: true,
     name: 'SHA1',
     query: `
       with rel:base use ^SHA1
@@ -1472,7 +1470,7 @@ export const specializationTests: Test[] = [
       },
     ],
     values: ['0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
-    displayValues: ['0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
+    displayValues: ['"0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c"'],
   },
 ];
 
@@ -2655,10 +2653,9 @@ export const valueTypeTests: Test[] = [
     displayValues: ['(:MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")'],
   },
   {
-    skip: true,
     name: 'SHA1',
     query: `
-      with rel:base use ^SHA1
+      with rel:base use ^SHA1, SHA1
       def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
       value type MyType = Int, SHA1
       def output = ^MyType[1, sha1]
@@ -4265,10 +4262,9 @@ export const valueTypeSpecializationTests: Test[] = [
     displayValues: ['(:MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)'],
   },
   {
-    skip: true,
     name: 'SHA1',
     query: `
-      with rel:base use ^SHA1
+      with rel:base use ^SHA1, SHA1
       def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
       value type MyType = SHA1, Int
       def v = ^MyType[sha1, 1]
