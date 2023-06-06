@@ -60,7 +60,8 @@ export type RelBaseTypedValue =
   | Rational32Value
   | Rational64Value
   | Rational128Value
-  | AutoNumber;
+  | AutoNumber
+  | UUID;
 
 export type RelTypedValue = RelBaseTypedValue | ValueTypeValue | UnknownType;
 
@@ -106,6 +107,7 @@ export type RelTypeDef =
   | Omit<Rational64Value, 'value'>
   | Omit<Rational128Value, 'value'>
   | Omit<AutoNumber, 'value'>
+  | Omit<UUID, 'value'>
   | ConstantValue
   | Omit<ValueTypeValue, 'value'>
   | Omit<UnknownType, 'value'>;
@@ -343,6 +345,11 @@ export type Rational128Value = {
 export type AutoNumber = {
   type: 'AutoNumber';
   value: bigint;
+};
+
+export type UUID = {
+  type: 'UUID';
+  value: string;
 };
 
 // TODO: should be removed with JSON based metadata implementation?

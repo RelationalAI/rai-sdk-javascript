@@ -270,6 +270,8 @@ export function convertValue<T extends RelTypedValue>(
         }
       });
     }
+    case 'UUID':
+      return toUuid(Array.from(value));
     case 'Unknown':
       return value && value.toJSON ? value.toJSON() : value;
   }
@@ -297,6 +299,7 @@ export function getDisplayValue(
 
   switch (val.type) {
     case 'String':
+    case 'UUID':
       return JSON.stringify(val.value);
     case 'Bool':
       return val.value ? 'true' : 'false';
@@ -410,6 +413,21 @@ function uint128ToBigInt(tuple: bigint[]) {
   return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
 
+function toUuid(tuple: bigint[]) {
+  const num = uint128ToBigInt(tuple);
+
+  const str = num.toString(16).padStart(32, '0');
+  const parts = [
+    str.slice(0, 8),
+    str.slice(8, 12),
+    str.slice(12, 16),
+    str.slice(16, 20),
+    str.slice(20),
+  ];
+
+  return parts.join('-');
+}
+
 function mapPrimitiveValue(val: PrimitiveValue) {
   switch (val.value.oneofKind) {
     case 'stringVal':
@@ -482,6 +500,7 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
     case 'Missing':
     case 'Hash':
     case 'AutoNumber':
+    case 'UUID':
       return {
         type: standardValueType,
       };

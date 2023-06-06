@@ -590,6 +590,20 @@ export const standardTypeTests: Test[] = [
     values: [1n],
     displayValues: ['1'],
   },
+  {
+    name: 'UUID',
+    query: `
+      with rel:base use uuid_from_string
+      def output = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
+    `,
+    typeDefs: [
+      {
+        type: 'UUID',
+      },
+    ],
+    values: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
+    displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
+  },
 ];
 
 export const specializationTests: Test[] = [
@@ -1405,6 +1419,25 @@ export const specializationTests: Test[] = [
     ],
     values: [1n],
     displayValues: ['1'],
+  },
+  {
+    name: 'UUID',
+    query: `
+      with rel:base use uuid_from_string
+      def v = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'UUID',
+          value: '22b4a8a1-e548-4eeb-9270-60426d66a48e',
+        },
+      },
+    ],
+    values: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
+    displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
   },
 ];
 
@@ -2557,6 +2590,34 @@ export const valueTypeTests: Test[] = [
     ],
     values: [[':MyType', 1n, 1n]],
     displayValues: ['(:MyType, 1, 1)'],
+  },
+  {
+    name: 'UUID',
+    query: `
+      with rel:base use uuid_from_string, UUID
+      def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
+      value type MyType = Int, UUID
+      def output = ^MyType[1, uuid]
+    `,
+    typeDefs: [
+      {
+        type: 'ValueType',
+        typeDefs: [
+          {
+            type: 'Constant',
+            value: { type: 'String', value: ':MyType' },
+          },
+          {
+            type: 'Int64',
+          },
+          {
+            type: 'UUID',
+          },
+        ],
+      },
+    ],
+    values: [[':MyType', 1n, '22b4a8a1-e548-4eeb-9270-60426d66a48e']],
+    displayValues: ['(:MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")'],
   },
 ];
 
@@ -4105,5 +4166,38 @@ export const valueTypeSpecializationTests: Test[] = [
     ],
     values: [[':MyType', 1n, 1n]],
     displayValues: ['(:MyType, 1, 1)'],
+  },
+  {
+    name: 'UUID',
+    query: `
+      with rel:base use uuid_from_string, UUID
+      def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
+      value type MyType = UUID, Int
+      def v = ^MyType[uuid, 1]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'UUID',
+            },
+            {
+              type: 'Int64',
+            },
+          ],
+          value: [':MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n],
+        },
+      },
+    ],
+    values: [[':MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n]],
+    displayValues: ['(:MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)'],
   },
 ];
