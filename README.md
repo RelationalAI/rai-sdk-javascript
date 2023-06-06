@@ -112,6 +112,9 @@ their corresponding JavaScript equivalents. Full mapping:
 | Bool                                                       | boolean                                              |
 | FilePos                                                    | bigint                                               |
 | Missing                                                    | null                                                 |
+| AutoNumber                                                 | bigint                                               |
+| UUID                                                       | string                                               |
+| SHA1                                                       | string                                               |
 
 ## Support
 
