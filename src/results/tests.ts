@@ -604,6 +604,20 @@ export const standardTypeTests: Test[] = [
     values: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
     displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
   },
+  {
+    name: 'SHA1',
+    query: `
+      with rel:base use ^SHA1
+      def output = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
+    `,
+    typeDefs: [
+      {
+        type: 'SHA1',
+      },
+    ],
+    values: ['0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
+    displayValues: ['"0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c"'],
+  },
 ];
 
 export const specializationTests: Test[] = [
@@ -1438,6 +1452,25 @@ export const specializationTests: Test[] = [
     ],
     values: ['22b4a8a1-e548-4eeb-9270-60426d66a48e'],
     displayValues: ['"22b4a8a1-e548-4eeb-9270-60426d66a48e"'],
+  },
+  {
+    name: 'SHA1',
+    query: `
+      with rel:base use ^SHA1
+      def v = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'SHA1',
+          value: '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c',
+        },
+      },
+    ],
+    values: ['0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
+    displayValues: ['"0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c"'],
   },
 ];
 
@@ -2618,6 +2651,34 @@ export const valueTypeTests: Test[] = [
     ],
     values: [[':MyType', 1n, '22b4a8a1-e548-4eeb-9270-60426d66a48e']],
     displayValues: ['(:MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")'],
+  },
+  {
+    name: 'SHA1',
+    query: `
+      with rel:base use ^SHA1, SHA1
+      def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
+      value type MyType = Int, SHA1
+      def output = ^MyType[1, sha1]
+    `,
+    typeDefs: [
+      {
+        type: 'ValueType',
+        typeDefs: [
+          {
+            type: 'Constant',
+            value: { type: 'String', value: ':MyType' },
+          },
+          {
+            type: 'Int64',
+          },
+          {
+            type: 'SHA1',
+          },
+        ],
+      },
+    ],
+    values: [[':MyType', 1n, '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c']],
+    displayValues: ['(:MyType, 1, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c")'],
   },
 ];
 
@@ -4199,5 +4260,38 @@ export const valueTypeSpecializationTests: Test[] = [
     ],
     values: [[':MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n]],
     displayValues: ['(:MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)'],
+  },
+  {
+    name: 'SHA1',
+    query: `
+      with rel:base use ^SHA1, SHA1
+      def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
+      value type MyType = SHA1, Int
+      def v = ^MyType[sha1, 1]
+      def output = #(v)
+    `,
+    typeDefs: [
+      {
+        type: 'Constant',
+        value: {
+          type: 'ValueType',
+          typeDefs: [
+            {
+              type: 'Constant',
+              value: { type: 'String', value: ':MyType' },
+            },
+            {
+              type: 'SHA1',
+            },
+            {
+              type: 'Int64',
+            },
+          ],
+          value: [':MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n],
+        },
+      },
+    ],
+    values: [[':MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n]],
+    displayValues: ['(:MyType, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c", 1)'],
   },
 ];

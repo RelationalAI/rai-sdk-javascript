@@ -61,7 +61,8 @@ export type RelBaseTypedValue =
   | Rational64Value
   | Rational128Value
   | AutoNumber
-  | UUID;
+  | UUID
+  | SHA1;
 
 export type RelTypedValue = RelBaseTypedValue | ValueTypeValue | UnknownType;
 
@@ -108,6 +109,7 @@ export type RelTypeDef =
   | Omit<Rational128Value, 'value'>
   | Omit<AutoNumber, 'value'>
   | Omit<UUID, 'value'>
+  | Omit<SHA1, 'value'>
   | ConstantValue
   | Omit<ValueTypeValue, 'value'>
   | Omit<UnknownType, 'value'>;
@@ -349,6 +351,11 @@ export type AutoNumber = {
 
 export type UUID = {
   type: 'UUID';
+  value: string;
+};
+
+export type SHA1 = {
+  type: 'SHA1';
   value: string;
 };
 
