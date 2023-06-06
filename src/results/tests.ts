@@ -1460,6 +1460,7 @@ export const specializationTests: Test[] = [
       def v = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
       def output = #(v)
     `,
+
     typeDefs: [
       {
         type: 'Constant',
