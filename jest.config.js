@@ -19,7 +19,7 @@ import { readFileSync } from 'fs';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 const engineName = process.env.GITHUB_ACTIONS
-  ? `js-sdk-tests-${Date.now()}`
+  ? `js-sdk-tests-${process.env.RunId}`
   : `js-sdk-tests-engine-local`;
 const timeout = 120000;
 
