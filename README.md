@@ -42,6 +42,8 @@ client_secret = <your client secret>
 Client credentials can be created using the RAI console at
 https://console.relationalai.com/login
 
+You can copy `config.spec` from the root of this repo and modify as needed.
+
 ### Usage
 
 The package provides `readConfig` helper that reads the configuration file
