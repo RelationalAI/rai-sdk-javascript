@@ -102,6 +102,12 @@ export class TransactionAsyncApi extends Base {
     return result;
   }
 
+  async getTransactionProfile(transactionId: string) {
+    const result = await this.get<any>(`${ENDPOINT}/${transactionId}/profile`);
+
+    return result;
+  }
+
   async cancelTransaction(transactionId: string) {
     const result = await this.post<CancelResponse>(
       `${ENDPOINT}/${transactionId}/cancel`,
