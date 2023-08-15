@@ -41,10 +41,11 @@ class AccessToken {
   ) {}
 
   get isExpired() {
-    const delta = Date.now() - this.createdOn;
-
     // experiesIn stored in seconds
-    return delta / 1000 >= this.experiesIn;
+    const delta = (Date.now() - this.createdOn) / 1000;
+
+    // anticipate access token expiration by 60 seconds
+    return delta + 60 >= this.experiesIn;
   }
 }
 
