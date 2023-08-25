@@ -41,8 +41,8 @@ class AccessToken {
   ) {}
 
   get isExpired() {
-    // experiesIn stored in seconds
-    const delta = (Date.now() - this.createdOn) / 1000;
+    // createdOn and experiesIn stored in seconds
+    const delta = Date.now() / 1000 - this.createdOn;
 
     // anticipate access token expiration by 60 seconds
     return delta + 60 >= this.experiesIn;
@@ -126,7 +126,7 @@ export class ClientCredentials extends Credentials {
     const token: AccessTokenCache = {
       access_token: data.access_token,
       expires_in: data.expires_in,
-      created_on: Date.now(),
+      created_on: Date.now() / 1000,
     };
 
     this.accessToken = new AccessToken(
