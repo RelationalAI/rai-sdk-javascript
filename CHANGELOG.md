@@ -1,6 +1,6 @@
 # Change Log
 
-## v0.7.1-alpha27
+## v0.7.1-alpha
 - Storing `AccessToken.createdOn` in seconds to be consistent with other RAI SDKs.
 
 ## v0.7.0
