@@ -1,7 +1,9 @@
 # Change Log
 
-## Unreleased
+## v0.7.1-alpha27
 - Storing `AccessToken.createdOn` in seconds to be consistent with other RAI SDKs.
+
+## v0.7.0
 
 ## [v0.7.0](https://github.com/relationalai/rai-sdk-javascript/tree/v0.7.0) (2022-XX-XX)
 
