@@ -29,7 +29,8 @@ import {
   ValueTypeValue,
 } from './types';
 
-Decimal.config({ precision: 31 });
+// Maximum number of precision digits in decimal128 is 39.
+Decimal.config({ precision: 40 });
 
 // Rata Die milliseconds for 1970-01-01T00:00:00.
 // Date and DateTime types are represented as days and milliseconds
