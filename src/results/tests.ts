@@ -486,15 +486,15 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Decimal128',
-    query: `def output = parse_decimal[128, 2, "12345678901011121314.34"]`,
+    query: `def output = parse_decimal[128, 2, "123456789010111213141516171819202122.34"]`,
     typeDefs: [
       {
         type: 'Decimal128',
         places: 2,
       },
     ],
-    values: [new Decimal('12345678901011121314.34')],
-    displayValues: ['12345678901011121314.34'],
+    values: [new Decimal('123456789010111213141516171819202122.34')],
+    displayValues: ['123456789010111213141516171819202122.34'],
   },
   {
     name: 'Rational8',
@@ -1281,7 +1281,7 @@ export const specializationTests: Test[] = [
   {
     name: 'Decimal128',
     query: `
-      def v = parse_decimal[128, 2, "12345678901011121314.34"]
+      def v = parse_decimal[128, 2, "123456789010111213141516171819202122.34"]
       def output = #(v)
     `,
     typeDefs: [
@@ -1289,13 +1289,13 @@ export const specializationTests: Test[] = [
         type: 'Constant',
         value: {
           type: 'Decimal128',
-          value: new Decimal('12345678901011121314.34'),
+          value: new Decimal('123456789010111213141516171819202122.34'),
           places: 2,
         },
       },
     ],
-    values: [new Decimal('12345678901011121314.34')],
-    displayValues: ['12345678901011121314.34'],
+    values: [new Decimal('123456789010111213141516171819202122.34')],
+    displayValues: ['123456789010111213141516171819202122.34'],
   },
   {
     name: 'Rational8',
@@ -2398,7 +2398,7 @@ export const valueTypeTests: Test[] = [
     name: 'Decimal128',
     query: `
       value type MyType = Int, FixedDecimal[128, 2]
-      def output = ^MyType[1, parse_decimal[128, 2, "12345678901011121314.34"]]
+      def output = ^MyType[1, parse_decimal[128, 2, "123456789010111213141516171819202122.34"]]
     `,
     typeDefs: [
       {
@@ -2418,8 +2418,10 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, new Decimal('12345678901011121314.34')]],
-    displayValues: ['(:MyType, 1, 12345678901011121314.34)'],
+    values: [
+      [':MyType', 1n, new Decimal('123456789010111213141516171819202122.34')],
+    ],
+    displayValues: ['(:MyType, 1, 123456789010111213141516171819202122.34)'],
   },
   {
     name: 'Rational8',
@@ -3932,7 +3934,7 @@ export const valueTypeSpecializationTests: Test[] = [
     name: 'Decimal128',
     query: `
       value type MyType = FixedDecimal[128, 2], Int
-      def v = ^MyType[parse_decimal[128, 2, "12345678901011121314.34"], 1]
+      def v = ^MyType[parse_decimal[128, 2, "123456789010111213141516171819202122.34"], 1]
       def output = #(v)
     `,
     typeDefs: [
@@ -3953,12 +3955,18 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', new Decimal('12345678901011121314.34'), 1n],
+          value: [
+            ':MyType',
+            new Decimal('123456789010111213141516171819202122.34'),
+            1n,
+          ],
         },
       },
     ],
-    values: [[':MyType', new Decimal('12345678901011121314.34'), 1n]],
-    displayValues: ['(:MyType, 12345678901011121314.34, 1)'],
+    values: [
+      [':MyType', new Decimal('123456789010111213141516171819202122.34'), 1n],
+    ],
+    displayValues: ['(:MyType, 123456789010111213141516171819202122.34, 1)'],
   },
   {
     name: 'Rational8',
