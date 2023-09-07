@@ -16,6 +16,7 @@
 
 import { tableFromArrays } from 'apache-arrow';
 import { Table as PrintTable } from 'console-table-printer';
+import Decimal from 'decimal.js';
 
 import { ArrowRelation } from '../api/transaction/types';
 import { MetadataInfo } from '../proto/generated/message';
@@ -34,12 +35,23 @@ function makeMetadata(json: any) {
 }
 
 describe('ResultTable', () => {
+  const MAX_INT_64 = 9223372036854775807n;
+  const MAX_DEC_128 = new Decimal(
+    '1.70141183460469231722463931679029329919e+28',
+  );
   const relation: ArrowRelation = {
-    relationId: '/Int64(1)/:foo/String/:bar/Char/Int64',
+    relationId:
+      '/Int64(1)/:foo/String/:bar/Char/Int64/FixedPointDecimals.FixedDecimal{Int128, 10}',
     table: tableFromArrays({
       v1: ['w', 'x', 'y', 'z'],
       v2: [97, 98, 99, 100],
       v3: [1n, 2n, 3n, 4n],
+      v4: [
+        [MAX_INT_64, MAX_INT_64],
+        [MAX_INT_64, MAX_INT_64],
+        [MAX_INT_64, MAX_INT_64],
+        [MAX_INT_64, MAX_INT_64],
+      ],
     }),
     metadata: makeMetadata({
       arguments: [
@@ -106,9 +118,106 @@ describe('ResultTable', () => {
           tag: 'PRIMITIVE_TYPE',
           primitiveType: 'INT_64',
         },
+        {
+          tag: 'VALUE_TYPE',
+          valueType: {
+            argumentTypes: [
+              {
+                tag: 'CONSTANT_TYPE',
+                constantType: {
+                  relType: {
+                    tag: 'PRIMITIVE_TYPE',
+                    primitiveType: 'STRING',
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 'STRING',
+                        stringVal: 'cmVs',
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 'CONSTANT_TYPE',
+                constantType: {
+                  relType: {
+                    tag: 'PRIMITIVE_TYPE',
+                    primitiveType: 'STRING',
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 'STRING',
+                        stringVal: 'YmFzZQ==',
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 'CONSTANT_TYPE',
+                constantType: {
+                  relType: {
+                    tag: 'PRIMITIVE_TYPE',
+                    primitiveType: 'STRING',
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 'STRING',
+                        stringVal: 'Rml4ZWREZWNpbWFs',
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 'CONSTANT_TYPE',
+                constantType: {
+                  relType: {
+                    tag: 'PRIMITIVE_TYPE',
+                    primitiveType: 'INT_64',
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 'INT_64',
+                        int64Val: '128',
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 'CONSTANT_TYPE',
+                constantType: {
+                  relType: {
+                    tag: 'PRIMITIVE_TYPE',
+                    primitiveType: 'INT_64',
+                  },
+                  value: {
+                    arguments: [
+                      {
+                        tag: 'INT_64',
+                        int64Val: '10',
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                tag: 'PRIMITIVE_TYPE',
+                primitiveType: 'INT_128',
+              },
+            ],
+          },
+        },
       ],
     }),
   };
+
   const specialRelation: ArrowRelation = {
     relationId: '/Int64(1)/:foo',
     table: tableFromArrays({}),
@@ -172,20 +281,21 @@ describe('ResultTable', () => {
         },
         { type: 'Char' },
         { type: 'Int64' },
+        { type: 'Decimal128', places: 10 },
       ]);
     });
 
     it('should get column length', () => {
       const table = new ResultTable(relation);
 
-      expect(table.columnLength).toEqual(6);
+      expect(table.columnLength).toEqual(7);
     });
 
     it('should get columns', () => {
       const table = new ResultTable(relation);
       const columns = table.columns();
 
-      expect(columns.length).toEqual(6);
+      expect(columns.length).toEqual(7);
       expect(columns[0].typeDef).toEqual({
         type: 'Constant',
         value: { type: 'Int64', value: 1n },
@@ -207,6 +317,8 @@ describe('ResultTable', () => {
       expect(columns[4].length).toEqual(4);
       expect(columns[5].typeDef).toEqual({ type: 'Int64' });
       expect(columns[5].length).toEqual(4);
+      expect(columns[6].typeDef).toEqual({ type: 'Decimal128', places: 10 });
+      expect(columns[6].length).toEqual(4);
     });
 
     it('should get column by index', () => {
@@ -282,6 +394,7 @@ describe('ResultTable', () => {
         [':bar', ':bar', ':bar', ':bar'],
         ['a', 'b', 'c', 'd'],
         [1n, 2n, 3n, 4n],
+        [MAX_DEC_128, MAX_DEC_128, MAX_DEC_128, MAX_DEC_128],
       ];
       expectedValues.forEach((expectedVals, index) => {
         expectedVals.forEach((val, valueIndex) => {
@@ -319,10 +432,10 @@ describe('ResultTable', () => {
         [1n, ':foo', 'z'],
       ]);
       expect(table.sliceColumns(4).values()).toEqual([
-        ['a', 1n],
-        ['b', 2n],
-        ['c', 3n],
-        ['d', 4n],
+        ['a', 1n, MAX_DEC_128],
+        ['b', 2n, MAX_DEC_128],
+        ['c', 3n, MAX_DEC_128],
+        ['d', 4n, MAX_DEC_128],
       ]);
       expect(table.sliceColumns(2, 4).values()).toEqual([
         ['w', ':bar'],
@@ -341,10 +454,10 @@ describe('ResultTable', () => {
     it('should be able to iterate table values', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        [1n, ':foo', 'w', ':bar', 'a', 1n],
-        [1n, ':foo', 'x', ':bar', 'b', 2n],
-        [1n, ':foo', 'y', ':bar', 'c', 3n],
-        [1n, ':foo', 'z', ':bar', 'd', 4n],
+        [1n, ':foo', 'w', ':bar', 'a', 1n, MAX_DEC_128],
+        [1n, ':foo', 'x', ':bar', 'b', 2n, MAX_DEC_128],
+        [1n, ':foo', 'y', ':bar', 'c', 3n, MAX_DEC_128],
+        [1n, ':foo', 'z', ':bar', 'd', 4n, MAX_DEC_128],
       ];
 
       let i = 0;
@@ -358,10 +471,10 @@ describe('ResultTable', () => {
     it('should get table values', () => {
       const table = new ResultTable(relation);
       const expectedValues = [
-        [1n, ':foo', 'w', ':bar', 'a', 1n],
-        [1n, ':foo', 'x', ':bar', 'b', 2n],
-        [1n, ':foo', 'y', ':bar', 'c', 3n],
-        [1n, ':foo', 'z', ':bar', 'd', 4n],
+        [1n, ':foo', 'w', ':bar', 'a', 1n, MAX_DEC_128],
+        [1n, ':foo', 'x', ':bar', 'b', 2n, MAX_DEC_128],
+        [1n, ':foo', 'y', ':bar', 'c', 3n, MAX_DEC_128],
+        [1n, ':foo', 'z', ':bar', 'd', 4n, MAX_DEC_128],
       ];
 
       expect(table.values()).toEqual(expectedValues);
@@ -370,23 +483,31 @@ describe('ResultTable', () => {
     it('should get values by index', () => {
       const table = new ResultTable(relation);
 
-      expect(table.get(2)).toEqual([1n, ':foo', 'y', ':bar', 'c', 3n]);
+      expect(table.get(2)).toEqual([
+        1n,
+        ':foo',
+        'y',
+        ':bar',
+        'c',
+        3n,
+        MAX_DEC_128,
+      ]);
     });
 
     it('should slice table', () => {
       const table = new ResultTable(relation);
 
       expect(table.slice(undefined, 2).values()).toEqual([
-        [1n, ':foo', 'w', ':bar', 'a', 1n],
-        [1n, ':foo', 'x', ':bar', 'b', 2n],
+        [1n, ':foo', 'w', ':bar', 'a', 1n, MAX_DEC_128],
+        [1n, ':foo', 'x', ':bar', 'b', 2n, MAX_DEC_128],
       ]);
       expect(table.slice(2).values()).toEqual([
-        [1n, ':foo', 'y', ':bar', 'c', 3n],
-        [1n, ':foo', 'z', ':bar', 'd', 4n],
+        [1n, ':foo', 'y', ':bar', 'c', 3n, MAX_DEC_128],
+        [1n, ':foo', 'z', ':bar', 'd', 4n, MAX_DEC_128],
       ]);
       expect(table.slice(1, 3).values()).toEqual([
-        [1n, ':foo', 'x', ':bar', 'b', 2n],
-        [1n, ':foo', 'y', ':bar', 'c', 3n],
+        [1n, ':foo', 'x', ':bar', 'b', 2n, MAX_DEC_128],
+        [1n, ':foo', 'y', ':bar', 'c', 3n, MAX_DEC_128],
       ]);
     });
 
@@ -416,10 +537,10 @@ describe('ResultTable', () => {
       const physicalTable = table.physical();
 
       expect(physicalTable.values()).toEqual([
-        ['w', 'a', 1n],
-        ['x', 'b', 2n],
-        ['y', 'c', 3n],
-        ['z', 'd', 4n],
+        ['w', 'a', 1n, MAX_DEC_128],
+        ['x', 'b', 2n, MAX_DEC_128],
+        ['y', 'c', 3n, MAX_DEC_128],
+        ['z', 'd', 4n, MAX_DEC_128],
       ]);
     });
 
