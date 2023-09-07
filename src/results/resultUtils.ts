@@ -206,6 +206,7 @@ export function convertValue<T extends RelTypedValue>(
     case 'UInt16':
     case 'UInt32':
     case 'UInt64':
+    case 'AutoNumber':
       return value;
     case 'UInt128':
       return uint128ToBigInt(Array.from(value));
@@ -270,6 +271,13 @@ export function convertValue<T extends RelTypedValue>(
         }
       });
     }
+    case 'UUID':
+      return toUuid(Array.from(value));
+    case 'SHA1': {
+      const val = value.toArray ? value.toArray() : value;
+
+      return toSha1(Array.from(val[0]), val[1]);
+    }
     case 'Unknown':
       return value && value.toJSON ? value.toJSON() : value;
   }
@@ -297,6 +305,8 @@ export function getDisplayValue(
 
   switch (val.type) {
     case 'String':
+    case 'UUID':
+    case 'SHA1':
       return JSON.stringify(val.value);
     case 'Bool':
       return val.value ? 'true' : 'false';
@@ -328,6 +338,7 @@ export function getDisplayValue(
     case 'UInt128':
     case 'FilePos':
     case 'Hash':
+    case 'AutoNumber':
       return val.value.toString();
     case 'Missing':
       return 'missing';
@@ -409,6 +420,27 @@ function uint128ToBigInt(tuple: bigint[]) {
   return (BigInt.asUintN(64, tuple[1]) << BigInt(64)) | tuple[0];
 }
 
+function toUuid(tuple: bigint[]) {
+  const num = uint128ToBigInt(tuple);
+  const str = num.toString(16).padStart(32, '0');
+  const parts = [
+    str.slice(0, 8),
+    str.slice(8, 12),
+    str.slice(12, 16),
+    str.slice(16, 20),
+    str.slice(20),
+  ];
+
+  return parts.join('-');
+}
+
+function toSha1(a: bigint[], b: Number) {
+  return (
+    uint128ToBigInt(a).toString(16).padStart(32, '0') +
+    b.toString(16).padStart(8, '0')
+  );
+}
+
 function mapPrimitiveValue(val: PrimitiveValue) {
   switch (val.value.oneofKind) {
     case 'stringVal':
@@ -480,6 +512,9 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
     case 'FilePos':
     case 'Missing':
     case 'Hash':
+    case 'AutoNumber':
+    case 'UUID':
+    case 'SHA1':
       return {
         type: standardValueType,
       };
@@ -571,7 +606,8 @@ function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
       case 'Rational32':
       case 'Rational64':
       case 'Rational128':
-        // Rationals take 2 values
+      case 'SHA1':
+        // These types take 2 values
         result.push(values.splice(0, 2));
         break;
       default: {

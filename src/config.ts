@@ -26,6 +26,9 @@ import { AccessTokenCache, Config } from './types';
 
 const { readFile, writeFile } = promises;
 
+// client id, token map
+type TokensCache = Record<string, AccessTokenCache>;
+
 export async function readConfig(
   profile = 'default',
   configPath = '~/.rai/config',
@@ -65,20 +68,21 @@ function readClientCredentials(configParser: ConfigIniParser, profile: string) {
     }
   }
 
+  const clientId = configParser.get(profile, 'client_id', '');
   const config: Config = {
     host: configParser.get(profile, 'host', ''),
     port: configParser.get(profile, 'port', DEFAULT_PORT),
     scheme: configParser.get(profile, 'scheme', DEFAULT_SCHEME),
     credentials: new ClientCredentials(
-      configParser.get(profile, 'client_id', ''),
+      clientId,
       configParser.get(profile, 'client_secret', ''),
       configParser.get(
         profile,
         'client_credentials_url',
         DEFAULT_CLIENT_CREDENTIALS_URL,
       ),
-      async () => await readTokenCache(profile),
-      async cache => await writeTokenCache(cache, profile),
+      async () => await readTokenCache(clientId),
+      async cache => await writeTokenCache(clientId, cache),
     ),
   };
 
@@ -97,16 +101,15 @@ function resolveHome(path: string) {
   return path;
 }
 
-function makeTokenCachePath(profile: string) {
-  return resolveHome(`~/.rai/${profile}_cache.json`);
-}
+const CACHE_PATH = '~/.rai/tokens.json';
 
-async function readTokenCache(profile = 'default') {
-  const cachePath = makeTokenCachePath(profile);
+async function readTokenCache(clientId: string) {
+  const cachePath = resolveHome(CACHE_PATH);
 
   try {
     const cachedStr = await readFile(cachePath, 'utf-8');
-    const cache = JSON.parse(cachedStr);
+    const tokensCache = JSON.parse(cachedStr) as TokensCache;
+    const cache = tokensCache[clientId];
 
     if (cache.access_token && cache.created_on && cache.expires_in) {
       return cache as AccessTokenCache;
@@ -115,9 +118,20 @@ async function readTokenCache(profile = 'default') {
   } catch {}
 }
 
-async function writeTokenCache(token: AccessTokenCache, profile = 'default') {
-  const cachePath = makeTokenCachePath(profile);
-  const cacheStr = JSON.stringify(token, null, 2);
+async function writeTokenCache(clientId: string, token: AccessTokenCache) {
+  const cachePath = resolveHome(CACHE_PATH);
+  let tokensCache: TokensCache = {};
+
+  try {
+    const cachedStr = await readFile(cachePath, 'utf-8');
+
+    tokensCache = JSON.parse(cachedStr) as TokensCache;
+    // eslint-disable-next-line no-empty
+  } catch {}
+
+  tokensCache[clientId] = token;
+
+  const cacheStr = JSON.stringify(tokensCache, null, 2);
 
   await writeFile(cachePath, cacheStr, 'utf-8');
 }
