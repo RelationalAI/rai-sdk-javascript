@@ -25,6 +25,7 @@ export type Engine = {
   requested_on: string;
   created_on: string;
   deleted_on: string;
+  version: string;
 };
 
 export type EngineOptions = {
