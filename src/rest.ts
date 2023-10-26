@@ -33,6 +33,15 @@ export type RequestOptions = {
   onResponse?: (r: ApiResponse) => void;
 };
 
+export type SortBy<T extends string> = {
+  field: T;
+  order: 'asc' | 'desc';
+};
+
+export type BooleanOperator = 'equals';
+export type StringOperator = 'equals' | 'contains';
+export type NumericOperator = 'lt' | 'lte' | 'gt' | 'gte';
+
 export type PollOptions = {
   overheadRate?: number;
   maxInterval?: number;

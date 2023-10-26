@@ -17,6 +17,12 @@
 import { Table } from 'apache-arrow';
 
 import { RelationId } from '../../proto/generated/schema';
+import {
+  BooleanOperator,
+  NumericOperator,
+  SortBy,
+  StringOperator,
+} from '../../rest';
 
 export type RelValue = string | number | boolean | null | number[];
 
@@ -239,9 +245,26 @@ export type TransactionAsyncResult = {
   results: ArrowRelation[];
 };
 
+export type TransactionListSortBy = SortBy<'created_on' | 'duration'>;
+
 export type TransactionListOptions = {
+  id?: string | string[];
+  created_by?: string | string[];
   database_name?: string | string[];
   engine_name?: string | string[];
   state?: TransactionAsyncState | TransactionAsyncState[];
   tags?: string | string[];
-};
+} & {
+  [key in
+    | `id.${StringOperator}`
+    | `created_by.${StringOperator}`
+    | `state.${StringOperator}`
+    | `database_name.${StringOperator}`
+    | `engine_name.${StringOperator}`
+    | `tags.${StringOperator}`]?: string | string[];
+} &
+  { [key in `created_on.${NumericOperator}`]?: number | Date } &
+  { [key in `duration.${NumericOperator}`]?: number } &
+  { [key in `read_only.${BooleanOperator}`]?: boolean } & {
+    sortBy?: TransactionListSortBy;
+  };

@@ -287,12 +287,26 @@ describe('TransactionAsyncApi', () => {
     const response = {
       transactions: mockTransactions,
     };
+    const date = new Date();
+    const options = {
+      engine_name: 'test_engine',
+      tags: ['tag1', 'tag2'],
+      'created_on.lt': date,
+      'duration.gt': 1000,
+      sortBy: {
+        field: 'created_on' as const,
+        order: 'desc' as const,
+      },
+    };
     const query = {
       engine_name: 'test_engine',
       tags: ['tag1', 'tag2'],
+      'created_on.lt': date.getTime(),
+      'duration.gt': 1000,
+      $sortby: '-created_on',
     };
     const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await api.listTransactions(query);
+    const result = await api.listTransactions(options);
 
     scope.done();
 

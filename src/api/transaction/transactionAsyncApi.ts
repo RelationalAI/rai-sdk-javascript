@@ -55,7 +55,19 @@ export class TransactionAsyncApi extends Base {
   }
 
   async listTransactions(options?: TransactionListOptions) {
-    const result = await this.get<ListResponse>(ENDPOINT, options);
+    const { sortBy, ...opts } = options ?? ({} as any);
+
+    Object.keys(opts).forEach(key => {
+      if (opts[key] instanceof Date) {
+        opts[key] = opts[key].getTime();
+      }
+    });
+
+    if (sortBy) {
+      opts.$sortby = `${sortBy.order === 'desc' ? '-' : ''}${sortBy.field}`;
+    }
+
+    const result = await this.get<ListResponse>(ENDPOINT, opts);
 
     return result.transactions;
   }
