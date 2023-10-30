@@ -31,7 +31,12 @@ import {
 
 const ENDPOINT = 'transactions';
 
-type ListResponse = { transactions: TransactionAsync[] };
+/**
+ * @param next Is a continuation token that can be used to fetch the next page.
+ *   `next` value is undefined if there are no more results to fetch.
+ */
+type ListResponse = { transactions: TransactionAsync[]; next?: string };
+
 type SingleResponse = { transaction: TransactionAsync };
 type CancelResponse = {
   message?: string;
@@ -54,7 +59,9 @@ export class TransactionAsyncApi extends Base {
     };
   }
 
-  async listTransactions(options?: TransactionListOptions) {
+  async listTransactions(
+    options?: TransactionListOptions,
+  ): Promise<ListResponse> {
     const { sortBy, ...opts } = options ?? ({} as any);
 
     Object.keys(opts).forEach(key => {
@@ -67,9 +74,7 @@ export class TransactionAsyncApi extends Base {
       opts.$sortby = `${sortBy.order === 'desc' ? '-' : ''}${sortBy.field}`;
     }
 
-    const result = await this.get<ListResponse>(ENDPOINT, opts);
-
-    return result.transactions;
+    return this.get<ListResponse>(ENDPOINT, opts);
   }
 
   async getTransaction(transactionId: string) {

@@ -247,6 +247,15 @@ export type TransactionAsyncResult = {
 
 export type TransactionListSortBy = SortBy<'created_on' | 'duration'>;
 
+/**
+ * TransactionListOptions represents the options that can be used to list
+ * transactions which includes filtering, sorting and pagination options. Each
+ * filter option has a set of operators that can be used to filter.
+ *
+ * @param sortBy Is used to perform sorting on a single field of `created_on`
+ *   and `duration` in ascending or descending orders.
+ * @param next Is used as a continuation token for cursor based pagination.
+ */
 export type TransactionListOptions = {
   id?: string | string[];
   created_by?: string | string[];

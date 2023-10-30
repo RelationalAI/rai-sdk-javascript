@@ -19,7 +19,7 @@ import nock from 'nock';
 
 import { baseUrl, getMockConfig } from '../../testUtils';
 import { TransactionAsyncApi } from './transactionAsyncApi';
-import { TransactionAsyncState } from './types';
+import { TransactionAsyncState, TransactionListOptions } from './types';
 
 const path = '/transactions';
 
@@ -280,25 +280,27 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockTransactions);
+    expect(result).toEqual(response);
   });
 
   it('should list transactions with params', async () => {
     const response = {
       transactions: mockTransactions,
+      next: 'nextToken',
     };
     const date = new Date();
-    const options = {
+    const options: TransactionListOptions = {
       engine_name: 'test_engine',
       tags: ['tag1', 'tag2'],
       'created_on.lt': date,
       'duration.gt': 1000,
       sortBy: {
-        field: 'created_on' as const,
-        order: 'desc' as const,
+        field: 'created_on',
+        order: 'desc',
       },
       next: 'nextToken',
     };
+
     const query = {
       engine_name: 'test_engine',
       tags: ['tag1', 'tag2'],
@@ -312,7 +314,7 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockTransactions);
+    expect(result).toEqual(response);
   });
 
   it('should get transaction', async () => {
