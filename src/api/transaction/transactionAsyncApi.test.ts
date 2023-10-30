@@ -19,7 +19,7 @@ import nock from 'nock';
 
 import { baseUrl, getMockConfig } from '../../testUtils';
 import { TransactionAsyncApi } from './transactionAsyncApi';
-import { TransactionAsyncState } from './types';
+import { TransactionAsyncState, TransactionListOptions } from './types';
 
 const path = '/transactions';
 
@@ -280,23 +280,41 @@ describe('TransactionAsyncApi', () => {
 
     scope.done();
 
-    expect(result).toEqual(mockTransactions);
+    expect(result).toEqual(response);
   });
 
   it('should list transactions with params', async () => {
     const response = {
       transactions: mockTransactions,
+      next: 'nextToken',
     };
+    const date = new Date();
+    const options: TransactionListOptions = {
+      engine_name: 'test_engine',
+      tags: ['tag1', 'tag2'],
+      'created_on.lt': date,
+      'duration.gt': 1000,
+      sortBy: {
+        field: 'created_on',
+        order: 'desc',
+      },
+      next: 'nextToken',
+    };
+
     const query = {
       engine_name: 'test_engine',
       tags: ['tag1', 'tag2'],
+      'created_on.lt': date.getTime(),
+      'duration.gt': 1000,
+      $sortby: '-created_on',
+      next: 'nextToken',
     };
     const scope = nock(baseUrl).get(path).query(query).reply(200, response);
-    const result = await api.listTransactions(query);
+    const result = await api.listTransactions(options);
 
     scope.done();
 
-    expect(result).toEqual(mockTransactions);
+    expect(result).toEqual(response);
   });
 
   it('should get transaction', async () => {
