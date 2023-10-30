@@ -267,4 +267,5 @@ export type TransactionListOptions = {
   { [key in `duration.${NumericOperator}`]?: number } &
   { [key in `read_only.${BooleanOperator}`]?: boolean } & {
     sortBy?: TransactionListSortBy;
+    next?: string;
   };

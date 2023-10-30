@@ -297,6 +297,7 @@ describe('TransactionAsyncApi', () => {
         field: 'created_on' as const,
         order: 'desc' as const,
       },
+      next: 'nextToken',
     };
     const query = {
       engine_name: 'test_engine',
@@ -304,6 +305,7 @@ describe('TransactionAsyncApi', () => {
       'created_on.lt': date.getTime(),
       'duration.gt': 1000,
       $sortby: '-created_on',
+      next: 'nextToken',
     };
     const scope = nock(baseUrl).get(path).query(query).reply(200, response);
     const result = await api.listTransactions(options);
