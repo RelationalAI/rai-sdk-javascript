@@ -1,16 +1,26 @@
 # Change Log
 
+## v0.7.5-alpha
+
+- Updated some dependencies.
+
 ## v0.7.4-alpha
 
-- Added filtering, sorting and pagination options to `listTransactions` API. [\#101](https://github.com/RelationalAI/rai-sdk-javascript/pull/101)
-### Breaking Changes
-- `listTransactions` API now returns an object that contains `transactions` and `next` properties.
-  - `transactions` is the result of the API call.
-  - `next` is a continuation token that can be used to fetch the next page of results. `next` is `undefined` if there are no more results to fetch.
+- Added filtering, sorting and pagination options to `listTransactions` API.
+  [\#101](https://github.com/RelationalAI/rai-sdk-javascript/pull/101)
 
+### Breaking Changes
+
+- `listTransactions` API now returns an object that contains `transactions` and
+  `next` properties.
+  - `transactions` is the result of the API call.
+  - `next` is a continuation token that can be used to fetch the next page of
+    results. `next` is `undefined` if there are no more results to fetch.
 
 ## v0.7.1-alpha
-- Storing `AccessToken.createdOn` in seconds to be consistent with other RAI SDKs.
+
+- Storing `AccessToken.createdOn` in seconds to be consistent with other RAI
+  SDKs.
 
 ## [v0.7.0](https://github.com/relationalai/rai-sdk-javascript/tree/v0.7.0)
 
