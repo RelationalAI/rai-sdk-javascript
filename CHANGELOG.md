@@ -1,5 +1,8 @@
 # Change Log
 
+## v0.7.6-alpha
+- Added error to handle empty relation size of 0 bytes when reading arrow files
+
 ## v0.7.5-alpha
 
 - Updated some dependencies.
