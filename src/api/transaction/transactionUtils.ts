@@ -96,7 +96,7 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
         );
       }
 
-      const table = tableFromIPC(file.file.stream());
+      const table = await tableFromIPC(file.file.stream());
 
       results.push({
         relationId: file.name,
