@@ -90,7 +90,12 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
           file.file.size,
           MAX_ARROW_SIZE,
         );
-      } else if (file.file.size === 0) {
+      }
+
+      // The part that exceeds 2GB is returned as a blob of 0 bytes,
+      // all the remaining parts are empty as well in Windows’s Chrome,
+      // therefore, throwing the error here to avoid failures downstream
+      if (file.file.size === 0) {
         throw new EmptyRelationSizeError(file.name);
       }
 
