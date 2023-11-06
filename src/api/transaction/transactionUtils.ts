@@ -77,6 +77,10 @@ const MAX_ARROW_SIZE = 2147483647;
 export async function readArrowFiles(files: TransactionAsyncFile[]) {
   const results: ArrowResult[] = [];
 
+  if (!files.length) {
+    throw new Error('No files found');
+  }
+
   for (const file of files) {
     if (
       typeof file.file !== 'string' &&
@@ -92,7 +96,7 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
         );
       }
 
-      const table = await tableFromIPC(file.file.stream());
+      const table = tableFromIPC(file.file.stream());
 
       results.push({
         relationId: file.name,
