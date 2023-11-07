@@ -2,7 +2,7 @@
 
 ## v0.7.7-alpha
 
-- Exported MaxRelationSizeError to allow utilise it
+- Exported EmptyRelationError
 
 ## v0.7.6-alpha
 

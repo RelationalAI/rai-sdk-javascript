@@ -16,7 +16,7 @@
 
 import { tableFromIPC } from 'apache-arrow';
 
-import { EmptyRelationSizeError, MaxRelationSizeError } from '../../errors';
+import { EmptyRelationError, MaxRelationSizeError } from '../../errors';
 import { MetadataInfo } from '../../proto/generated/message';
 import { RelationId } from '../../proto/generated/schema';
 import {
@@ -96,7 +96,7 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
       // all the remaining parts are empty as well in Windows’s Chrome,
       // therefore, throwing the error here to avoid failures downstream
       if (file.file.size === 0) {
-        throw new EmptyRelationSizeError(file.name);
+        throw new EmptyRelationError(file.name);
       }
 
       const table = await tableFromIPC(file.file.stream());

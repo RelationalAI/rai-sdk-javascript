@@ -26,7 +26,7 @@ export type { SdkError } from './src/errors';
 export {
   AbortError,
   ApiError,
-  EmptyRelationSizeError,
+  EmptyRelationError,
   MaxRelationSizeError,
   TransactionError,
 } from './src/errors';
