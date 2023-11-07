@@ -82,13 +82,13 @@ export class MaxRelationSizeError extends Error {
   }
 }
 
-export class EmptyRelationSizeError extends Error {
+export class EmptyRelationError extends Error {
   constructor(public relationId: string) {
-    const message = `Empty relation size of 0 bytes. Relation: ${relationId}`;
+    const message = `Unexpected 0 bytes relation. Relation: ${relationId}`;
 
     super(message);
 
-    this.name = 'EmptyRelationSizeError';
+    this.name = 'EmptyRelationError';
   }
 }
 
@@ -109,5 +109,5 @@ export type SdkError =
   | ApiError
   | TransactionError
   | MaxRelationSizeError
-  | EmptyRelationSizeError
+  | EmptyRelationError
   | Error;

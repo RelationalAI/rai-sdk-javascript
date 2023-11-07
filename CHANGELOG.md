@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.7.7-alpha
+
+- Exported EmptyRelationError
+
 ## v0.7.6-alpha
 
 - Added an error to handle empty relation size of 0 bytes when reading arrow files
