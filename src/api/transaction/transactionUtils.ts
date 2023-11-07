@@ -16,7 +16,7 @@
 
 import { tableFromIPC } from 'apache-arrow';
 
-import { MaxRelationSizeError } from '../../errors';
+import { EmptyRelationSizeError, MaxRelationSizeError } from '../../errors';
 import { MetadataInfo } from '../../proto/generated/message';
 import { RelationId } from '../../proto/generated/schema';
 import {
@@ -90,6 +90,13 @@ export async function readArrowFiles(files: TransactionAsyncFile[]) {
           file.file.size,
           MAX_ARROW_SIZE,
         );
+      }
+
+      // The part that exceeds 2GB is returned as a blob of 0 bytes,
+      // all the remaining parts are empty as well in Windows’s Chrome,
+      // therefore, throwing the error here to avoid failures downstream
+      if (file.file.size === 0) {
+        throw new EmptyRelationSizeError(file.name);
       }
 
       const table = await tableFromIPC(file.file.stream());
