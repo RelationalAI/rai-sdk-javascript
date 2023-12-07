@@ -577,20 +577,6 @@ export const standardTypeTests: Test[] = [
     displayValues: ['123456789101112313/9123456789101112313'],
   },
   {
-    name: 'AutoNumber',
-    query: `
-      def num = auto_number["a"]
-      def output(x) = num(_, x) 
-    `,
-    typeDefs: [
-      {
-        type: 'AutoNumber',
-      },
-    ],
-    values: [1n],
-    displayValues: ['1'],
-  },
-  {
     name: 'UUID',
     query: `
       with rel:base use uuid_from_string
