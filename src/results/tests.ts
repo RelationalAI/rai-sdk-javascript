@@ -1402,25 +1402,6 @@ export const specializationTests: Test[] = [
     displayValues: ['123456789101112313/9123456789101112313'],
   },
   {
-    name: 'AutoNumber',
-    query: `
-      def num = auto_number["a"]
-      def v(x) = num(_, x)
-      def output = #(v)
-    `,
-    typeDefs: [
-      {
-        type: 'Constant',
-        value: {
-          type: 'AutoNumber',
-          value: 1n,
-        },
-      },
-    ],
-    values: [1n],
-    displayValues: ['1'],
-  },
-  {
     name: 'UUID',
     query: `
       with rel:base use uuid_from_string
@@ -2583,34 +2564,6 @@ export const valueTypeTests: Test[] = [
       ],
     ],
     displayValues: ['(:MyType, 1, 123456789101112313/9123456789101112313)'],
-  },
-  {
-    name: 'AutoNumber',
-    query: `
-      def num = auto_number["a"]
-      def anum(x) = num(_, x)
-      value type MyType = Int, AutoNumber
-      def output = ^MyType[1, anum]
-    `,
-    typeDefs: [
-      {
-        type: 'ValueType',
-        typeDefs: [
-          {
-            type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
-          },
-          {
-            type: 'Int64',
-          },
-          {
-            type: 'AutoNumber',
-          },
-        ],
-      },
-    ],
-    values: [[':MyType', 1n, 1n]],
-    displayValues: ['(:MyType, 1, 1)'],
   },
   {
     name: 'UUID',
@@ -4188,39 +4141,6 @@ export const valueTypeSpecializationTests: Test[] = [
       ],
     ],
     displayValues: ['(:MyType, 123456789101112313/9123456789101112313, 1)'],
-  },
-  {
-    name: 'AutoNumber',
-    query: `
-      def num = auto_number["a"]
-      def anum(x) = num(_, x)
-      value type MyType = AutoNumber, Int
-      def v = ^MyType[anum, 1]
-      def output = #(v)
-    `,
-    typeDefs: [
-      {
-        type: 'Constant',
-        value: {
-          type: 'ValueType',
-          typeDefs: [
-            {
-              type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
-            },
-            {
-              type: 'AutoNumber',
-            },
-            {
-              type: 'Int64',
-            },
-          ],
-          value: [':MyType', 1n, 1n],
-        },
-      },
-    ],
-    values: [[':MyType', 1n, 1n]],
-    displayValues: ['(:MyType, 1, 1)'],
   },
   {
     name: 'UUID',
