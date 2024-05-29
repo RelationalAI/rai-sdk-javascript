@@ -242,9 +242,9 @@ export const standardTypeTests: Test[] = [
       1,2,3
       4,5,6
       """
-      
+
       def csv = load_csv[config]
-      
+
       def output(p) = csv(_, p, _)
     `,
     typeDefs: [
@@ -579,7 +579,7 @@ export const standardTypeTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      with rel:base use uuid_from_string
+      from ::std::common import uuid_from_string
       def output = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
     `,
     typeDefs: [
@@ -593,7 +593,7 @@ export const standardTypeTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      with rel:base use ^SHA1
+      from ::std::common import ^SHA1
       def output = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
     `,
     typeDefs: [
@@ -1916,7 +1916,7 @@ export const valueTypeTests: Test[] = [
       a,b,c
       1,2,3
       """
-      
+
       def csv = load_csv[config]
       def v(p) = csv(_, p, _)
       value type MyType = Int, FilePos
@@ -3339,7 +3339,7 @@ export const valueTypeSpecializationTests: Test[] = [
       a,b,c
       1,2,3
       """
-      
+
       def csv = load_csv[config]
       def f(p) = csv(_, p, _)
       value type MyType = FilePos, Int
