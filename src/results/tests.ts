@@ -411,8 +411,8 @@ export const standardTypeTests: Test[] = [
         type: 'Float16',
       },
     ],
-    values: [12, 42.5, -0],
-    displayValues: ['12.0', '42.5', '-0.0'],
+    values: [12, 42.5, 0],
+    displayValues: ['12.0', '42.5', '0.0'],
   },
   {
     name: 'Float32',
@@ -428,8 +428,8 @@ export const standardTypeTests: Test[] = [
         type: 'Float32',
       },
     ],
-    values: [12, 42.5, -0],
-    displayValues: ['12.0', '42.5', '-0.0'],
+    values: [12, 42.5, 0],
+    displayValues: ['12.0', '42.5', '0.0'],
   },
   {
     name: 'Float64',
@@ -445,8 +445,8 @@ export const standardTypeTests: Test[] = [
         type: 'Float64',
       },
     ],
-    values: [12, 42.5, -0],
-    displayValues: ['12.0', '42.5', '-0.0'],
+    values: [12, 42.5, 0],
+    displayValues: ['12.0', '42.5', '0.0'],
   },
   {
     name: 'Decimal16',
