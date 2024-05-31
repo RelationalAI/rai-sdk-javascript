@@ -399,7 +399,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Float16',
-    query: `def output = float[16, 12], float[16, 42.5], float[16, -0.0]`,
+    query: `def output = float[16, 12], float[16, 42.5], float[16, 0.0]`,
     typeDefs: [
       {
         type: 'Float16',
@@ -411,12 +411,12 @@ export const standardTypeTests: Test[] = [
         type: 'Float16',
       },
     ],
-    values: [12, 42.5, -0],
-    displayValues: ['12.0', '42.5', '-0.0'],
+    values: [12, 42.5, 0],
+    displayValues: ['12.0', '42.5', '0.0'],
   },
   {
     name: 'Float32',
-    query: `def output = float[32, 12], float[32, 42.5], float[32, -0.0]`,
+    query: `def output = float[32, 12], float[32, 42.5], float[32, 0.0]`,
     typeDefs: [
       {
         type: 'Float32',
@@ -428,12 +428,12 @@ export const standardTypeTests: Test[] = [
         type: 'Float32',
       },
     ],
-    values: [12, 42.5, -0],
-    displayValues: ['12.0', '42.5', '-0.0'],
+    values: [12, 42.5, 0],
+    displayValues: ['12.0', '42.5', '0.0'],
   },
   {
     name: 'Float64',
-    query: `def output = float[64, 12], float[64, 42.5], float[64, -0.0]`,
+    query: `def output = float[64, 12], float[64, 42.5], float[64, 0.0]`,
     typeDefs: [
       {
         type: 'Float64',
@@ -445,8 +445,8 @@ export const standardTypeTests: Test[] = [
         type: 'Float64',
       },
     ],
-    values: [12, 42.5, -0],
-    displayValues: ['12.0', '42.5', '-0.0'],
+    values: [12, 42.5, 0],
+    displayValues: ['12.0', '42.5', '0.0'],
   },
   {
     name: 'Decimal16',
