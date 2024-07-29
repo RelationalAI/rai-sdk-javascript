@@ -1404,7 +1404,6 @@ export const specializationTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      with rel:base use uuid_from_string
       def v = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
       def output = #(v)
     `,
@@ -1423,7 +1422,6 @@ export const specializationTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      with rel:base use ^SHA1
       def v = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
       def output = #(v)
     `,
@@ -2568,7 +2566,6 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      with rel:base use uuid_from_string, UUID
       def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
       value type MyType = Int, UUID
       def output = ^MyType[1, uuid]
@@ -2596,7 +2593,6 @@ export const valueTypeTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      with rel:base use ^SHA1, SHA1
       def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
       value type MyType = Int, SHA1
       def output = ^MyType[1, sha1]
@@ -4145,7 +4141,6 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      with rel:base use uuid_from_string, UUID
       def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
       value type MyType = UUID, Int
       def v = ^MyType[uuid, 1]
@@ -4178,7 +4173,6 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      with rel:base use ^SHA1, SHA1
       def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
       value type MyType = SHA1, Int
       def v = ^MyType[sha1, 1]
