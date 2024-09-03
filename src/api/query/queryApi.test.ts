@@ -64,7 +64,7 @@ describe('QueryApi', () => {
           persist: [],
           inputs: [],
           source: {
-            value: 'def output = 123',
+            value: 'def output {123}',
             name: 'query',
             type: 'Source',
             path: '',
@@ -92,7 +92,7 @@ describe('QueryApi', () => {
       })
       .reply(200, response);
 
-    const result = await api.query(database, engine, 'def output = 123');
+    const result = await api.query(database, engine, 'def output {123}');
 
     scope.done();
 
@@ -119,7 +119,7 @@ describe('QueryApi', () => {
             },
           ],
           source: {
-            value: 'def output = 123',
+            value: 'def output {123}',
             name: 'query',
             type: 'Source',
             path: '',
@@ -146,7 +146,7 @@ describe('QueryApi', () => {
         compute_name: engine,
       })
       .reply(200, response);
-    const result = await api.query(database, engine, 'def output = 123', [
+    const result = await api.query(database, engine, 'def output {123}', [
       { name: 'input1', value: 'value1' },
     ]);
 

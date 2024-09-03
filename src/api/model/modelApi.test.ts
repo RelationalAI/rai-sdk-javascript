@@ -45,7 +45,7 @@ describe('ModelApi', () => {
 
     it('should installModel', async () => {
       const testModels: Model[] = [
-        { name: 'test_model_1', value: 'def foo = :bar' },
+        { name: 'test_model_1', value: 'def foo {:bar}' },
       ];
       const resp = await client.installModels(
         databaseName,
@@ -68,7 +68,7 @@ describe('ModelApi', () => {
 
     it('should deleteModel', async () => {
       const testModels: Model[] = [
-        { name: 'test_model_2', value: 'def foo = :bar' },
+        { name: 'test_model_2', value: 'def foo {:bar}' },
       ];
       let resp = await client.installModels(
         databaseName,
