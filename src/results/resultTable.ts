@@ -89,7 +89,7 @@ export class ResultTable implements IteratorOf<RelTypedValue['value'][]> {
    * Instantiate a new ResultTable instance.
    *
    * @example
-   *   cosnt result = await client.exec('database', 'engine', 'def output = 123, "test"')
+   *   cosnt result = await client.exec('database', 'engine', 'def output {123}, "test"')
    *   cosnt table = new ResultTable(result.results[0]);
    *
    *   console.log(table.values()); // Prints [[123n, "test"]];

@@ -117,8 +117,8 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     json: any,
   ) {
     const qs = [
-      `def config:data = data`,
-      `def insert:${relation} = load_json[config]`,
+      `def config[:data]: data`,
+      `def insert[:${relation}]: load_json[config]`,
     ];
     const inputs: QueryInput[] = [
       {
@@ -138,7 +138,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
     syntax?: CsvConfigSyntax,
     schema?: CsvConfigSchema,
   ) {
-    const qs = [`def config:data = data`];
+    const qs = [`def config[:data]: data`];
     const inputs: QueryInput[] = [
       {
         name: 'data',
@@ -154,7 +154,7 @@ export class ExecAsyncApi extends TransactionAsyncApi {
       qs.push(...schemaToRel(schema));
     }
 
-    qs.push(`def insert:${relation} = load_csv[config]`);
+    qs.push(`def insert[:${relation}]: load_csv[config]`);
 
     return this.exec(database, engine, qs.join('\n'), inputs, false);
   }

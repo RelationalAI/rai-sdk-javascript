@@ -28,9 +28,9 @@ const protobufMock = readFileSync(__dirname + '/mocks/metadata.pb');
 const multipartContentType =
   'multipart/form-data; boundary=28deee55b43d20e109a8fe119e47c5393620ea568b7059405c4cf23bad7b';
 
-// def output = :foo
-// def output = :"foo;bar", 1
-// def output = 1
+// def output {:foo}
+// def output {(:"foo;bar", 1)}
+// def output {1}
 const expectedArrow = [
   {
     filename: '0.arrow',

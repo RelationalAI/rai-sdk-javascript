@@ -34,9 +34,9 @@ export const standardTypeTests: Test[] = [
   {
     name: 'String',
     query: `
-      def s1 = "_\\"escape test1\\"_"
-      def s2 = "_\\\\escape test2\\\\_"
-      def output = s1, s2
+      def s1 {"_\\"escape test1\\"_"}
+      def s2 {"_\\\\escape test2\\\\_"}
+      def output {(s1, s2)}
     `,
     typeDefs: [
       {
@@ -51,7 +51,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Bool',
-    query: `def output = boolean_true, boolean_false`,
+    query: `def output {(boolean_true, boolean_false)}`,
     typeDefs: [
       {
         type: 'Bool',
@@ -65,7 +65,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Char',
-    query: `def output = 'a', '👍'`,
+    query: `def output {('a', '👍')}`,
     typeDefs: [
       {
         type: 'Char',
@@ -79,7 +79,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'DateTime',
-    query: `def output = 2021-10-12T01:22:31+10:00`,
+    query: `def output {2021-10-12T01:22:31+10:00}`,
     typeDefs: [
       {
         type: 'DateTime',
@@ -90,7 +90,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Date',
-    query: `def output = 2021-10-12`,
+    query: `def output {2021-10-12}`,
     typeDefs: [
       {
         type: 'Date',
@@ -101,7 +101,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Year',
-    query: `def output = Year[2022]`,
+    query: `def output {Year[2022]}`,
     typeDefs: [
       {
         type: 'Year',
@@ -112,7 +112,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Month',
-    query: `def output = Month[1]`,
+    query: `def output {Month[1]}`,
     typeDefs: [
       {
         type: 'Month',
@@ -123,7 +123,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Week',
-    query: `def output = Week[1]`,
+    query: `def output {Week[1]}`,
     typeDefs: [
       {
         type: 'Week',
@@ -134,7 +134,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Day',
-    query: `def output = Day[1]`,
+    query: `def output {Day[1]}`,
     typeDefs: [
       {
         type: 'Day',
@@ -145,7 +145,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Hour',
-    query: `def output = Hour[1]`,
+    query: `def output {Hour[1]}`,
     typeDefs: [
       {
         type: 'Hour',
@@ -156,7 +156,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Minute',
-    query: `def output = Minute[1]`,
+    query: `def output {Minute[1]}`,
     typeDefs: [
       {
         type: 'Minute',
@@ -167,7 +167,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Second',
-    query: `def output = Second[1]`,
+    query: `def output {Second[1]}`,
     typeDefs: [
       {
         type: 'Second',
@@ -178,7 +178,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Millisecond',
-    query: `def output = Millisecond[1]`,
+    query: `def output {Millisecond[1]}`,
     typeDefs: [
       {
         type: 'Millisecond',
@@ -189,7 +189,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Microsecond',
-    query: `def output = Microsecond[1]`,
+    query: `def output {Microsecond[1]}`,
     typeDefs: [
       {
         type: 'Microsecond',
@@ -200,7 +200,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Nanosecond',
-    query: `def output = Nanosecond[1]`,
+    query: `def output {Nanosecond[1]}`,
     typeDefs: [
       {
         type: 'Nanosecond',
@@ -212,8 +212,8 @@ export const standardTypeTests: Test[] = [
   {
     name: 'Hash',
     query: `
-       entity type Foo = Int
-       def output = ^Foo[12]
+       @inline def ^Foo(x, h): make_entity_hash({:"Foo"}, {Int}, x, h)
+       def output {^Foo[12]}
      `,
     typeDefs: [
       {
@@ -225,7 +225,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Missing',
-    query: `def output = missing`,
+    query: `def output {missing}`,
     typeDefs: [
       {
         type: 'Missing',
@@ -237,15 +237,15 @@ export const standardTypeTests: Test[] = [
   {
     name: 'FilePos',
     query: `
-      def config:data="""
+      def config[:data]: """
       a,b,c
       1,2,3
       4,5,6
       """
 
-      def csv = load_csv[config]
+      def csv {load_csv[config]}
 
-      def output(p) = csv(_, p, _)
+      def output(p): csv(_, p, _)
     `,
     typeDefs: [
       {
@@ -257,7 +257,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Int8',
-    query: `def output = int[8, 12], int[8, -12]`,
+    query: `def output {(int[8, 12], int[8, -12])}`,
     typeDefs: [
       {
         type: 'Int8',
@@ -271,7 +271,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Int16',
-    query: `def output = int[16, 123], int[16, -123]`,
+    query: `def output {(int[16, 123], int[16, -123])}`,
     typeDefs: [
       {
         type: 'Int16',
@@ -285,7 +285,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Int32',
-    query: `def output = int[32, 1234], int[32, -1234]`,
+    query: `def output {(int[32, 1234], int[32, -1234])}`,
     typeDefs: [
       {
         type: 'Int32',
@@ -299,7 +299,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Int64',
-    query: `def output = 12345, -12345`,
+    query: `def output {(12345, -12345)}`,
     typeDefs: [
       {
         type: 'Int64',
@@ -313,7 +313,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Int128',
-    query: `def output = 123456789101112131415, int[128, 0], int[128, -10^10]`,
+    query: `def output {(123456789101112131415, int[128, 0], int[128, -10^10])}`,
     typeDefs: [
       {
         type: 'Int128',
@@ -330,7 +330,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'UInt8',
-    query: `def output = uint[8, 12]`,
+    query: `def output {uint[8, 12]}`,
     typeDefs: [
       {
         type: 'UInt8',
@@ -341,7 +341,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'UInt16',
-    query: `def output = uint[16, 123]`,
+    query: `def output {uint[16, 123]}`,
     typeDefs: [
       {
         type: 'UInt16',
@@ -352,7 +352,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'UInt32',
-    query: `def output = uint[32, 1234]`,
+    query: `def output {uint[32, 1234]}`,
     typeDefs: [
       {
         type: 'UInt32',
@@ -363,7 +363,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'UInt64',
-    query: `def output = uint[64, 12345]`,
+    query: `def output {uint[64, 12345]}`,
     typeDefs: [
       {
         type: 'UInt64',
@@ -374,7 +374,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'UInt128',
-    query: `def output = uint[128, 123456789101112131415], uint[128, 0], 0xdade49b564ec827d92f4fd30f1023a1e`,
+    query: `def output {(uint[128, 123456789101112131415], uint[128, 0], 0xdade49b564ec827d92f4fd30f1023a1e)}`,
     typeDefs: [
       {
         type: 'UInt128',
@@ -399,7 +399,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Float16',
-    query: `def output = float[16, 12], float[16, 42.5], float[16, 0.0]`,
+    query: `def output {(float[16, 12], float[16, 42.5], float[16, 0.0])}`,
     typeDefs: [
       {
         type: 'Float16',
@@ -416,7 +416,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Float32',
-    query: `def output = float[32, 12], float[32, 42.5], float[32, 0.0]`,
+    query: `def output {(float[32, 12], float[32, 42.5], float[32, 0.0])}`,
     typeDefs: [
       {
         type: 'Float32',
@@ -433,7 +433,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Float64',
-    query: `def output = float[64, 12], float[64, 42.5], float[64, 0.0]`,
+    query: `def output {(float[64, 12], float[64, 42.5], float[64, 0.0])}`,
     typeDefs: [
       {
         type: 'Float64',
@@ -450,7 +450,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Decimal16',
-    query: `def output = parse_decimal[16, 2, "12.34"]`,
+    query: `def output {parse_decimal[16, 2, "12.34"]}`,
     typeDefs: [
       {
         type: 'Decimal16',
@@ -462,7 +462,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Decimal32',
-    query: `def output = parse_decimal[32, 2, "12.34"]`,
+    query: `def output {parse_decimal[32, 2, "12.34"]}`,
     typeDefs: [
       {
         type: 'Decimal32',
@@ -474,7 +474,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Decimal64',
-    query: `def output = parse_decimal[64, 2, "12.34"]`,
+    query: `def output {parse_decimal[64, 2, "12.34"]}`,
     typeDefs: [
       {
         type: 'Decimal64',
@@ -486,7 +486,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Decimal128',
-    query: `def output = parse_decimal[128, 2, "123456789010111213141516171819202122.34"]`,
+    query: `def output {parse_decimal[128, 2, "123456789010111213141516171819202122.34"]}`,
     typeDefs: [
       {
         type: 'Decimal128',
@@ -498,7 +498,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Rational8',
-    query: `def output = rational[8, 1, 2]`,
+    query: `def output {rational[8, 1, 2]}`,
     typeDefs: [
       {
         type: 'Rational8',
@@ -514,7 +514,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Rational16',
-    query: `def output = rational[16, 1, 2]`,
+    query: `def output {rational[16, 1, 2]}`,
     typeDefs: [
       {
         type: 'Rational16',
@@ -530,7 +530,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Rational32',
-    query: `def output = rational[32, 1, 2]`,
+    query: `def output {rational[32, 1, 2]}`,
     typeDefs: [
       {
         type: 'Rational32',
@@ -546,7 +546,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Rational64',
-    query: `def output = rational[64, 1, 2]`,
+    query: `def output {rational[64, 1, 2]}`,
     typeDefs: [
       {
         type: 'Rational64',
@@ -562,7 +562,7 @@ export const standardTypeTests: Test[] = [
   },
   {
     name: 'Rational128',
-    query: `def output = rational[128, 123456789101112313, 9123456789101112313]`,
+    query: `def output {rational[128, 123456789101112313, 9123456789101112313]}`,
     typeDefs: [
       {
         type: 'Rational128',
@@ -580,7 +580,7 @@ export const standardTypeTests: Test[] = [
     name: 'UUID',
     query: `
       from ::std::common import uuid_from_string
-      def output = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
+      def output {uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]}
     `,
     typeDefs: [
       {
@@ -594,7 +594,7 @@ export const standardTypeTests: Test[] = [
     name: 'SHA1',
     query: `
       from ::std::common import ^SHA1
-      def output = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
+      def output {^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]}
     `,
     typeDefs: [
       {
@@ -609,7 +609,7 @@ export const standardTypeTests: Test[] = [
 export const specializationTests: Test[] = [
   {
     name: 'String(symbol)',
-    query: `def output = :foo`,
+    query: `def output {:foo}`,
     typeDefs: [
       {
         type: 'Constant',
@@ -625,8 +625,8 @@ export const specializationTests: Test[] = [
   {
     name: 'String',
     query: `
-      def v = "foo"
-      def output = #(v)
+      def v {"foo"}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -643,8 +643,8 @@ export const specializationTests: Test[] = [
   {
     name: 'String with slash',
     query: `
-      def v = "foo / bar"
-      def output = #(v)
+      def v {"foo / bar"}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -661,8 +661,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Bool',
     query: `
-      def v = boolean_true
-      def output = #(v)
+      def v {boolean_true}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -679,8 +679,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Char',
     query: `
-      def v = '👍'
-      def output = #(v)
+      def v {'👍'}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -697,8 +697,8 @@ export const specializationTests: Test[] = [
   {
     name: 'DateTime',
     query: `
-      def v = 2021-10-12T01:22:31+10:00
-      def output = #(v)
+      def v {2021-10-12T01:22:31+10:00}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -717,8 +717,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Date',
     query: `
-      def v = 2021-10-12
-      def output = #(v)
+      def v {2021-10-12}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -735,8 +735,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Year',
     query: `
-      def v = Year[2022]
-      def output = #(v)
+      def v {Year[2022]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -753,8 +753,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Month',
     query: `
-      def v = Month[1]
-      def output = #(v)
+      def v {Month[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -771,8 +771,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Week',
     query: `
-      def v = Week[1]
-      def output = #(v)
+      def v {Week[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -789,8 +789,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Day',
     query: `
-      def v = Day[1]
-      def output = #(v)
+      def v {Day[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -807,8 +807,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Hour',
     query: `
-      def v = Hour[1]
-      def output = #(v)
+      def v {Hour[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -825,8 +825,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Minute',
     query: `
-      def v = Minute[1]
-      def output = #(v)
+      def v {Minute[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -843,8 +843,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Second',
     query: `
-      def v = Second[1]
-      def output = #(v)
+      def v {Second[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -861,8 +861,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Millisecond',
     query: `
-      def v = Millisecond[1]
-      def output = #(v)
+      def v {Millisecond[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -879,8 +879,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Microsecond',
     query: `
-      def v = Microsecond[1]
-      def output = #(v)
+      def v {Microsecond[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -897,8 +897,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Nanosecond',
     query: `
-      def v = Nanosecond[1]
-      def output = #(v)
+      def v {Nanosecond[1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -915,9 +915,9 @@ export const specializationTests: Test[] = [
   {
     name: 'Hash',
     query: `
-      entity type Foo = Int
-      def v = ^Foo[12]
-      def output = #(v)
+      @inline def ^Foo(x, h): make_entity_hash({:"Foo"}, {Int}, x, h)
+      def v {^Foo[12]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -934,8 +934,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Missing',
     query: `
-      def v = missing
-      def output = #(v)
+      def v {missing}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -952,14 +952,14 @@ export const specializationTests: Test[] = [
   {
     name: 'FilePos',
     query: `
-      def config:data="""
+      def config[:data]: """
       a,b,c
       1,2,3
       """
 
-      def csv = load_csv[config]
-      def v(p) = csv(_, p, _)
-      def output = #(v)
+      def csv {load_csv[config]}
+      def v(p): csv(_, p, _)
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -976,8 +976,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Int8',
     query: `
-      def v = int[8, -12]
-      def output = #(v)
+      def v {int[8, -12]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -994,8 +994,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Int16',
     query: `
-      def v = int[16, -123]
-      def output = #(v)
+      def v {int[16, -123]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1012,8 +1012,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Int32',
     query: `
-      def v = int[32, -1234]
-      def output = #(v)
+      def v {int[32, -1234]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1030,8 +1030,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Int64',
     query: `
-      def v = int[64, -12345]
-      def output = #(v)
+      def v {int[64, -12345]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1048,8 +1048,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Int128',
     query: `
-      def v = int[128, 123456789101112131415]
-      def output = #(v)
+      def v {int[128, 123456789101112131415]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1066,8 +1066,8 @@ export const specializationTests: Test[] = [
   {
     name: 'UInt8',
     query: `
-      def v = uint[8, 12]
-      def output = #(v)
+      def v {uint[8, 12]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1084,8 +1084,8 @@ export const specializationTests: Test[] = [
   {
     name: 'UInt16',
     query: `
-      def v = uint[16, 123]
-      def output = #(v)
+      def v {uint[16, 123]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1102,8 +1102,8 @@ export const specializationTests: Test[] = [
   {
     name: 'UInt32',
     query: `
-      def v = uint[32, 1234]
-      def output = #(v)
+      def v {uint[32, 1234]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1120,8 +1120,8 @@ export const specializationTests: Test[] = [
   {
     name: 'UInt64',
     query: `
-      def v = uint[64, 12345]
-      def output = #(v)
+      def v {uint[64, 12345]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1138,8 +1138,8 @@ export const specializationTests: Test[] = [
   {
     name: 'UInt128',
     query: `
-      def v = uint[128, 123456789101112131415]
-      def output = #(v)
+      def v {uint[128, 123456789101112131415]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1156,8 +1156,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Float16',
     query: `
-      def v = float[16, 42.5]
-      def output = #(v)
+      def v {float[16, 42.5]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1174,8 +1174,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Float32',
     query: `
-      def v = float[32, 42.5]
-      def output = #(v)
+      def v {float[32, 42.5]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1192,8 +1192,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Float64',
     query: `
-      def v = float[64, 42.5]
-      def output = #(v)
+      def v {float[64, 42.5]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1210,8 +1210,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Decimal16',
     query: `
-      def v = parse_decimal[16, 2, "12.34"]
-      def output = #(v)
+      def v {parse_decimal[16, 2, "12.34"]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1229,8 +1229,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Decimal32',
     query: `
-      def v = parse_decimal[32, 2, "12.34"]
-      def output = #(v)
+      def v {parse_decimal[32, 2, "12.34"]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1248,8 +1248,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Decimal64',
     query: `
-      def v = parse_decimal[64, 2, "12.34"]
-      def output = #(v)
+      def v {parse_decimal[64, 2, "12.34"]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1267,8 +1267,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Decimal128',
     query: `
-      def v = parse_decimal[128, 2, "123456789010111213141516171819202122.34"]
-      def output = #(v)
+      def v {parse_decimal[128, 2, "123456789010111213141516171819202122.34"]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1301,16 +1301,16 @@ export const specializationTests: Test[] = [
       },
     ],
     query: `
-      def v = rational[8, 1, 2]
-      def output = #(v)
+      def v {rational[8, 1, 2]}
+      def output {::std::mirror::lift[v]}
     `,
     displayValues: ['1/2'],
   },
   {
     name: 'Rational16',
     query: `
-      def v = rational[16, 1, 2]
-      def output = #(v)
+      def v {rational[16, 1, 2]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1332,8 +1332,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Rational32',
     query: `
-      def v = rational[32, 1, 2]
-      def output = #(v)
+      def v {rational[32, 1, 2]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1355,8 +1355,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Rational64',
     query: `
-      def v = rational[64, 1, 2]
-      def output = #(v)
+      def v {rational[64, 1, 2]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1378,8 +1378,8 @@ export const specializationTests: Test[] = [
   {
     name: 'Rational128',
     query: `
-      def v = rational[128, 123456789101112313, 9123456789101112313]
-      def output = #(v)
+      def v {rational[128, 123456789101112313, 9123456789101112313]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1404,8 +1404,8 @@ export const specializationTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      def v = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
-      def output = #(v)
+      def v {uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1422,8 +1422,8 @@ export const specializationTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      def v = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
-      def output = #(v)
+      def v {^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -1443,8 +1443,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'String(symbol)',
     query: `
-      value type MyType = :foo; :bar; :baz
-      def output = ^MyType[:foo]
+      value type MyType {:foo; :bar; :baz}
+      def output {^MyType[:foo]}
     `,
     typeDefs: [
       {
@@ -1467,8 +1467,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'String',
     query: `
-      value type MyType = Int, String
-      def output = ^MyType[1, "abc"]
+      value type MyType {(Int, String)}
+      def output {^MyType[1, "abc"]}
     `,
     typeDefs: [
       {
@@ -1493,8 +1493,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Bool',
     query: `
-      value type MyType = Int, Boolean
-      def output = ^MyType[1, boolean_false]
+      value type MyType {(Int, Boolean)}
+      def output {^MyType[1, boolean_false]}
     `,
     typeDefs: [
       {
@@ -1519,8 +1519,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Char',
     query: `
-      value type MyType = Int, Char
-      def output = ^MyType[1, '👍']
+      value type MyType {(Int, Char)}
+      def output {^MyType[1, '👍']}
     `,
     typeDefs: [
       {
@@ -1545,8 +1545,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'DateTime',
     query: `
-      value type MyType = Int, DateTime
-      def output = ^MyType[1, 2021-10-12T01:22:31+10:00]
+      value type MyType {(Int, DateTime)}
+      def output {^MyType[1, 2021-10-12T01:22:31+10:00]}
     `,
     typeDefs: [
       {
@@ -1571,8 +1571,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Date',
     query: `
-      value type MyType = Int, Date
-      def output = ^MyType[1, 2021-10-12]
+      value type MyType {(Int, Date)}
+      def output {^MyType[1, 2021-10-12]}
     `,
     typeDefs: [
       {
@@ -1597,8 +1597,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Year',
     query: `
-      value type MyType = Int, is_Year
-      def output = ^MyType[1, Year[2022]]
+      value type MyType {(Int, is_Year)}
+      def output {^MyType[1, Year[2022]]}
     `,
     typeDefs: [
       {
@@ -1623,8 +1623,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Month',
     query: `
-      value type MyType = Int, is_Month
-      def output = ^MyType[1, Month[2]]
+      value type MyType {(Int, is_Month)}
+      def output {^MyType[1, Month[2]]}
     `,
     typeDefs: [
       {
@@ -1649,8 +1649,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Week',
     query: `
-      value type MyType = Int, is_Week
-      def output = ^MyType[1, Week[2]]
+      value type MyType {(Int, is_Week)}
+      def output {^MyType[1, Week[2]]}
     `,
     typeDefs: [
       {
@@ -1675,8 +1675,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Day',
     query: `
-      value type MyType = Int, is_Day
-      def output = ^MyType[1, Day[2]]
+      value type MyType {(Int, is_Day)}
+      def output {^MyType[1, Day[2]]}
     `,
     typeDefs: [
       {
@@ -1701,8 +1701,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Hour',
     query: `
-      value type MyType = Int, is_Hour
-      def output = ^MyType[1, Hour[2]]
+      value type MyType {(Int, is_Hour)}
+      def output {^MyType[1, Hour[2]]}
     `,
     typeDefs: [
       {
@@ -1727,8 +1727,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Minute',
     query: `
-      value type MyType = Int, is_Minute
-      def output = ^MyType[1, Minute[2]]
+      value type MyType {(Int, is_Minute)}
+      def output {^MyType[1, Minute[2]]}
     `,
     typeDefs: [
       {
@@ -1753,8 +1753,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Second',
     query: `
-      value type MyType = Int, is_Second
-      def output = ^MyType[1, Second[2]]
+      value type MyType {(Int, is_Second)}
+      def output {^MyType[1, Second[2]]}
     `,
     typeDefs: [
       {
@@ -1779,8 +1779,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Millisecond',
     query: `
-      value type MyType = Int, is_Millisecond
-      def output = ^MyType[1, Millisecond[2]]
+      value type MyType {(Int, is_Millisecond)}
+      def output {^MyType[1, Millisecond[2]]}
     `,
     typeDefs: [
       {
@@ -1805,8 +1805,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Microsecond',
     query: `
-      value type MyType = Int, is_Microsecond
-      def output = ^MyType[1, Microsecond[2]]
+      value type MyType {(Int, is_Microsecond)}
+      def output {^MyType[1, Microsecond[2]]}
     `,
     typeDefs: [
       {
@@ -1831,8 +1831,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Nanosecond',
     query: `
-      value type MyType = Int, is_Nanosecond
-      def output = ^MyType[1, Nanosecond[2]]
+      value type MyType {(Int, is_Nanosecond)}
+      def output {^MyType[1, Nanosecond[2]]}
     `,
     typeDefs: [
       {
@@ -1857,9 +1857,9 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Hash',
     query: `
-      value type MyType = Int, Hash
-      def h(x) = hash128["abc", _, x]
-      def output = ^MyType[1, h]
+      value type MyType {(Int, Hash)}
+      def h[x]: hash128["abc", _, x]
+      def output {^MyType[1, h]}
     `,
     typeDefs: [
       {
@@ -1884,8 +1884,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Missing',
     query: `
-      value type MyType = Int, Missing
-      def output = ^MyType[1, missing]
+      value type MyType {(Int, Missing)}
+      def output {^MyType[1, missing]}
     `,
     typeDefs: [
       {
@@ -1910,15 +1910,15 @@ export const valueTypeTests: Test[] = [
   {
     name: 'FilePos',
     query: `
-      def config:data="""
+      def config[:data]: """
       a,b,c
       1,2,3
       """
 
-      def csv = load_csv[config]
-      def v(p) = csv(_, p, _)
-      value type MyType = Int, FilePos
-      def output = ^MyType[1, v]
+      def csv {load_csv[config]}
+      def v(p): csv(_, p, _)
+      value type MyType {(Int, FilePos)}
+      def output {^MyType[1, v]}
     `,
     typeDefs: [
       {
@@ -1943,8 +1943,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Int8',
     query: `
-      value type MyType = Int, SignedInt[8]
-      def output = ^MyType[1, int[8, -12]]
+      value type MyType {(Int, SignedInt[8])}
+      def output {^MyType[1, int[8, -12]]}
     `,
     typeDefs: [
       {
@@ -1969,8 +1969,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Int16',
     query: `
-      value type MyType = Int, SignedInt[16]
-      def output = ^MyType[1, int[16, -123]]
+      value type MyType {(Int, SignedInt[16])}
+      def output {^MyType[1, int[16, -123]]}
     `,
     typeDefs: [
       {
@@ -1995,8 +1995,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Int32',
     query: `
-      value type MyType = Int, SignedInt[32]
-      def output = ^MyType[1, int[32, -1234]]
+      value type MyType {(Int, SignedInt[32])}
+      def output {^MyType[1, int[32, -1234]]}
     `,
     typeDefs: [
       {
@@ -2021,8 +2021,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Int64',
     query: `
-      value type MyType = Int, SignedInt[64]
-      def output = ^MyType[1, int[64, -12345]]
+      value type MyType {(Int, SignedInt[64])}
+      def output {^MyType[1, int[64, -12345]]}
     `,
     typeDefs: [
       {
@@ -2047,8 +2047,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Int128',
     query: `
-      value type MyType = Int, SignedInt[128]
-      def output = ^MyType[1, int[128, 123456789101112131415]]
+      value type MyType {(Int, SignedInt[128])}
+      def output {^MyType[1, int[128, 123456789101112131415]]}
     `,
     typeDefs: [
       {
@@ -2073,8 +2073,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UInt8',
     query: `
-      value type MyType = Int, UnsignedInt[8]
-      def output = ^MyType[1, uint[8, 12]]
+      value type MyType {(Int, UnsignedInt[8])}
+      def output {^MyType[1, uint[8, 12]]}
     `,
     typeDefs: [
       {
@@ -2099,8 +2099,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UInt16',
     query: `
-      value type MyType = Int, UnsignedInt[16]
-      def output = ^MyType[1, uint[16, 123]]
+      value type MyType {(Int, UnsignedInt[16])}
+      def output {^MyType[1, uint[16, 123]]}
     `,
     typeDefs: [
       {
@@ -2125,8 +2125,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UInt32',
     query: `
-      value type MyType = Int, UnsignedInt[32]
-      def output = ^MyType[1, uint[32, 1234]]
+      value type MyType {(Int, UnsignedInt[32])}
+      def output {^MyType[1, uint[32, 1234]]}
     `,
     typeDefs: [
       {
@@ -2151,8 +2151,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UInt64',
     query: `
-      value type MyType = Int, UnsignedInt[64]
-      def output = ^MyType[1, uint[64, 12345]]
+      value type MyType {(Int, UnsignedInt[64])}
+      def output {^MyType[1, uint[64, 12345]]}
     `,
     typeDefs: [
       {
@@ -2177,8 +2177,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UInt128',
     query: `
-      value type MyType = Int, UnsignedInt[128]
-      def output = ^MyType[1, uint[128, 123456789101112131415]]
+      value type MyType {(Int, UnsignedInt[128])}
+      def output {^MyType[1, uint[128, 123456789101112131415]]}
     `,
     typeDefs: [
       {
@@ -2203,8 +2203,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Float16',
     query: `
-      value type MyType = Int, Floating[16]
-      def output = ^MyType[1, float[16, 42.5]]
+      value type MyType {(Int, Floating[16])}
+      def output {^MyType[1, float[16, 42.5]]}
     `,
     typeDefs: [
       {
@@ -2229,8 +2229,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Float32',
     query: `
-      value type MyType = Int, Floating[32]
-      def output = ^MyType[1, float[32, 42.5]]
+      value type MyType {(Int, Floating[32])}
+      def output {^MyType[1, float[32, 42.5]]}
     `,
     typeDefs: [
       {
@@ -2255,8 +2255,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Float64',
     query: `
-      value type MyType = Int, Floating[64]
-      def output = ^MyType[1, float[64, 42.5]]
+      value type MyType {(Int, Floating[64])}
+      def output {^MyType[1, float[64, 42.5]]}
     `,
     typeDefs: [
       {
@@ -2281,8 +2281,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Decimal16',
     query: `
-      value type MyType = Int, FixedDecimal[16, 2]
-      def output = ^MyType[1, parse_decimal[16, 2, "12.34"]]
+      value type MyType {(Int, FixedDecimal[16, 2])}
+      def output {^MyType[1, parse_decimal[16, 2, "12.34"]]}
     `,
     typeDefs: [
       {
@@ -2308,8 +2308,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Decimal32',
     query: `
-      value type MyType = Int, FixedDecimal[32, 2]
-      def output = ^MyType[1, parse_decimal[32, 2, "12.34"]]
+      value type MyType {(Int, FixedDecimal[32, 2])}
+      def output {^MyType[1, parse_decimal[32, 2, "12.34"]]}
     `,
     typeDefs: [
       {
@@ -2335,8 +2335,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Decimal64',
     query: `
-      value type MyType = Int, FixedDecimal[64, 2]
-      def output = ^MyType[1, parse_decimal[64, 2, "12.34"]]
+      value type MyType {(Int, FixedDecimal[64, 2])}
+      def output {^MyType[1, parse_decimal[64, 2, "12.34"]]}
     `,
     typeDefs: [
       {
@@ -2362,8 +2362,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Decimal128',
     query: `
-      value type MyType = Int, FixedDecimal[128, 2]
-      def output = ^MyType[1, parse_decimal[128, 2, "123456789010111213141516171819202122.34"]]
+      value type MyType {(Int, FixedDecimal[128, 2])}
+      def output {^MyType[1, parse_decimal[128, 2, "123456789010111213141516171819202122.34"]]}
     `,
     typeDefs: [
       {
@@ -2391,8 +2391,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Rational8',
     query: `
-      value type MyType = Int, Rational[8]
-      def output = ^MyType[1, rational[8, 1, 2]]
+      value type MyType {(Int, Rational[8])}
+      def output {^MyType[1, rational[8, 1, 2]]}
     `,
     typeDefs: [
       {
@@ -2426,8 +2426,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Rational16',
     query: `
-      value type MyType = Int, Rational[16]
-      def output = ^MyType[1, rational[16, 1, 2]]
+      value type MyType {(Int, Rational[16])}
+      def output {^MyType[1, rational[16, 1, 2]]}
     `,
     typeDefs: [
       {
@@ -2461,8 +2461,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Rational32',
     query: `
-      value type MyType = Int, Rational[32]
-      def output = ^MyType[1, rational[32, 1, 2]]
+      value type MyType {(Int, Rational[32])}
+      def output {^MyType[1, rational[32, 1, 2]]}
     `,
     typeDefs: [
       {
@@ -2496,8 +2496,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Rational64',
     query: `
-      value type MyType = Int, Rational[64]
-      def output = ^MyType[1, rational[64, 1, 2]]
+      value type MyType {(Int, Rational[64])}
+      def output {^MyType[1, rational[64, 1, 2]]}
     `,
     typeDefs: [
       {
@@ -2531,8 +2531,8 @@ export const valueTypeTests: Test[] = [
   {
     name: 'Rational128',
     query: `
-      value type MyType = Int, Rational[128]
-      def output = ^MyType[1, rational[128, 123456789101112313, 9123456789101112313]]
+      value type MyType {(Int, Rational[128])}
+      def output {^MyType[1, rational[128, 123456789101112313, 9123456789101112313]]}
     `,
     typeDefs: [
       {
@@ -2566,9 +2566,9 @@ export const valueTypeTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
-      value type MyType = Int, UUID
-      def output = ^MyType[1, uuid]
+      def uuid {uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]}
+      value type MyType {(Int, UUID)}
+      def output {^MyType[1, uuid]}
     `,
     typeDefs: [
       {
@@ -2593,9 +2593,9 @@ export const valueTypeTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
-      value type MyType = Int, SHA1
-      def output = ^MyType[1, sha1]
+      def sha1 {^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]}
+      value type MyType {(Int, SHA1)}
+      def output {^MyType[1, sha1]}
     `,
     typeDefs: [
       {
@@ -2623,8 +2623,8 @@ export const miscValueTypeTests: Test[] = [
   {
     name: 'Int',
     query: `
-      value type MyType = Int
-      def output = ^MyType[123]
+      value type MyType {Int}
+      def output {^MyType[123]}
     `,
     typeDefs: [
       {
@@ -2646,8 +2646,8 @@ export const miscValueTypeTests: Test[] = [
   {
     name: 'Int128',
     query: `
-      value type MyType = SignedInt[128]
-      def output = ^MyType[123445677777999999999]
+      value type MyType {SignedInt[128]}
+      def output {^MyType[123445677777999999999]}
     `,
     typeDefs: [
       {
@@ -2669,8 +2669,8 @@ export const miscValueTypeTests: Test[] = [
   {
     name: 'Date',
     query: `
-      value type MyType = Date
-      def output = ^MyType[2021-10-12]
+      value type MyType {Date}
+      def output {^MyType[2021-10-12]}
     `,
     typeDefs: [
       {
@@ -2692,9 +2692,9 @@ export const miscValueTypeTests: Test[] = [
   {
     name: 'OuterType(InnerType(Int, String), String)',
     query: `
-      value type InnerType = Int, String
-      value type OuterType = InnerType, String
-      def output = ^OuterType[^InnerType[123, "inner"], "outer"]
+      value type InnerType {(Int, String)}
+      value type OuterType {(InnerType, String)}
+      def output {^OuterType[^InnerType[123, "inner"], "outer"]}
     `,
     typeDefs: [
       {
@@ -2733,10 +2733,10 @@ export const miscValueTypeTests: Test[] = [
     query: `
       module Foo
         module Bar
-          value type MyType = Int, Int
+          value type MyType {(Int, Int)}
         end
       end
-      def output = Foo:Bar:^MyType[12, 34]
+      def output {Foo[:Bar, :^MyType, 12, 34]}
     `,
     typeDefs: [
       {
@@ -2772,9 +2772,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'String(symbol)',
     query: `
-      value type MyType = :foo; :bar; :baz
-      def v = ^MyType[:foo]
-      def output = #(v)
+      value type MyType {:foo; :bar; :baz}
+      def v {^MyType[:foo]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2801,9 +2801,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'String',
     query: `
-      value type MyType = String, Int
-      def v = ^MyType["abc", 1]
-      def output = #(v)
+      value type MyType {(String, Int)}
+      def v {^MyType["abc", 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2832,9 +2832,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Bool',
     query: `
-      value type MyType = Boolean, Int
-      def v = ^MyType[boolean_false, 1]
-      def output = #(v)
+      value type MyType {(Boolean, Int)}
+      def v {^MyType[boolean_false, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2863,9 +2863,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Char',
     query: `
-      value type MyType = Char, Int
-      def v = ^MyType['👍', 1]
-      def output = #(v)
+      value type MyType {(Char, Int)}
+      def v {^MyType['👍', 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2894,9 +2894,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'DateTime',
     query: `
-      value type MyType = DateTime, Int
-      def v = ^MyType[2021-10-12T01:22:31+10:00, 1]
-      def output = #(v)
+      value type MyType {(DateTime, Int)}
+      def v {^MyType[2021-10-12T01:22:31+10:00, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2927,9 +2927,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Date',
     query: `
-      value type MyType = Date, Int
-      def v = ^MyType[2021-10-12, 1]
-      def output = #(v)
+      value type MyType {(Date, Int)}
+      def v {^MyType[2021-10-12, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2958,9 +2958,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Year',
     query: `
-      value type MyType = is_Year, Int
-      def v = ^MyType[Year[2022], 1]
-      def output = #(v)
+      value type MyType {(is_Year, Int)}
+      def v {^MyType[Year[2022], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -2989,9 +2989,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Month',
     query: `
-      value type MyType = is_Month, Int
-      def v = ^MyType[Month[2], 1]
-      def output = #(v)
+      value type MyType {(is_Month, Int)}
+      def v {^MyType[Month[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3020,9 +3020,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Week',
     query: `
-      value type MyType = is_Week, Int
-      def v = ^MyType[Week[2], 1]
-      def output = #(v)
+      value type MyType {(is_Week, Int)}
+      def v {^MyType[Week[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3051,9 +3051,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Day',
     query: `
-      value type MyType = is_Day, Int
-      def v = ^MyType[Day[2], 1]
-      def output = #(v)
+      value type MyType {(is_Day, Int)}
+      def v {^MyType[Day[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3082,9 +3082,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Hour',
     query: `
-      value type MyType = is_Hour, Int
-      def v = ^MyType[Hour[2], 1]
-      def output = #(v)
+      value type MyType {(is_Hour, Int)}
+      def v {^MyType[Hour[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3113,9 +3113,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Minute',
     query: `
-      value type MyType = is_Minute, Int
-      def v = ^MyType[Minute[2], 1]
-      def output = #(v)
+      value type MyType {(is_Minute, Int)}
+      def v {^MyType[Minute[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3144,9 +3144,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Second',
     query: `
-      value type MyType = is_Second, Int
-      def v = ^MyType[Second[2], 1]
-      def output = #(v)
+      value type MyType {(is_Second, Int)}
+      def v {^MyType[Second[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3175,9 +3175,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Millisecond',
     query: `
-      value type MyType = is_Millisecond, Int
-      def v = ^MyType[Millisecond[2], 1]
-      def output = #(v)
+      value type MyType {(is_Millisecond, Int)}
+      def v {^MyType[Millisecond[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3206,9 +3206,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Microsecond',
     query: `
-      value type MyType = is_Microsecond, Int
-      def v = ^MyType[Microsecond[2], 1]
-      def output = #(v)
+      value type MyType {(is_Microsecond, Int)}
+      def v {^MyType[Microsecond[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3237,9 +3237,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Nanosecond',
     query: `
-      value type MyType = is_Nanosecond, Int
-      def v = ^MyType[Nanosecond[2], 1]
-      def output = #(v)
+      value type MyType {(is_Nanosecond, Int)}
+      def v {^MyType[Nanosecond[2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3268,10 +3268,10 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Hash',
     query: `
-      value type MyType = Hash, Int
-      def h(x) = hash128["abc", _, x]
-      def v = ^MyType[h, 1]
-      def output = #(v)
+      value type MyType {(Hash, Int)}
+      def h[x]: hash128["abc", _, x]
+      def v {^MyType[h, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3300,9 +3300,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Missing',
     query: `
-      value type MyType = Missing, Int
-      def v = ^MyType[missing, 1]
-      def output = #(v)
+      value type MyType {(Missing, Int)}
+      def v {^MyType[missing, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3331,16 +3331,16 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'FilePos',
     query: `
-      def config:data="""
+      def config[:data]: """
       a,b,c
       1,2,3
       """
 
-      def csv = load_csv[config]
-      def f(p) = csv(_, p, _)
-      value type MyType = FilePos, Int
-      def v = ^MyType[f, 1]
-      def output = #(v)
+      def csv {load_csv[config]}
+      def f(p): csv(_, p, _)
+      value type MyType {(FilePos, Int)}
+      def v {^MyType[f, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3369,9 +3369,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Int8',
     query: `
-      value type MyType = SignedInt[8], Int
-      def v = ^MyType[int[8, -12], 1]
-      def output = #(v)
+      value type MyType {(SignedInt[8], Int)}
+      def v {^MyType[int[8, -12], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3400,9 +3400,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Int16',
     query: `
-      value type MyType = SignedInt[16], Int
-      def v = ^MyType[int[16, -123], 1]
-      def output = #(v)
+      value type MyType {(SignedInt[16], Int)}
+      def v {^MyType[int[16, -123], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3431,9 +3431,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Int32',
     query: `
-      value type MyType = SignedInt[32], Int
-      def v = ^MyType[int[32, -1234], 1]
-      def output = #(v)
+      value type MyType {(SignedInt[32], Int)}
+      def v {^MyType[int[32, -1234], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3462,9 +3462,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Int64',
     query: `
-      value type MyType = SignedInt[64], Int
-      def v = ^MyType[int[64, -12345], 1]
-      def output = #(v)
+      value type MyType {(SignedInt[64], Int)}
+      def v {^MyType[int[64, -12345], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3493,9 +3493,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Int128',
     query: `
-      value type MyType = SignedInt[128], Int
-      def v = ^MyType[int[128, 123456789101112131415], 1]
-      def output = #(v)
+      value type MyType {(SignedInt[128], Int)}
+      def v {^MyType[int[128, 123456789101112131415], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3524,9 +3524,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UInt8',
     query: `
-      value type MyType = UnsignedInt[8], Int
-      def v = ^MyType[uint[8, 12], 1]
-      def output = #(v)
+      value type MyType {(UnsignedInt[8], Int)}
+      def v {^MyType[uint[8, 12], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3555,9 +3555,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UInt16',
     query: `
-      value type MyType = UnsignedInt[16], Int
-      def v = ^MyType[uint[16, 123], 1]
-      def output = #(v)
+      value type MyType {(UnsignedInt[16], Int)}
+      def v {^MyType[uint[16, 123], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3586,9 +3586,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UInt32',
     query: `
-      value type MyType = UnsignedInt[32], Int
-      def v = ^MyType[uint[32, 1234], 1]
-      def output = #(v)
+      value type MyType {(UnsignedInt[32], Int)}
+      def v {^MyType[uint[32, 1234], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3617,9 +3617,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UInt64',
     query: `
-      value type MyType = UnsignedInt[64], Int
-      def v = ^MyType[uint[64, 12345], 1]
-      def output = #(v)
+      value type MyType {(UnsignedInt[64], Int)}
+      def v {^MyType[uint[64, 12345], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3648,9 +3648,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UInt128',
     query: `
-      value type MyType = UnsignedInt[128], Int
-      def v = ^MyType[uint[128, 123456789101112131415], 1]
-      def output = #(v)
+      value type MyType {(UnsignedInt[128], Int)}
+      def v {^MyType[uint[128, 123456789101112131415], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3679,9 +3679,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Float16',
     query: `
-      value type MyType = Floating[16], Int
-      def v = ^MyType[float[16, 42.5], 1]
-      def output = #(v)
+      value type MyType {(Floating[16], Int)}
+      def v {^MyType[float[16, 42.5], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3710,9 +3710,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Float32',
     query: `
-      value type MyType = Floating[32], Int
-      def v = ^MyType[float[32, 42.5], 1]
-      def output = #(v)
+      value type MyType {(Floating[32], Int)}
+      def v {^MyType[float[32, 42.5], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3741,9 +3741,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Float64',
     query: `
-      value type MyType = Floating[64], Int
-      def v = ^MyType[float[64, 42.5], 1]
-      def output = #(v)
+      value type MyType {(Floating[64], Int)}
+      def v {^MyType[float[64, 42.5], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3772,9 +3772,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Decimal16',
     query: `
-      value type MyType = FixedDecimal[16, 2], Int
-      def v = ^MyType[parse_decimal[16, 2, "12.34"], 1]
-      def output = #(v)
+      value type MyType {(FixedDecimal[16, 2], Int)}
+      def v {^MyType[parse_decimal[16, 2, "12.34"], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3804,9 +3804,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Decimal32',
     query: `
-      value type MyType = FixedDecimal[32, 2], Int
-      def v = ^MyType[parse_decimal[32, 2, "12.34"], 1]
-      def output = #(v)
+      value type MyType {(FixedDecimal[32, 2], Int)}
+      def v {^MyType[parse_decimal[32, 2, "12.34"], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3836,9 +3836,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Decimal64',
     query: `
-      value type MyType = FixedDecimal[64, 2], Int
-      def v = ^MyType[parse_decimal[64, 2, "12.34"], 1]
-      def output = #(v)
+      value type MyType {(FixedDecimal[64, 2], Int)}
+      def v {^MyType[parse_decimal[64, 2, "12.34"], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3868,9 +3868,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Decimal128',
     query: `
-      value type MyType = FixedDecimal[128, 2], Int
-      def v = ^MyType[parse_decimal[128, 2, "123456789010111213141516171819202122.34"], 1]
-      def output = #(v)
+      value type MyType {(FixedDecimal[128, 2], Int)}
+      def v {^MyType[parse_decimal[128, 2, "123456789010111213141516171819202122.34"], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3906,9 +3906,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Rational8',
     query: `
-      value type MyType = Rational[8], Int
-      def v = ^MyType[rational[8, 1, 2], 1]
-      def output = #(v)
+      value type MyType {(Rational[8], Int)}
+      def v {^MyType[rational[8, 1, 2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -3953,9 +3953,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Rational16',
     query: `
-      value type MyType = Rational[16], Int
-      def v = ^MyType[rational[16, 1, 2], 1]
-      def output = #(v)
+      value type MyType {(Rational[16], Int)}
+      def v {^MyType[rational[16, 1, 2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -4000,9 +4000,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Rational32',
     query: `
-      value type MyType = Rational[32], Int
-      def v = ^MyType[rational[32, 1, 2], 1]
-      def output = #(v)
+      value type MyType {(Rational[32], Int)}
+      def v {^MyType[rational[32, 1, 2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -4047,9 +4047,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Rational64',
     query: `
-      value type MyType = Rational[64], Int
-      def v = ^MyType[rational[64, 1, 2], 1]
-      def output = #(v)
+      value type MyType {(Rational[64], Int)}
+      def v {^MyType[rational[64, 1, 2], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -4094,9 +4094,9 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'Rational128',
     query: `
-      value type MyType = Rational[128], Int
-      def v = ^MyType[rational[128, 123456789101112313, 9123456789101112313], 1]
-      def output = #(v)
+      value type MyType {(Rational[128], Int)}
+      def v {^MyType[rational[128, 123456789101112313, 9123456789101112313], 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -4141,10 +4141,10 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'UUID',
     query: `
-      def uuid = uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]
-      value type MyType = UUID, Int
-      def v = ^MyType[uuid, 1]
-      def output = #(v)
+      def uuid {uuid_from_string["22b4a8a1-e548-4eeb-9270-60426d66a48e"]}
+      value type MyType {(UUID, Int)}
+      def v {^MyType[uuid, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {
@@ -4173,10 +4173,10 @@ export const valueTypeSpecializationTests: Test[] = [
   {
     name: 'SHA1',
     query: `
-      def sha1 = ^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]
-      value type MyType = SHA1, Int
-      def v = ^MyType[sha1, 1]
-      def output = #(v)
+      def sha1 {^SHA1[0x0d7d4a744fd92effd1ed88e48ac8231e, 0x7f7e9e6c]}
+      value type MyType {(SHA1, Int)}
+      def v {^MyType[sha1, 1]}
+      def output {::std::mirror::lift[v]}
     `,
     typeDefs: [
       {

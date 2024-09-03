@@ -88,7 +88,7 @@ $ npm run example -- ./examples/listEngines.ts
 ```
 
 ```console
-$ npm run example -- ./examples/runQuery.ts -d dbName -e engineName -c "def output = 1 + 2"
+$ npm run example -- ./examples/runQuery.ts -d dbName -e engineName -c "def output {1 + 2}"
 ```
 
 ## Data Types

@@ -27,8 +27,8 @@ export class ModelApi extends ExecAsyncApi {
     models.map((model, index) => {
       const inputName = `input_${randInt}_${index}`;
       queryInputs.push({ name: inputName, value: model.value });
-      queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
-        def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
+      queries.push(`def delete[:rel, :catalog, :model, "${model.name}"]: rel[:catalog, :model, "${model.name}"]
+        def insert[:rel, :catalog, :model, "${model.name}"]: ${inputName}`);
     });
 
     return await this.exec(
@@ -48,8 +48,8 @@ export class ModelApi extends ExecAsyncApi {
     models.map((model, index) => {
       const inputName = `input_${randInt}_${index}`;
       queryInputs.push({ name: inputName, value: model.value });
-      queries.push(`def delete:rel:catalog:model["${model.name}"] = rel:catalog:model["${model.name}"]
-        def insert:rel:catalog:model["${model.name}"] = ${inputName}`);
+      queries.push(`def delete[:rel, :catalog, :model, "${model.name}"]: rel[:catalog, :model, "${model.name}"]
+        def insert[:rel, :catalog, :model, "${model.name}"]: ${inputName}`);
     });
 
     return await this.execAsync(
@@ -67,7 +67,7 @@ export class ModelApi extends ExecAsyncApi {
     const rsp = await this.exec(
       database,
       engine,
-      `def output:${outName}[name] = rel:catalog:model(name, _)`,
+      `def output(:${outName}, name): rel(:catalog, :model, name, _)`,
     );
 
     const result = rsp.results.find(
@@ -86,7 +86,7 @@ export class ModelApi extends ExecAsyncApi {
     const rsp = await this.exec(
       database,
       engine,
-      `def output:${outName} = rel:catalog:model["${name}"]`,
+      `def output[:${outName}]: rel[:catalog, :model, "${name}"]`,
     );
 
     const result = rsp.results.find(
@@ -106,7 +106,7 @@ export class ModelApi extends ExecAsyncApi {
   async deleteModels(database: string, engine: string, names: string[]) {
     const queries = names.map(
       name =>
-        `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
+        `def delete[:rel, :catalog, :model, "${name}"]: rel[:catalog, :model, "${name}"]`,
     );
     return await this.exec(database, engine, queries.join('\n'), [], false);
   }
@@ -114,7 +114,7 @@ export class ModelApi extends ExecAsyncApi {
   async deleteModelsAsync(database: string, engine: string, names: string[]) {
     const queries = names.map(
       name =>
-        `def delete:rel:catalog:model["${name}"] = rel:catalog:model["${name}"]`,
+        `def delete[:rel, :catalog, :model, "${name}"]: rel[:catalog, :model, "${name}"]`,
     );
 
     return await this.execAsync(

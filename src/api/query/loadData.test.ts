@@ -51,7 +51,7 @@ describe('Load data integration tests', () => {
       resp = await client.exec(
         databaseName,
         engineName,
-        'def output = test_relation',
+        'def output {test_relation}',
       );
 
       expect(resp.transaction.state).toEqual('COMPLETED');
@@ -74,7 +74,7 @@ describe('Load data integration tests', () => {
       resp = await client.exec(
         databaseName,
         engineName,
-        'def output = test_relation',
+        'def output {test_relation}',
       );
 
       expect(resp.transaction.state).toEqual('COMPLETED');
@@ -109,7 +109,7 @@ describe('Load data integration tests', () => {
       resp = await client.exec(
         databaseName,
         engineName,
-        'def output = test_relation_1',
+        'def output {test_relation_1}',
       );
 
       expect(resp.transaction.state).toEqual('COMPLETED');
@@ -142,7 +142,7 @@ describe('Load data integration tests', () => {
       resp = await client.exec(
         databaseName,
         engineName,
-        'def output = test_relation_2',
+        'def output {test_relation_2}',
       );
 
       expect(resp.transaction.state).toEqual('COMPLETED');

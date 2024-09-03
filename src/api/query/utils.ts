@@ -86,9 +86,9 @@ export function syntaxToRel(syntax: CsvConfigSyntax) {
           return `(${key}, :${toRelLiteral(syntax.header![key])})`;
         })
         .join('; ');
-      qs.push(`def config:syntax:header = ${headerStr}`);
+      qs.push(`def config[:syntax, :header]: { ${headerStr} }`);
     } else {
-      qs.push(`def config:syntax:${prop} = ${toRelLiteral(syntax[prop])}`);
+      qs.push(`def config[:syntax, :${prop}]: ${toRelLiteral(syntax[prop])}`);
     }
   });
 
@@ -99,7 +99,9 @@ export function schemaToRel(schema: CsvConfigSchema) {
   const qs: string[] = [];
 
   Object.keys(schema).forEach(colName => {
-    qs.push(`def config:schema${colName} = ${toRelLiteral(schema[colName])}`);
+    qs.push(
+      `def config[:schema, ${colName}]: ${toRelLiteral(schema[colName])}`,
+    );
   });
 
   return qs;
