@@ -99,7 +99,9 @@ export function schemaToRel(schema: CsvConfigSchema) {
   const qs: string[] = [];
 
   Object.keys(schema).forEach(colName => {
-    qs.push(`def config[:schema, ${colName}]: ${toRelLiteral(schema[colName])}`);
+    qs.push(
+      `def config[:schema, ${colName}]: ${toRelLiteral(schema[colName])}`,
+    );
   });
 
   return qs;
