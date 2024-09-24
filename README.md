@@ -11,7 +11,7 @@ REST APIs from JavaScript. The SDK provides first class TypeScript support.
 
 ### Requirements
 
-- Node.js 14+
+- Node.js 18+
 
 ### Installing the SDK
 

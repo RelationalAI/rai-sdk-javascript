@@ -17,8 +17,8 @@
 /* eslint-env node */
 /* eslint-disable no-console */
 
-import { ConfigIniParser } from 'config-ini-parser';
 import { promises } from 'fs';
+import { parse } from 'ini';
 import { homedir } from 'os';
 
 import { ClientCredentials } from './credentials';
@@ -37,15 +37,14 @@ export async function readConfig(
 
   try {
     const strCfg = await readFile(configPath, 'utf-8');
-    const configParser = new ConfigIniParser();
 
-    configParser.parse(strCfg);
+    const config = parse(strCfg);
 
-    if (!configParser.isHaveSection(profile)) {
+    if (!config || !config[profile]) {
       throw new Error(`Profile '${profile}' not found in ${configPath}`);
     }
 
-    return readClientCredentials(configParser, profile);
+    return readClientCredentials(config, profile);
   } catch (error: unknown) {
     if (isNodeError(error) && error.code === 'ENOENT') {
       throw new Error(`Can't find file: ${configPath}`);
@@ -61,26 +60,23 @@ const DEFAULT_SCHEME = 'https';
 const DEFAULT_CLIENT_CREDENTIALS_URL =
   'https://login.relationalai.com/oauth/token';
 
-function readClientCredentials(configParser: ConfigIniParser, profile: string) {
+function readClientCredentials(cfg: Record<string, any>, profile: string) {
+  const _p = cfg[profile];
   for (const field of REQUIRED_FIELDS) {
-    if (!configParser.get(profile, field, '')) {
+    if (!_p[field]) {
       throw new Error(`Can't find ${field} field in ${profile} profile`);
     }
   }
 
-  const clientId = configParser.get(profile, 'client_id', '');
+  const clientId = _p['client_id'] || '';
   const config: Config = {
-    host: configParser.get(profile, 'host', ''),
-    port: configParser.get(profile, 'port', DEFAULT_PORT),
-    scheme: configParser.get(profile, 'scheme', DEFAULT_SCHEME),
+    host: _p['host'] || '',
+    port: _p['port'] || DEFAULT_PORT,
+    scheme: _p['scheme'] || DEFAULT_SCHEME,
     credentials: new ClientCredentials(
       clientId,
-      configParser.get(profile, 'client_secret', ''),
-      configParser.get(
-        profile,
-        'client_credentials_url',
-        DEFAULT_CLIENT_CREDENTIALS_URL,
-      ),
+      _p['client_secret'] || '',
+      _p['client_credentials_url'] || DEFAULT_CLIENT_CREDENTIALS_URL,
       async () => await readTokenCache(clientId),
       async cache => await writeTokenCache(clientId, cache),
     ),
