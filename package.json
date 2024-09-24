@@ -101,7 +101,7 @@
     "webpack-node-externals": "3.0.0"
   },
   "dependencies": {
-    "@protobuf-ts/runtime": "2.7.0",
+    "@protobuf-ts/runtime": "2.9.4",
     "apache-arrow": "8.0.0",
     "console-table-printer": "2.11.0",
     "decimal.js": "10.3.1",
