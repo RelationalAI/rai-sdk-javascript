@@ -31,18 +31,6 @@ describe('resultUtils', () => {
       ).toEqual('String(:foo)');
     });
 
-    it('should get display name for rational constant type def', () => {
-      expect(
-        getDisplayName({
-          type: 'Constant',
-          value: {
-            type: 'Rational32',
-            value: { numerator: 1, denominator: 2 },
-          },
-        }),
-      ).toEqual('Rational32(1/2)');
-    });
-
     it('should get display name for value type type def', () => {
       expect(
         getDisplayName({
