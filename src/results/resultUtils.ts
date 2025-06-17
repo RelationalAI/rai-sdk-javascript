@@ -227,25 +227,6 @@ export function convertValue<T extends RelTypedValue>(
         Math.pow(10, typeDef.places),
       );
     }
-    case 'Rational8':
-    case 'Rational16':
-    case 'Rational32':
-    case 'Rational64': {
-      value = Array.from(value);
-
-      return {
-        numerator: value[0],
-        denominator: value[1],
-      };
-    }
-    case 'Rational128': {
-      value = Array.from(value);
-
-      return {
-        numerator: int128ToBigInt(Array.from(value[0])),
-        denominator: int128ToBigInt(Array.from(value[1])),
-      };
-    }
     case 'Constant': {
       return typeDef.value.value;
     }
@@ -357,12 +338,6 @@ export function getDisplayValue(
     case 'Decimal64':
     case 'Decimal128':
       return val.value.toFixed(val.places);
-    case 'Rational8':
-    case 'Rational16':
-    case 'Rational32':
-    case 'Rational64':
-    case 'Rational128':
-      return `${val.value.numerator}/${val.value.denominator}`;
     case 'ValueType': {
       const displayValue = val.typeDefs
         .map((td, index) => {
@@ -536,47 +511,6 @@ function mapValueType(typeDef: Omit<ValueTypeValue, 'value'>): RelTypeDef {
       }
       break;
     }
-    case 'Rational': {
-      // TODO remove later, this's legacy Rational representation
-      if (typeDef.typeDefs.length === 5 && typeDef.typeDefs[3]) {
-        const tp = typeDef.typeDefs[3];
-
-        switch (tp.type) {
-          case 'Int8':
-            return { type: 'Rational8' };
-          case 'Int16':
-            return { type: 'Rational16' };
-          case 'Int32':
-            return { type: 'Rational32' };
-          case 'Int64':
-            return { type: 'Rational64' };
-          case 'Int128':
-            return { type: 'Rational128' };
-        }
-      }
-
-      if (
-        typeDef.typeDefs.length === 6 &&
-        typeDef.typeDefs[3] &&
-        typeDef.typeDefs[3].type === 'Constant' &&
-        typeDef.typeDefs[3].value.type === 'Int64'
-      ) {
-        const bits = typeDef.typeDefs[3].value.value;
-
-        switch (bits) {
-          case 8n:
-            return { type: 'Rational8' };
-          case 16n:
-            return { type: 'Rational16' };
-          case 32n:
-            return { type: 'Rational32' };
-          case 64n:
-            return { type: 'Rational64' };
-          case 128n:
-            return { type: 'Rational128' };
-        }
-      }
-    }
   }
 
   return typeDef;
@@ -601,11 +535,6 @@ function unflattenConstantValue(typeDef: RelTypeDef, value: PrimitiveValue[]) {
       case 'Missing':
         result.push(null);
         break;
-      case 'Rational8':
-      case 'Rational16':
-      case 'Rational32':
-      case 'Rational64':
-      case 'Rational128':
       case 'SHA1':
         // These types take 2 values
         result.push(values.splice(0, 2));

@@ -55,11 +55,6 @@ export type RelBaseTypedValue =
   | Decimal32Value
   | Decimal64Value
   | Decimal128Value
-  | Rational8Value
-  | Rational16Value
-  | Rational32Value
-  | Rational64Value
-  | Rational128Value
   | AutoNumber
   | UUID
   | SHA1;
@@ -102,11 +97,6 @@ export type RelTypeDef =
   | Omit<Decimal32Value, 'value'>
   | Omit<Decimal64Value, 'value'>
   | Omit<Decimal128Value, 'value'>
-  | Omit<Rational8Value, 'value'>
-  | Omit<Rational16Value, 'value'>
-  | Omit<Rational32Value, 'value'>
-  | Omit<Rational64Value, 'value'>
-  | Omit<Rational128Value, 'value'>
   | Omit<AutoNumber, 'value'>
   | Omit<UUID, 'value'>
   | Omit<SHA1, 'value'>
@@ -302,46 +292,6 @@ export type Decimal128Value = {
   type: 'Decimal128';
   value: Decimal;
   places: number;
-};
-
-export type Rational8Value = {
-  type: 'Rational8';
-  value: {
-    numerator: number;
-    denominator: number;
-  };
-};
-
-export type Rational16Value = {
-  type: 'Rational16';
-  value: {
-    numerator: number;
-    denominator: number;
-  };
-};
-
-export type Rational32Value = {
-  type: 'Rational32';
-  value: {
-    numerator: number;
-    denominator: number;
-  };
-};
-
-export type Rational64Value = {
-  type: 'Rational64';
-  value: {
-    numerator: bigint;
-    denominator: bigint;
-  };
-};
-
-export type Rational128Value = {
-  type: 'Rational128';
-  value: {
-    numerator: bigint;
-    denominator: bigint;
-  };
 };
 
 export type AutoNumber = {
