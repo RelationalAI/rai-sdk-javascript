@@ -1681,7 +1681,9 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':_query::MyType', 1n, 59005302613613978016770438099762432572n]],
-    displayValues: ['(:_query::MyType, 1, 59005302613613978016770438099762432572)'],
+    displayValues: [
+      '(:_query::MyType, 1, 59005302613613978016770438099762432572)',
+    ],
   },
   {
     name: 'Missing',
@@ -2186,9 +2188,15 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [
-      [':_query::MyType', 1n, new Decimal('123456789010111213141516171819202122.34')],
+      [
+        ':_query::MyType',
+        1n,
+        new Decimal('123456789010111213141516171819202122.34'),
+      ],
     ],
-    displayValues: ['(:_query::MyType, 1, 123456789010111213141516171819202122.34)'],
+    displayValues: [
+      '(:_query::MyType, 1, 123456789010111213141516171819202122.34)',
+    ],
   },
   {
     name: 'UUID',
@@ -2215,7 +2223,9 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [[':_query::MyType', 1n, '22b4a8a1-e548-4eeb-9270-60426d66a48e']],
-    displayValues: ['(:_query::MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")'],
+    displayValues: [
+      '(:_query::MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")',
+    ],
   },
   {
     name: 'SHA1',
@@ -2241,8 +2251,12 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':_query::MyType', 1n, '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c']],
-    displayValues: ['(:_query::MyType, 1, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c")'],
+    values: [
+      [':_query::MyType', 1n, '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
+    ],
+    displayValues: [
+      '(:_query::MyType, 1, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c")',
+    ],
   },
 ];
 
@@ -2352,8 +2366,12 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':_query::OuterType', [':_query::InnerType', 123n, 'inner'], 'outer']],
-    displayValues: ['(:_query::OuterType, (:_query::InnerType, 123, "inner"), "outer")'],
+    values: [
+      [':_query::OuterType', [':_query::InnerType', 123n, 'inner'], 'outer'],
+    ],
+    displayValues: [
+      '(:_query::OuterType, (:_query::InnerType, 123, "inner"), "outer")',
+    ],
   },
   {
     name: 'Module',
@@ -2917,12 +2935,18 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':_query::MyType', 59005302613613978016770438099762432572n, 1n],
+          value: [
+            ':_query::MyType',
+            59005302613613978016770438099762432572n,
+            1n,
+          ],
         },
       },
     ],
     values: [[':_query::MyType', 59005302613613978016770438099762432572n, 1n]],
-    displayValues: ['(:_query::MyType, 59005302613613978016770438099762432572, 1)'],
+    displayValues: [
+      '(:_query::MyType, 59005302613613978016770438099762432572, 1)',
+    ],
   },
   {
     name: 'Missing',
@@ -3526,9 +3550,15 @@ export const valueTypeSpecializationTests: Test[] = [
       },
     ],
     values: [
-      [':_query::MyType', new Decimal('123456789010111213141516171819202122.34'), 1n],
+      [
+        ':_query::MyType',
+        new Decimal('123456789010111213141516171819202122.34'),
+        1n,
+      ],
     ],
-    displayValues: ['(:_query::MyType, 123456789010111213141516171819202122.34, 1)'],
+    displayValues: [
+      '(:_query::MyType, 123456789010111213141516171819202122.34, 1)',
+    ],
   },
   {
     name: 'UUID',
@@ -3555,12 +3585,18 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':_query::MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n],
+          value: [
+            ':_query::MyType',
+            '22b4a8a1-e548-4eeb-9270-60426d66a48e',
+            1n,
+          ],
         },
       },
     ],
     values: [[':_query::MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n]],
-    displayValues: ['(:_query::MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)'],
+    displayValues: [
+      '(:_query::MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)',
+    ],
   },
   {
     name: 'SHA1',
@@ -3587,11 +3623,19 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':_query::MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n],
+          value: [
+            ':_query::MyType',
+            '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c',
+            1n,
+          ],
         },
       },
     ],
-    values: [[':_query::MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n]],
-    displayValues: ['(:_query::MyType, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c", 1)'],
+    values: [
+      [':_query::MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n],
+    ],
+    displayValues: [
+      '(:_query::MyType, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c", 1)',
+    ],
   },
 ];
