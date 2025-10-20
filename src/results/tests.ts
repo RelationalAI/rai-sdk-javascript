@@ -3614,7 +3614,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':_query::MyType' },
+              value: { type: 'String', value: ':MyType' },
             },
             {
               type: 'SHA1',
@@ -3623,11 +3623,7 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [
-            ':_query::MyType',
-            '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c',
-            1n,
-          ],
+          value: [':MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n],
         },
       },
     ],
