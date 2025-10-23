@@ -1254,7 +1254,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Constant',
@@ -1263,8 +1263,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', ':foo']],
-    displayValues: ['(:MyType, :foo)'],
+    values: [[':_query::MyType', ':foo']],
+    displayValues: ['(:_query::MyType, :foo)'],
   },
   {
     name: 'String',
@@ -1278,7 +1278,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1289,8 +1289,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 'abc']],
-    displayValues: ['(:MyType, 1, "abc")'],
+    values: [[':_query::MyType', 1n, 'abc']],
+    displayValues: ['(:_query::MyType, 1, "abc")'],
   },
   {
     name: 'Bool',
@@ -1304,7 +1304,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1315,8 +1315,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, false]],
-    displayValues: ['(:MyType, 1, false)'],
+    values: [[':_query::MyType', 1n, false]],
+    displayValues: ['(:_query::MyType, 1, false)'],
   },
   {
     name: 'Char',
@@ -1330,7 +1330,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1341,8 +1341,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, '👍']],
-    displayValues: ["(:MyType, 1, '👍')"],
+    values: [[':_query::MyType', 1n, '👍']],
+    displayValues: ["(:_query::MyType, 1, '👍')"],
   },
   {
     name: 'DateTime',
@@ -1356,7 +1356,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1367,8 +1367,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, new Date('2021-10-11T15:22:31.000Z')]],
-    displayValues: ['(:MyType, 1, 2021-10-11T15:22:31.000Z)'],
+    values: [[':_query::MyType', 1n, new Date('2021-10-11T15:22:31.000Z')]],
+    displayValues: ['(:_query::MyType, 1, 2021-10-11T15:22:31.000Z)'],
   },
   {
     name: 'Date',
@@ -1382,7 +1382,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1393,8 +1393,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, new Date('2021-10-12')]],
-    displayValues: ['(:MyType, 1, 2021-10-12)'],
+    values: [[':_query::MyType', 1n, new Date('2021-10-12')]],
+    displayValues: ['(:_query::MyType, 1, 2021-10-12)'],
   },
   {
     name: 'Year',
@@ -1408,7 +1408,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1419,8 +1419,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2022n]],
-    displayValues: ['(:MyType, 1, 2022)'],
+    values: [[':_query::MyType', 1n, 2022n]],
+    displayValues: ['(:_query::MyType, 1, 2022)'],
   },
   {
     name: 'Month',
@@ -1434,7 +1434,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1445,8 +1445,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Week',
@@ -1460,7 +1460,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1471,8 +1471,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Day',
@@ -1486,7 +1486,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1497,8 +1497,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Hour',
@@ -1512,7 +1512,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1523,8 +1523,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Minute',
@@ -1538,7 +1538,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1549,8 +1549,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Second',
@@ -1564,7 +1564,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1575,8 +1575,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Millisecond',
@@ -1590,7 +1590,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1601,8 +1601,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Microsecond',
@@ -1616,7 +1616,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1627,8 +1627,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Nanosecond',
@@ -1642,7 +1642,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1653,8 +1653,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Hash',
@@ -1669,7 +1669,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1680,8 +1680,10 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 59005302613613978016770438099762432572n]],
-    displayValues: ['(:MyType, 1, 59005302613613978016770438099762432572)'],
+    values: [[':_query::MyType', 1n, 59005302613613978016770438099762432572n]],
+    displayValues: [
+      '(:_query::MyType, 1, 59005302613613978016770438099762432572)',
+    ],
   },
   {
     name: 'Missing',
@@ -1695,7 +1697,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1706,8 +1708,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, null]],
-    displayValues: ['(:MyType, 1, missing)'],
+    values: [[':_query::MyType', 1n, null]],
+    displayValues: ['(:_query::MyType, 1, missing)'],
   },
   {
     name: 'FilePos',
@@ -1728,7 +1730,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1739,8 +1741,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 2n]],
-    displayValues: ['(:MyType, 1, 2)'],
+    values: [[':_query::MyType', 1n, 2n]],
+    displayValues: ['(:_query::MyType, 1, 2)'],
   },
   {
     name: 'Int8',
@@ -1754,7 +1756,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1765,8 +1767,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, -12]],
-    displayValues: ['(:MyType, 1, -12)'],
+    values: [[':_query::MyType', 1n, -12]],
+    displayValues: ['(:_query::MyType, 1, -12)'],
   },
   {
     name: 'Int16',
@@ -1780,7 +1782,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1791,8 +1793,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, -123]],
-    displayValues: ['(:MyType, 1, -123)'],
+    values: [[':_query::MyType', 1n, -123]],
+    displayValues: ['(:_query::MyType, 1, -123)'],
   },
   {
     name: 'Int32',
@@ -1806,7 +1808,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1817,8 +1819,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, -1234]],
-    displayValues: ['(:MyType, 1, -1234)'],
+    values: [[':_query::MyType', 1n, -1234]],
+    displayValues: ['(:_query::MyType, 1, -1234)'],
   },
   {
     name: 'Int64',
@@ -1832,7 +1834,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1843,8 +1845,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, -12345n]],
-    displayValues: ['(:MyType, 1, -12345)'],
+    values: [[':_query::MyType', 1n, -12345n]],
+    displayValues: ['(:_query::MyType, 1, -12345)'],
   },
   {
     name: 'Int128',
@@ -1858,7 +1860,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1869,8 +1871,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 123456789101112131415n]],
-    displayValues: ['(:MyType, 1, 123456789101112131415)'],
+    values: [[':_query::MyType', 1n, 123456789101112131415n]],
+    displayValues: ['(:_query::MyType, 1, 123456789101112131415)'],
   },
   {
     name: 'UInt8',
@@ -1884,7 +1886,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1895,8 +1897,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 12]],
-    displayValues: ['(:MyType, 1, 12)'],
+    values: [[':_query::MyType', 1n, 12]],
+    displayValues: ['(:_query::MyType, 1, 12)'],
   },
   {
     name: 'UInt16',
@@ -1910,7 +1912,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1921,8 +1923,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 123]],
-    displayValues: ['(:MyType, 1, 123)'],
+    values: [[':_query::MyType', 1n, 123]],
+    displayValues: ['(:_query::MyType, 1, 123)'],
   },
   {
     name: 'UInt32',
@@ -1936,7 +1938,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1947,8 +1949,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 1234]],
-    displayValues: ['(:MyType, 1, 1234)'],
+    values: [[':_query::MyType', 1n, 1234]],
+    displayValues: ['(:_query::MyType, 1, 1234)'],
   },
   {
     name: 'UInt64',
@@ -1962,7 +1964,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1973,8 +1975,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 12345n]],
-    displayValues: ['(:MyType, 1, 12345)'],
+    values: [[':_query::MyType', 1n, 12345n]],
+    displayValues: ['(:_query::MyType, 1, 12345)'],
   },
   {
     name: 'UInt128',
@@ -1988,7 +1990,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -1999,8 +2001,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 123456789101112131415n]],
-    displayValues: ['(:MyType, 1, 123456789101112131415)'],
+    values: [[':_query::MyType', 1n, 123456789101112131415n]],
+    displayValues: ['(:_query::MyType, 1, 123456789101112131415)'],
   },
   {
     name: 'Float16',
@@ -2014,7 +2016,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2025,8 +2027,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 42.5]],
-    displayValues: ['(:MyType, 1, 42.5)'],
+    values: [[':_query::MyType', 1n, 42.5]],
+    displayValues: ['(:_query::MyType, 1, 42.5)'],
   },
   {
     name: 'Float32',
@@ -2040,7 +2042,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2051,8 +2053,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 42.5]],
-    displayValues: ['(:MyType, 1, 42.5)'],
+    values: [[':_query::MyType', 1n, 42.5]],
+    displayValues: ['(:_query::MyType, 1, 42.5)'],
   },
   {
     name: 'Float64',
@@ -2066,7 +2068,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2077,8 +2079,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, 42.5]],
-    displayValues: ['(:MyType, 1, 42.5)'],
+    values: [[':_query::MyType', 1n, 42.5]],
+    displayValues: ['(:_query::MyType, 1, 42.5)'],
   },
   {
     name: 'Decimal16',
@@ -2092,7 +2094,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2104,8 +2106,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, new Decimal('12.34')]],
-    displayValues: ['(:MyType, 1, 12.34)'],
+    values: [[':_query::MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:_query::MyType, 1, 12.34)'],
   },
   {
     name: 'Decimal32',
@@ -2119,7 +2121,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2131,8 +2133,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, new Decimal('12.34')]],
-    displayValues: ['(:MyType, 1, 12.34)'],
+    values: [[':_query::MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:_query::MyType, 1, 12.34)'],
   },
   {
     name: 'Decimal64',
@@ -2146,7 +2148,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2158,8 +2160,8 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, new Decimal('12.34')]],
-    displayValues: ['(:MyType, 1, 12.34)'],
+    values: [[':_query::MyType', 1n, new Decimal('12.34')]],
+    displayValues: ['(:_query::MyType, 1, 12.34)'],
   },
   {
     name: 'Decimal128',
@@ -2173,7 +2175,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2186,9 +2188,15 @@ export const valueTypeTests: Test[] = [
       },
     ],
     values: [
-      [':MyType', 1n, new Decimal('123456789010111213141516171819202122.34')],
+      [
+        ':_query::MyType',
+        1n,
+        new Decimal('123456789010111213141516171819202122.34'),
+      ],
     ],
-    displayValues: ['(:MyType, 1, 123456789010111213141516171819202122.34)'],
+    displayValues: [
+      '(:_query::MyType, 1, 123456789010111213141516171819202122.34)',
+    ],
   },
   {
     name: 'UUID',
@@ -2203,7 +2211,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2214,8 +2222,10 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, '22b4a8a1-e548-4eeb-9270-60426d66a48e']],
-    displayValues: ['(:MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")'],
+    values: [[':_query::MyType', 1n, '22b4a8a1-e548-4eeb-9270-60426d66a48e']],
+    displayValues: [
+      '(:_query::MyType, 1, "22b4a8a1-e548-4eeb-9270-60426d66a48e")',
+    ],
   },
   {
     name: 'SHA1',
@@ -2230,7 +2240,7 @@ export const valueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2241,8 +2251,12 @@ export const valueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 1n, '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c']],
-    displayValues: ['(:MyType, 1, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c")'],
+    values: [
+      [':_query::MyType', 1n, '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c'],
+    ],
+    displayValues: [
+      '(:_query::MyType, 1, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c")',
+    ],
   },
 ];
 
@@ -2259,7 +2273,7 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int64',
@@ -2267,8 +2281,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 123n]],
-    displayValues: ['(:MyType, 123)'],
+    values: [[':_query::MyType', 123n]],
+    displayValues: ['(:_query::MyType, 123)'],
   },
   {
     name: 'Int128',
@@ -2282,7 +2296,7 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Int128',
@@ -2290,8 +2304,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', 123445677777999999999n]],
-    displayValues: ['(:MyType, 123445677777999999999)'],
+    values: [[':_query::MyType', 123445677777999999999n]],
+    displayValues: ['(:_query::MyType, 123445677777999999999)'],
   },
   {
     name: 'Date',
@@ -2305,7 +2319,7 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':MyType' },
+            value: { type: 'String', value: ':_query::MyType' },
           },
           {
             type: 'Date',
@@ -2313,8 +2327,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':MyType', new Date('2021-10-12')]],
-    displayValues: ['(:MyType, 2021-10-12)'],
+    values: [[':_query::MyType', new Date('2021-10-12')]],
+    displayValues: ['(:_query::MyType, 2021-10-12)'],
   },
   {
     name: 'OuterType(InnerType(Int, String), String)',
@@ -2329,14 +2343,14 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':OuterType' },
+            value: { type: 'String', value: ':_query::OuterType' },
           },
           {
             type: 'ValueType',
             typeDefs: [
               {
                 type: 'Constant',
-                value: { type: 'String', value: ':InnerType' },
+                value: { type: 'String', value: ':_query::InnerType' },
               },
               {
                 type: 'Int64',
@@ -2352,8 +2366,12 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':OuterType', [':InnerType', 123n, 'inner'], 'outer']],
-    displayValues: ['(:OuterType, (:InnerType, 123, "inner"), "outer")'],
+    values: [
+      [':_query::OuterType', [':_query::InnerType', 123n, 'inner'], 'outer'],
+    ],
+    displayValues: [
+      '(:_query::OuterType, (:_query::InnerType, 123, "inner"), "outer")',
+    ],
   },
   {
     name: 'Module',
@@ -2371,7 +2389,7 @@ export const miscValueTypeTests: Test[] = [
         typeDefs: [
           {
             type: 'Constant',
-            value: { type: 'String', value: ':Foo' },
+            value: { type: 'String', value: ':_query::Foo' },
           },
           {
             type: 'Constant',
@@ -2390,8 +2408,8 @@ export const miscValueTypeTests: Test[] = [
         ],
       },
     ],
-    values: [[':Foo', ':Bar', ':MyType', 12n, 34n]],
-    displayValues: ['(:Foo, :Bar, :MyType, 12, 34)'],
+    values: [[':_query::Foo', ':Bar', ':MyType', 12n, 34n]],
+    displayValues: ['(:_query::Foo, :Bar, :MyType, 12, 34)'],
   },
 ];
 
@@ -2411,19 +2429,19 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Constant',
               value: { type: 'String', value: ':foo' },
             },
           ],
-          value: [':MyType', ':foo'],
+          value: [':_query::MyType', ':foo'],
         },
       },
     ],
-    values: [[':MyType', ':foo']],
-    displayValues: ['(:MyType, :foo)'],
+    values: [[':_query::MyType', ':foo']],
+    displayValues: ['(:_query::MyType, :foo)'],
   },
   {
     name: 'String',
@@ -2440,7 +2458,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'String',
@@ -2449,12 +2467,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', ':abc', 1n],
+          value: [':_query::MyType', ':abc', 1n],
         },
       },
     ],
-    values: [[':MyType', ':abc', 1n]],
-    displayValues: ['(:MyType, ":abc", 1)'],
+    values: [[':_query::MyType', ':abc', 1n]],
+    displayValues: ['(:_query::MyType, ":abc", 1)'],
   },
   {
     name: 'Bool',
@@ -2471,7 +2489,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Bool',
@@ -2480,12 +2498,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', false, 1n],
+          value: [':_query::MyType', false, 1n],
         },
       },
     ],
-    values: [[':MyType', false, 1n]],
-    displayValues: ['(:MyType, false, 1)'],
+    values: [[':_query::MyType', false, 1n]],
+    displayValues: ['(:_query::MyType, false, 1)'],
   },
   {
     name: 'Char',
@@ -2502,7 +2520,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Char',
@@ -2511,12 +2529,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', '👍', 1n],
+          value: [':_query::MyType', '👍', 1n],
         },
       },
     ],
-    values: [[':MyType', '👍', 1n]],
-    displayValues: ["(:MyType, '👍', 1)"],
+    values: [[':_query::MyType', '👍', 1n]],
+    displayValues: ["(:_query::MyType, '👍', 1)"],
   },
   {
     name: 'DateTime',
@@ -2533,7 +2551,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'DateTime',
@@ -2542,12 +2560,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', new Date('2021-10-11T15:22:31.000Z'), 1n],
+          value: [':_query::MyType', new Date('2021-10-11T15:22:31.000Z'), 1n],
         },
       },
     ],
-    values: [[':MyType', new Date('2021-10-11T15:22:31.000Z'), 1n]],
-    displayValues: ['(:MyType, 2021-10-11T15:22:31.000Z, 1)'],
+    values: [[':_query::MyType', new Date('2021-10-11T15:22:31.000Z'), 1n]],
+    displayValues: ['(:_query::MyType, 2021-10-11T15:22:31.000Z, 1)'],
     // TODO enable this when DateTime serialization fixed
     skip: true,
   },
@@ -2566,7 +2584,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Date',
@@ -2575,12 +2593,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', new Date('2021-10-12'), 1n],
+          value: [':_query::MyType', new Date('2021-10-12'), 1n],
         },
       },
     ],
-    values: [[':MyType', new Date('2021-10-12'), 1n]],
-    displayValues: ['(:MyType, 2021-10-12, 1)'],
+    values: [[':_query::MyType', new Date('2021-10-12'), 1n]],
+    displayValues: ['(:_query::MyType, 2021-10-12, 1)'],
   },
   {
     name: 'Year',
@@ -2597,7 +2615,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Year',
@@ -2606,12 +2624,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2022n, 1n],
+          value: [':_query::MyType', 2022n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2022n, 1n]],
-    displayValues: ['(:MyType, 2022, 1)'],
+    values: [[':_query::MyType', 2022n, 1n]],
+    displayValues: ['(:_query::MyType, 2022, 1)'],
   },
   {
     name: 'Month',
@@ -2628,7 +2646,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Month',
@@ -2637,12 +2655,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Week',
@@ -2659,7 +2677,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Week',
@@ -2668,12 +2686,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Day',
@@ -2690,7 +2708,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Day',
@@ -2699,12 +2717,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Hour',
@@ -2721,7 +2739,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Hour',
@@ -2730,12 +2748,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Minute',
@@ -2752,7 +2770,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Minute',
@@ -2761,12 +2779,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Second',
@@ -2783,7 +2801,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Second',
@@ -2792,12 +2810,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Millisecond',
@@ -2814,7 +2832,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Millisecond',
@@ -2823,12 +2841,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Microsecond',
@@ -2845,7 +2863,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Microsecond',
@@ -2854,12 +2872,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Nanosecond',
@@ -2876,7 +2894,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Nanosecond',
@@ -2885,12 +2903,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Hash',
@@ -2908,7 +2926,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Hash',
@@ -2917,12 +2935,18 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 59005302613613978016770438099762432572n, 1n],
+          value: [
+            ':_query::MyType',
+            59005302613613978016770438099762432572n,
+            1n,
+          ],
         },
       },
     ],
-    values: [[':MyType', 59005302613613978016770438099762432572n, 1n]],
-    displayValues: ['(:MyType, 59005302613613978016770438099762432572, 1)'],
+    values: [[':_query::MyType', 59005302613613978016770438099762432572n, 1n]],
+    displayValues: [
+      '(:_query::MyType, 59005302613613978016770438099762432572, 1)',
+    ],
   },
   {
     name: 'Missing',
@@ -2939,7 +2963,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Missing',
@@ -2948,12 +2972,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', null, 1n],
+          value: [':_query::MyType', null, 1n],
         },
       },
     ],
-    values: [[':MyType', null, 1n]],
-    displayValues: ['(:MyType, missing, 1)'],
+    values: [[':_query::MyType', null, 1n]],
+    displayValues: ['(:_query::MyType, missing, 1)'],
   },
   {
     name: 'FilePos',
@@ -2977,7 +3001,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'FilePos',
@@ -2986,12 +3010,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 2n, 1n],
+          value: [':_query::MyType', 2n, 1n],
         },
       },
     ],
-    values: [[':MyType', 2n, 1n]],
-    displayValues: ['(:MyType, 2, 1)'],
+    values: [[':_query::MyType', 2n, 1n]],
+    displayValues: ['(:_query::MyType, 2, 1)'],
   },
   {
     name: 'Int8',
@@ -3008,7 +3032,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Int8',
@@ -3017,12 +3041,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', -12, 1n],
+          value: [':_query::MyType', -12, 1n],
         },
       },
     ],
-    values: [[':MyType', -12, 1n]],
-    displayValues: ['(:MyType, -12, 1)'],
+    values: [[':_query::MyType', -12, 1n]],
+    displayValues: ['(:_query::MyType, -12, 1)'],
   },
   {
     name: 'Int16',
@@ -3039,7 +3063,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Int16',
@@ -3048,12 +3072,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', -123, 1n],
+          value: [':_query::MyType', -123, 1n],
         },
       },
     ],
-    values: [[':MyType', -123, 1n]],
-    displayValues: ['(:MyType, -123, 1)'],
+    values: [[':_query::MyType', -123, 1n]],
+    displayValues: ['(:_query::MyType, -123, 1)'],
   },
   {
     name: 'Int32',
@@ -3070,7 +3094,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Int32',
@@ -3079,12 +3103,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', -1234, 1n],
+          value: [':_query::MyType', -1234, 1n],
         },
       },
     ],
-    values: [[':MyType', -1234, 1n]],
-    displayValues: ['(:MyType, -1234, 1)'],
+    values: [[':_query::MyType', -1234, 1n]],
+    displayValues: ['(:_query::MyType, -1234, 1)'],
   },
   {
     name: 'Int64',
@@ -3101,7 +3125,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Int64',
@@ -3110,12 +3134,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', -12345n, 1n],
+          value: [':_query::MyType', -12345n, 1n],
         },
       },
     ],
-    values: [[':MyType', -12345n, 1n]],
-    displayValues: ['(:MyType, -12345, 1)'],
+    values: [[':_query::MyType', -12345n, 1n]],
+    displayValues: ['(:_query::MyType, -12345, 1)'],
   },
   {
     name: 'Int128',
@@ -3132,7 +3156,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Int128',
@@ -3141,12 +3165,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 123456789101112131415n, 1n],
+          value: [':_query::MyType', 123456789101112131415n, 1n],
         },
       },
     ],
-    values: [[':MyType', 123456789101112131415n, 1n]],
-    displayValues: ['(:MyType, 123456789101112131415, 1)'],
+    values: [[':_query::MyType', 123456789101112131415n, 1n]],
+    displayValues: ['(:_query::MyType, 123456789101112131415, 1)'],
   },
   {
     name: 'UInt8',
@@ -3163,7 +3187,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'UInt8',
@@ -3172,12 +3196,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 12, 1n],
+          value: [':_query::MyType', 12, 1n],
         },
       },
     ],
-    values: [[':MyType', 12, 1n]],
-    displayValues: ['(:MyType, 12, 1)'],
+    values: [[':_query::MyType', 12, 1n]],
+    displayValues: ['(:_query::MyType, 12, 1)'],
   },
   {
     name: 'UInt16',
@@ -3194,7 +3218,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'UInt16',
@@ -3203,12 +3227,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 123, 1n],
+          value: [':_query::MyType', 123, 1n],
         },
       },
     ],
-    values: [[':MyType', 123, 1n]],
-    displayValues: ['(:MyType, 123, 1)'],
+    values: [[':_query::MyType', 123, 1n]],
+    displayValues: ['(:_query::MyType, 123, 1)'],
   },
   {
     name: 'UInt32',
@@ -3225,7 +3249,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'UInt32',
@@ -3234,12 +3258,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 1234, 1n],
+          value: [':_query::MyType', 1234, 1n],
         },
       },
     ],
-    values: [[':MyType', 1234, 1n]],
-    displayValues: ['(:MyType, 1234, 1)'],
+    values: [[':_query::MyType', 1234, 1n]],
+    displayValues: ['(:_query::MyType, 1234, 1)'],
   },
   {
     name: 'UInt64',
@@ -3256,7 +3280,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'UInt64',
@@ -3265,12 +3289,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 12345n, 1n],
+          value: [':_query::MyType', 12345n, 1n],
         },
       },
     ],
-    values: [[':MyType', 12345n, 1n]],
-    displayValues: ['(:MyType, 12345, 1)'],
+    values: [[':_query::MyType', 12345n, 1n]],
+    displayValues: ['(:_query::MyType, 12345, 1)'],
   },
   {
     name: 'UInt128',
@@ -3287,7 +3311,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'UInt128',
@@ -3296,12 +3320,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 123456789101112131415n, 1n],
+          value: [':_query::MyType', 123456789101112131415n, 1n],
         },
       },
     ],
-    values: [[':MyType', 123456789101112131415n, 1n]],
-    displayValues: ['(:MyType, 123456789101112131415, 1)'],
+    values: [[':_query::MyType', 123456789101112131415n, 1n]],
+    displayValues: ['(:_query::MyType, 123456789101112131415, 1)'],
   },
   {
     name: 'Float16',
@@ -3318,7 +3342,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Float16',
@@ -3327,12 +3351,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 42.5, 1n],
+          value: [':_query::MyType', 42.5, 1n],
         },
       },
     ],
-    values: [[':MyType', 42.5, 1n]],
-    displayValues: ['(:MyType, 42.5, 1)'],
+    values: [[':_query::MyType', 42.5, 1n]],
+    displayValues: ['(:_query::MyType, 42.5, 1)'],
   },
   {
     name: 'Float32',
@@ -3349,7 +3373,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Float32',
@@ -3358,12 +3382,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 42.5, 1n],
+          value: [':_query::MyType', 42.5, 1n],
         },
       },
     ],
-    values: [[':MyType', 42.5, 1n]],
-    displayValues: ['(:MyType, 42.5, 1)'],
+    values: [[':_query::MyType', 42.5, 1n]],
+    displayValues: ['(:_query::MyType, 42.5, 1)'],
   },
   {
     name: 'Float64',
@@ -3380,7 +3404,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Float64',
@@ -3389,12 +3413,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', 42.5, 1n],
+          value: [':_query::MyType', 42.5, 1n],
         },
       },
     ],
-    values: [[':MyType', 42.5, 1n]],
-    displayValues: ['(:MyType, 42.5, 1)'],
+    values: [[':_query::MyType', 42.5, 1n]],
+    displayValues: ['(:_query::MyType, 42.5, 1)'],
   },
   {
     name: 'Decimal16',
@@ -3411,7 +3435,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Decimal16',
@@ -3421,12 +3445,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', new Decimal('12.34'), 1n],
+          value: [':_query::MyType', new Decimal('12.34'), 1n],
         },
       },
     ],
-    values: [[':MyType', new Decimal('12.34'), 1n]],
-    displayValues: ['(:MyType, 12.34, 1)'],
+    values: [[':_query::MyType', new Decimal('12.34'), 1n]],
+    displayValues: ['(:_query::MyType, 12.34, 1)'],
   },
   {
     name: 'Decimal32',
@@ -3443,7 +3467,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Decimal32',
@@ -3453,12 +3477,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', new Decimal('12.34'), 1n],
+          value: [':_query::MyType', new Decimal('12.34'), 1n],
         },
       },
     ],
-    values: [[':MyType', new Decimal('12.34'), 1n]],
-    displayValues: ['(:MyType, 12.34, 1)'],
+    values: [[':_query::MyType', new Decimal('12.34'), 1n]],
+    displayValues: ['(:_query::MyType, 12.34, 1)'],
   },
   {
     name: 'Decimal64',
@@ -3475,7 +3499,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Decimal64',
@@ -3485,12 +3509,12 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', new Decimal('12.34'), 1n],
+          value: [':_query::MyType', new Decimal('12.34'), 1n],
         },
       },
     ],
-    values: [[':MyType', new Decimal('12.34'), 1n]],
-    displayValues: ['(:MyType, 12.34, 1)'],
+    values: [[':_query::MyType', new Decimal('12.34'), 1n]],
+    displayValues: ['(:_query::MyType, 12.34, 1)'],
   },
   {
     name: 'Decimal128',
@@ -3507,7 +3531,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'Decimal128',
@@ -3518,7 +3542,7 @@ export const valueTypeSpecializationTests: Test[] = [
             },
           ],
           value: [
-            ':MyType',
+            ':_query::MyType',
             new Decimal('123456789010111213141516171819202122.34'),
             1n,
           ],
@@ -3526,9 +3550,15 @@ export const valueTypeSpecializationTests: Test[] = [
       },
     ],
     values: [
-      [':MyType', new Decimal('123456789010111213141516171819202122.34'), 1n],
+      [
+        ':_query::MyType',
+        new Decimal('123456789010111213141516171819202122.34'),
+        1n,
+      ],
     ],
-    displayValues: ['(:MyType, 123456789010111213141516171819202122.34, 1)'],
+    displayValues: [
+      '(:_query::MyType, 123456789010111213141516171819202122.34, 1)',
+    ],
   },
   {
     name: 'UUID',
@@ -3546,7 +3576,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'UUID',
@@ -3555,12 +3585,18 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n],
+          value: [
+            ':_query::MyType',
+            '22b4a8a1-e548-4eeb-9270-60426d66a48e',
+            1n,
+          ],
         },
       },
     ],
-    values: [[':MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n]],
-    displayValues: ['(:MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)'],
+    values: [[':_query::MyType', '22b4a8a1-e548-4eeb-9270-60426d66a48e', 1n]],
+    displayValues: [
+      '(:_query::MyType, "22b4a8a1-e548-4eeb-9270-60426d66a48e", 1)',
+    ],
   },
   {
     name: 'SHA1',
@@ -3578,7 +3614,7 @@ export const valueTypeSpecializationTests: Test[] = [
           typeDefs: [
             {
               type: 'Constant',
-              value: { type: 'String', value: ':MyType' },
+              value: { type: 'String', value: ':_query::MyType' },
             },
             {
               type: 'SHA1',
@@ -3587,11 +3623,19 @@ export const valueTypeSpecializationTests: Test[] = [
               type: 'Int64',
             },
           ],
-          value: [':MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n],
+          value: [
+            ':_query::MyType',
+            '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c',
+            1n,
+          ],
         },
       },
     ],
-    values: [[':MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n]],
-    displayValues: ['(:MyType, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c", 1)'],
+    values: [
+      [':_query::MyType', '0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c', 1n],
+    ],
+    displayValues: [
+      '(:_query::MyType, "0d7d4a744fd92effd1ed88e48ac8231e7f7e9e6c", 1)',
+    ],
   },
 ];
