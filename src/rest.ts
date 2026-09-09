@@ -14,7 +14,7 @@
  * under the License.
  */
 
-import { stringify } from 'query-string';
+import queryString from 'query-string';
 
 import { AbortError, makeError } from './errors';
 import { getFetch, Response } from './fetch.node';
@@ -87,7 +87,7 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   const fullUrl =
     options.query && Object.keys(options.query).length > 0
-      ? `${url}?${stringify(options.query, { arrayFormat: 'none' })}`
+      ? `${url}?${queryString.stringify(options.query, { arrayFormat: 'none' })}`
       : url;
 
   let response;
