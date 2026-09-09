@@ -81,12 +81,16 @@ export function syntaxToRel(syntax: CsvConfigSyntax) {
     const prop = k as keyof CsvConfigSyntax;
 
     if (prop === 'header') {
-      const headerStr = Object.keys(syntax.header!)
-        .map(key => {
-          return `(${key}, :${toRelLiteral(syntax.header![key])})`;
-        })
-        .join('; ');
-      qs.push(`def config[:syntax, :header]: { ${headerStr} }`);
+      const header = syntax.header;
+
+      if (header) {
+        const headerStr = Object.keys(header)
+          .map(key => {
+            return `(${key}, :${toRelLiteral(header[key])})`;
+          })
+          .join('; ');
+        qs.push(`def config[:syntax, :header]: { ${headerStr} }`);
+      }
     } else {
       qs.push(`def config[:syntax, :${prop}]: ${toRelLiteral(syntax[prop])}`);
     }

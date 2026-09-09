@@ -87,7 +87,9 @@ export async function request<T>(url: string, options: RequestOptions = {}) {
 
   const fullUrl =
     options.query && Object.keys(options.query).length > 0
-      ? `${url}?${queryString.stringify(options.query, { arrayFormat: 'none' })}`
+      ? `${url}?${queryString.stringify(options.query, {
+          arrayFormat: 'none',
+        })}`
       : url;
 
   let response;
