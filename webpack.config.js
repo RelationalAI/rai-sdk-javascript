@@ -115,7 +115,16 @@ const nodeCjs = lodash.merge({}, baseConfig, {
     },
   },
   target: 'node',
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals({
+      allowlist: [
+        'query-string',
+        'decode-uri-component',
+        'filter-obj',
+        'split-on-first',
+      ],
+    }),
+  ],
 });
 
 const configs = [webEsm, webCjs, nodeEsm, nodeCjs];

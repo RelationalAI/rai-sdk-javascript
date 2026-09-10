@@ -41,6 +41,9 @@ const config = {
   globalSetup: '<rootDir>/jest.setup.ts',
   globalTeardown: '<rootDir>/jest.teardown.ts',
   testTimeout: timeout,
+  transformIgnorePatterns: [
+    '/node_modules/(?!(query-string|decode-uri-component|filter-obj|split-on-first)/)',
+  ],
   reporters: ['<rootDir>/jest.reporter.js', 'summary'],
 };
 
