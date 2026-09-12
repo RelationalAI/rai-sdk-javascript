@@ -14,6 +14,7 @@
  * under the License.
  */
 
+import { readFileSync } from 'fs';
 import nock from 'nock';
 
 import { baseUrl, getMockConfig } from '../../testUtils';
@@ -21,6 +22,7 @@ import { TransactionAsyncState } from '../transaction/types';
 import { ExecAsyncApi } from './execAsyncApi';
 
 const path = '/transactions';
+const multipartMock = readFileSync(__dirname + '/mocks/multipart');
 
 describe('QueryAsyncApi', () => {
   const api = new ExecAsyncApi(getMockConfig());
@@ -52,5 +54,42 @@ describe('QueryAsyncApi', () => {
     scope.done();
 
     expect(result).toEqual(mockTransaction);
+  });
+
+  it('should exec query async without relation id in arrow part name', async () => {
+    const query = 'x, x^2, x^3, x^4 from x in {1; 2; 3; 4; 5}';
+    const payload = {
+      dbname: database,
+      engine_name: engine,
+      query: query,
+      nowait_durable: false,
+      readonly: true,
+      v1_inputs: [],
+      tags: [],
+    };
+    const scope = nock(baseUrl).post(path, payload).reply(200, multipartMock, {
+      'Content-type':
+        'multipart/form-data; boundary=b11385ead6144ee0a9550db3672a7ccf',
+    });
+
+    const result = await api.execAsync(database, engine, query, [], true);
+
+    scope.done();
+
+    expect(result).toEqual({
+      transaction: {
+        id: '6bedf77c-8259-fcde-c31c-ab142a0606b9',
+        response_format_version: '2.0.4',
+        state: 'COMPLETED',
+      },
+      results: [
+        {
+          relationId: '',
+          metadata: expect.anything(),
+          table: expect.anything(),
+        },
+      ],
+      problems: [],
+    });
   });
 });
